@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PasswordRecoveryRepository } from './repositories/password-recovery.repository';
 import { PasswordRecoveryDto } from './dto/password-recovery.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
@@ -15,7 +9,7 @@ import { HashService } from 'src/hash.service';
 export class PasswordRecoveryService {
   constructor(
     private readonly UserRepo: UsersRepository,
-    private readonly passwordRecoveryRepo: PasswordRecoveryRepository,
+    private readonly passwordRecoveryRepo: UserPasswordRecoveryRepository,
     private readonly hashService: HashService,
   ) {}
 

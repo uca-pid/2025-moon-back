@@ -8,7 +8,7 @@ import { HashService } from 'src/hash.service';
 import { JwtService } from 'src/jwt.service';
 import { ConfigModule } from '@nestjs/config';
 import { PasswordRecoveryService } from './password-recovery.service';
-import { PasswordRecoveryRepository } from './repositories/password-recovery.repository';
+import { UserPasswordRecoveryRepository } from './repositories/password-recovery.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), ConfigModule],
@@ -19,7 +19,7 @@ import { PasswordRecoveryRepository } from './repositories/password-recovery.rep
     HashService,
     JwtService,
     PasswordRecoveryService,
-    PasswordRecoveryRepository,
+    UserPasswordRecoveryRepository,
   ],
 })
 export class UsersModule {}

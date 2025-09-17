@@ -9,7 +9,7 @@ export class PasswordRecoveryRepository extends Repository<PasswordRecoveryEntit
     super(PasswordRecoveryEntity, dataSource.createEntityManager());
   }
 
-  async createToken(email: string): Promise<PasswordRecoveryEntity> {
+  async createToken(email: string): Promise<UserPasswordRecovery> {
     const token = crypto.randomBytes(32).toString('hex');
     const entity = this.create({ email, token });
     return this.save(entity);
@@ -23,8 +23,8 @@ export class PasswordRecoveryRepository extends Repository<PasswordRecoveryEntit
   }
 
   async markAsUsed(
-    entity: PasswordRecoveryEntity,
-  ): Promise<PasswordRecoveryEntity> {
+    entity: UserPasswordRecovery,
+  ): Promise<UserPasswordRecovery> {
     entity.used = true;
     return this.save(entity);
   }
