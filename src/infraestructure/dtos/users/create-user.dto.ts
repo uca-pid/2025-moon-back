@@ -1,4 +1,4 @@
-import { UserRole } from '../entities/user-role.enum';
+import { UserRole } from 'src/infraestructure/entities/users/user-role.enum';
 import {
   IsEmail,
   IsEnum,

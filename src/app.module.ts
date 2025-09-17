@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from 'src/infraestructure/rest-api/users/users.module';
 import { ConfigModule } from '@nestjs/config';
-import { User } from './users/entities/user.entity';
-import { UserPasswordRecovery } from './users/entities/password-recovery.entity';
+import { User } from 'src/infraestructure/entities/users/user.entity';
+import { UserPasswordRecovery } from 'src/infraestructure/entities/users/password-recovery.entity';
 
 @Module({
   imports: [
@@ -22,7 +20,7 @@ import { UserPasswordRecovery } from './users/entities/password-recovery.entity'
     }),
     UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

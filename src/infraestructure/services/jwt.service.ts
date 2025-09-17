@@ -1,19 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { sign, verify } from 'jsonwebtoken';
-import { UserRole } from './users/entities/user-role.enum';
-
-export type JwtPayload = {
-  id: number;
-  email: string;
-  fullName: string;
-  userRole: UserRole;
-  workshopName: string;
-  address: string;
-};
+import { IJwtService } from 'src/domain/interfaces/jwt-service.interface';
+import { JwtPayload } from 'src/domain/dtos/jwt-payload.interface';
 
 @Injectable()
-export class JwtService {
+export class JwtService implements IJwtService {
   constructor(private readonly configService: ConfigService) {}
 
   public sign(payload: JwtPayload): string {
@@ -22,7 +14,7 @@ export class JwtService {
     });
   }
 
-  public verifyToken(token: string): JwtPayload {
+  public verify(token: string): JwtPayload {
     try {
       return verify(
         token,

@@ -1,18 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { UserPasswordRecovery } from '../entities/password-recovery.entity';
-import * as crypto from 'crypto';
+
+import { UserPasswordRecovery } from 'src/infraestructure/entities/users/password-recovery.entity';
+import { IUsersPasswordRecoveryRepository } from './interfaces/users-password-recovery-repository.interface';
 
 @Injectable()
-export class UserPasswordRecoveryRepository extends Repository<UserPasswordRecovery> {
+export class UserPasswordRecoveryRepository
+  extends Repository<UserPasswordRecovery>
+  implements IUsersPasswordRecoveryRepository
+{
   constructor(private dataSource: DataSource) {
     super(UserPasswordRecovery, dataSource.createEntityManager());
-  }
-
-  async createToken(email: string): Promise<UserPasswordRecovery> {
-    const token = crypto.randomBytes(32).toString('hex');
-    const entity = this.create({ email, token });
-    return this.save(entity);
   }
 
   async findValidToken(

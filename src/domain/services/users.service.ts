@@ -1,21 +1,28 @@
 import {
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UsersRepository } from './repositories/users.repository';
-import { HashService } from 'src/hash.service';
-import { LoginUserDto } from './dto/login-user.dto';
-import { JwtService } from 'src/jwt.service';
+import { CreateUserDto } from '../../infraestructure/dtos/users/create-user.dto';
+import { LoginUserDto } from '../../infraestructure/dtos/users/login-user.dto';
+import { IUsersService } from '../interfaces/users-service.interface';
+
+import { IHashServiceToken } from '../interfaces/hash-service.interface';
+import type { IHashService } from '../interfaces/hash-service.interface';
+import type { IJwtService } from '../interfaces/jwt-service.interface';
+import { IJwtServiceToken } from '../interfaces/jwt-service.interface';
+import { IUsersRepositoryToken } from 'src/infraestructure/repositories/interfaces/users-repository.interface';
+import type { IUsersRepository } from 'src/infraestructure/repositories/interfaces/users-repository.interface';
 
 @Injectable()
-export class UsersService {
+export class UsersService implements IUsersService {
   constructor(
-    private readonly usersRepository: UsersRepository,
-    private readonly hashService: HashService,
-    private readonly jwtService: JwtService,
+    @Inject(IUsersRepositoryToken)
+    private readonly usersRepository: IUsersRepository,
+    @Inject(IHashServiceToken) private readonly hashService: IHashService,
+    @Inject(IJwtServiceToken) private readonly jwtService: IJwtService,
   ) {}
 
   async create(dto: CreateUserDto) {
