@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PasswordRecoveryRepository } from './repositories/password-recovery.repository';
+import { UserPasswordRecoveryRepository } from './repositories/password-recovery.repository';
 import { PasswordRecoveryDto } from './dto/password-recovery.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UsersRepository } from './repositories/users.repository';
