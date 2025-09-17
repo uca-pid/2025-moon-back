@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity()
-export class PasswordRecoveryEntity extends BaseEntity {
+@Entity('users_password_recovery')
+export class UserPasswordRecovery extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
