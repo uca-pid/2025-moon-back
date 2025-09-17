@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './users/entities/user.entity';
-import { PasswordRecoveryEntity } from './users/entities/password-recovery.entity';
+import { UserPasswordRecovery } from './users/entities/password-recovery.entity';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { PasswordRecoveryEntity } from './users/entities/password-recovery.entit
       username: 'postgres',
       password: 'postgres',
       database: 'estaller',
-      entities: [User, PasswordRecoveryEntity],
+      entities: [User, UserPasswordRecovery],
       synchronize: true,
     }),
     UsersModule,
