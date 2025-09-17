@@ -1,7 +1,6 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { PasswordRecoveryDto } from '../../infraestructure/dtos/users/password-recovery.dto';
 import { ChangePasswordDto } from '../../infraestructure/dtos/users/change-password.dto';
-import * as crypto from 'crypto';
 import { IPasswordRecoveryService } from '../interfaces/password-recovery-service.interface';
 import {
   IUsersRepositoryToken,
@@ -15,6 +14,10 @@ import {
   IUsersPasswordRecoveryRepositoryToken,
   type IUsersPasswordRecoveryRepository,
 } from 'src/infraestructure/repositories/interfaces/users-password-recovery-repository.interface';
+import {
+  type IRandomService,
+  IRandomServiceToken,
+} from 'src/infraestructure/repositories/interfaces/random-service.interface';
 
 @Injectable()
 export class PasswordRecoveryService implements IPasswordRecoveryService {
@@ -24,6 +27,7 @@ export class PasswordRecoveryService implements IPasswordRecoveryService {
     @Inject(IUsersPasswordRecoveryRepositoryToken)
     private readonly passwordRecoveryRepo: IUsersPasswordRecoveryRepository,
     @Inject(IHashServiceToken) private readonly hashService: IHashService,
+    @Inject(IRandomServiceToken) private readonly randomService: IRandomService,
   ) {}
 
   async request(passwordRecoveryDto: PasswordRecoveryDto) {
@@ -33,8 +37,7 @@ export class PasswordRecoveryService implements IPasswordRecoveryService {
 
     const tokenEntity = await this.passwordRecoveryRepo.save({
       email: passwordRecoveryDto.email,
-      //TODO: move this logic to random service
-      token: crypto.randomBytes(32).toString('hex'),
+      token: this.randomService.randomString(32),
     });
 
     return { token: tokenEntity.token };
