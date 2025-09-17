@@ -8,13 +8,13 @@ import { HashService } from 'src/hash.service';
 @Injectable()
 export class PasswordRecoveryService {
   constructor(
-    private readonly UserRepo: UsersRepository,
+    private readonly userRepo: UsersRepository,
     private readonly passwordRecoveryRepo: UserPasswordRecoveryRepository,
     private readonly hashService: HashService,
   ) {}
 
   async requestPasswordRecovery(passwordRecoveryDto: PasswordRecoveryDto) {
-    const user = await this.UserRepo.findByEmail(passwordRecoveryDto.email);
+    const user = await this.userRepo.findByEmail(passwordRecoveryDto.email);
     if (!user)
       throw new BadRequestException('No existe un usuario con ese email');
 
@@ -33,13 +33,13 @@ export class PasswordRecoveryService {
     if (!resetToken)
       throw new BadRequestException('Token inválido o ya utilizado');
 
-    const user = await this.UserRepo.findByEmail(changePasswordDto.email);
+    const user = await this.userRepo.findByEmail(changePasswordDto.email);
     if (!user) throw new BadRequestException('Usuario no encontrado');
 
     user.hashedPassword = await this.hashService.hash(
       changePasswordDto.newPassword,
     );
-    await this.UserRepo.save(user);
+    await this.userRepo.save(user);
 
     await this.passwordRecoveryRepo.markAsUsed(resetToken);
 
