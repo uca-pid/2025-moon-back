@@ -17,9 +17,15 @@ import { IUsersRepositoryToken } from 'src/infraestructure/repositories/interfac
 import { IPasswordRecoveryServiceToken } from 'src/domain/interfaces/password-recovery-service.interface';
 import { IRandomServiceToken } from 'src/infraestructure/repositories/interfaces/random-service.interface';
 import { RandomService } from 'src/infraestructure/services/random.service';
+import { IEmailServiceToken } from 'src/domain/interfaces/email-service.interface';
+import { EmailService } from 'src/infraestructure/services/email.service';
+import { UserPasswordRecovery } from 'src/infraestructure/entities/users/password-recovery.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), ConfigModule],
+  imports: [
+    TypeOrmModule.forFeature([User, UserPasswordRecovery]),
+    ConfigModule,
+  ],
   controllers: [UsersController],
   providers: [
     { provide: IUsersRepositoryToken, useClass: UsersRepository },
@@ -35,6 +41,7 @@ import { RandomService } from 'src/infraestructure/services/random.service';
     { provide: IJwtServiceToken, useClass: JwtService },
     { provide: IHashServiceToken, useClass: HashService },
     { provide: IRandomServiceToken, useClass: RandomService },
+    { provide: IEmailServiceToken, useClass: EmailService },
   ],
 })
 export class UsersModule {}

@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PasswordRecoveryDto } from '../../infraestructure/dtos/users/password-recovery.dto';
 import { ChangePasswordDto } from '../../infraestructure/dtos/users/change-password.dto';
 import { IPasswordRecoveryService } from '../interfaces/password-recovery-service.interface';
@@ -18,30 +18,40 @@ import {
   type IRandomService,
   IRandomServiceToken,
 } from 'src/infraestructure/repositories/interfaces/random-service.interface';
+import {
+  type IEmailService,
+  IEmailServiceToken,
+} from '../interfaces/email-service.interface';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PasswordRecoveryService implements IPasswordRecoveryService {
   constructor(
     @Inject(IUsersRepositoryToken) private readonly userRepo: IUsersRepository,
-    @Inject(IUsersRepositoryToken)
     @Inject(IUsersPasswordRecoveryRepositoryToken)
     private readonly passwordRecoveryRepo: IUsersPasswordRecoveryRepository,
     @Inject(IHashServiceToken) private readonly hashService: IHashService,
     @Inject(IRandomServiceToken) private readonly randomService: IRandomService,
+    @Inject(IEmailServiceToken) private readonly emailService: IEmailService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async request(passwordRecoveryDto: PasswordRecoveryDto) {
-    const user = await this.userRepo.findByEmail(passwordRecoveryDto.email);
-    if (!user)
-      throw new BadRequestException('No existe un usuario con ese email');
+  async request(dto: PasswordRecoveryDto) {
+    const user = await this.userRepo.findByEmail(dto.email);
+    // if no user is found, just ignore request
+    if (!user) return;
 
     const tokenEntity = await this.passwordRecoveryRepo.save({
-      email: passwordRecoveryDto.email,
+      email: dto.email,
       //TODO: checkear que este token no se haya sacado antes, y si ya se saco, tirar otro random
       token: this.randomService.randomString(32),
     });
 
-    return { token: tokenEntity.token };
+    const baseUrl = this.configService.getOrThrow<string>(
+      'FRONT_RECOVERY_PASSWORD_URL',
+    );
+    const url = `${baseUrl}?token=${tokenEntity.token}&email=${tokenEntity.email}`;
+    this.emailService.sendPasswordRecovery(url, dto.email);
   }
 
   async change(changePasswordDto: ChangePasswordDto) {
@@ -50,10 +60,10 @@ export class PasswordRecoveryService implements IPasswordRecoveryService {
       changePasswordDto.email,
     );
     if (!resetToken)
-      throw new BadRequestException('Token inválido o ya utilizado');
+      throw new UnauthorizedException('Token inválido o ya utilizado');
 
     const user = await this.userRepo.findByEmail(changePasswordDto.email);
-    if (!user) throw new BadRequestException('Usuario no encontrado');
+    if (!user) throw new UnauthorizedException('Usuario no encontrado');
 
     user.hashedPassword = await this.hashService.hash(
       changePasswordDto.newPassword,
