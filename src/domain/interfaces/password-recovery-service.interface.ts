@@ -2,7 +2,7 @@ import { ChangePasswordDto } from 'src/infraestructure/dtos/users/change-passwor
 import { PasswordRecoveryDto } from 'src/infraestructure/dtos/users/password-recovery.dto';
 
 export interface IPasswordRecoveryService {
-  request(passwordRecoveryDto: PasswordRecoveryDto): Promise<{ token: string }>;
+  request(passwordRecoveryDto: PasswordRecoveryDto): Promise<void>;
   change(changePasswordDto: ChangePasswordDto): Promise<void>;
 }
 
