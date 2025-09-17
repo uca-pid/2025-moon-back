@@ -37,6 +37,7 @@ export class PasswordRecoveryService implements IPasswordRecoveryService {
 
     const tokenEntity = await this.passwordRecoveryRepo.save({
       email: passwordRecoveryDto.email,
+      //TODO: checkear que este token no se haya sacado antes, y si ya se saco, tirar otro random
       token: this.randomService.randomString(32),
     });
 
