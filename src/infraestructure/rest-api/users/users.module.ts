@@ -15,6 +15,8 @@ import { IHashServiceToken } from 'src/domain/interfaces/hash-service.interface'
 import { IUsersPasswordRecoveryRepositoryToken } from 'src/infraestructure/repositories/interfaces/users-password-recovery-repository.interface';
 import { IUsersRepositoryToken } from 'src/infraestructure/repositories/interfaces/users-repository.interface';
 import { IPasswordRecoveryServiceToken } from 'src/domain/interfaces/password-recovery-service.interface';
+import { IRandomServiceToken } from 'src/infraestructure/repositories/interfaces/random-service.interface';
+import { RandomService } from 'src/infraestructure/services/random.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), ConfigModule],
@@ -32,6 +34,7 @@ import { IPasswordRecoveryServiceToken } from 'src/domain/interfaces/password-re
     { provide: IUsersServiceToken, useClass: UsersService },
     { provide: IJwtServiceToken, useClass: JwtService },
     { provide: IHashServiceToken, useClass: HashService },
+    { provide: IRandomServiceToken, useClass: RandomService },
   ],
 })
 export class UsersModule {}
