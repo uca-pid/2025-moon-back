@@ -12,6 +12,9 @@ export class UserPasswordRecoveryRepository
   constructor(private dataSource: DataSource) {
     super(UserPasswordRecovery, dataSource.createEntityManager());
   }
+  findByToken(token: string): Promise<UserPasswordRecovery | null> {
+    return this.findOne({ where: { token } });
+  }
 
   async findValidToken(
     token: string,

@@ -9,6 +9,7 @@ export interface IUsersPasswordRecoveryRepository
   ): Promise<UserPasswordRecovery | null>;
 
   markAsUsed(entity: UserPasswordRecovery): Promise<UserPasswordRecovery>;
+  findByToken(token: string): Promise<UserPasswordRecovery | null>;
 }
 
 export const IUsersPasswordRecoveryRepositoryToken =

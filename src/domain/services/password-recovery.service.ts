@@ -41,10 +41,10 @@ export class PasswordRecoveryService implements IPasswordRecoveryService {
     // if no user is found, just ignore request
     if (!user) return;
 
+    const token = await this.generateUniqueRandomToken();
     const tokenEntity = await this.passwordRecoveryRepo.save({
       email: dto.email,
-      //TODO: checkear que este token no se haya sacado antes, y si ya se saco, tirar otro random
-      token: this.randomService.randomString(32),
+      token,
     });
 
     const baseUrl = this.configService.getOrThrow<string>(
@@ -52,6 +52,15 @@ export class PasswordRecoveryService implements IPasswordRecoveryService {
     );
     const url = `${baseUrl}?token=${tokenEntity.token}&email=${tokenEntity.email}`;
     this.emailService.sendPasswordRecovery(url, dto.email);
+  }
+
+  private async generateUniqueRandomToken(): Promise<string> {
+    while (true) {
+      const token = this.randomService.randomString(32);
+      const entity = await this.passwordRecoveryRepo.findByToken(token);
+      const tokenAlreadyExists = entity !== null;
+      if (!tokenAlreadyExists) return token;
+    }
   }
 
   async change(changePasswordDto: ChangePasswordDto) {
