@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { PasswordRecoveryEntity } from '../entities/password-recovery.entity';
+import { UserPasswordRecovery } from '../entities/password-recovery.entity';
 import * as crypto from 'crypto';
 
 @Injectable()
-export class PasswordRecoveryRepository extends Repository<PasswordRecoveryEntity> {
+export class UserPasswordRecoveryRepository extends Repository<UserPasswordRecovery> {
   constructor(private dataSource: DataSource) {
-    super(PasswordRecoveryEntity, dataSource.createEntityManager());
+    super(UserPasswordRecovery, dataSource.createEntityManager());
   }
 
   async createToken(email: string): Promise<UserPasswordRecovery> {
@@ -18,7 +18,7 @@ export class PasswordRecoveryRepository extends Repository<PasswordRecoveryEntit
   async findValidToken(
     token: string,
     email: string,
-  ): Promise<PasswordRecoveryEntity | null> {
+  ): Promise<UserPasswordRecovery | null> {
     return this.findOne({ where: { token, email, used: false } });
   }
 
