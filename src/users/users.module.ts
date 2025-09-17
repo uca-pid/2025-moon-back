@@ -7,10 +7,19 @@ import { User } from './entities/user.entity';
 import { HashService } from 'src/hash.service';
 import { JwtService } from 'src/jwt.service';
 import { ConfigModule } from '@nestjs/config';
+import { PasswordRecoveryService } from './password-recovery.service';
+import { PasswordRecoveryRepository } from './repositories/password-recovery.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), ConfigModule],
   controllers: [UsersController],
-  providers: [UsersService, UsersRepository, HashService, JwtService],
+  providers: [
+    UsersService,
+    UsersRepository,
+    HashService,
+    JwtService,
+    PasswordRecoveryService,
+    PasswordRecoveryRepository,
+  ],
 })
 export class UsersModule {}
