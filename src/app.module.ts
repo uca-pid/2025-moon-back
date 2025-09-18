@@ -18,7 +18,7 @@ import { UserPasswordRecovery } from 'src/infraestructure/entities/users/passwor
         password: configService.get<string>('DB_PASSWORD', 'postgres'),
         database: configService.get<string>('DB_DATABASE', 'estaller'),
         entities: [User, UserPasswordRecovery],
-        synchronize: true,
+        synchronize: configService.get<string>('NODE_ENV', 'development') !== 'production',
       }),
       inject: [ConfigService],
     }),
