@@ -23,6 +23,7 @@ export class AppointmentRepository
   async getNextAppointmentsOfUser(userId: number): Promise<Appointment[]> {
     const { today, nowTime } = this.getTodayAndNow();
     return this.createQueryBuilder('appointment')
+      .leftJoinAndSelect('appointment.service', 'service')
       .where('appointment.user_id = :userId', { userId })
       .andWhere(
         new Brackets((qb) => {
@@ -41,6 +42,7 @@ export class AppointmentRepository
   async getNextAppointments(): Promise<Appointment[]> {
     const { today, nowTime } = this.getTodayAndNow();
     return this.createQueryBuilder('appointment')
+      .leftJoinAndSelect('appointment.service', 'service')
       .where('appointment.date = :today AND appointment.time >= :nowTime', {
         today,
         nowTime,
