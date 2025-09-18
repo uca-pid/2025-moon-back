@@ -15,6 +15,8 @@ import type { IJwtService } from '../interfaces/jwt-service.interface';
 import { IJwtServiceToken } from '../interfaces/jwt-service.interface';
 import { IUsersRepositoryToken } from 'src/infraestructure/repositories/interfaces/users-repository.interface';
 import type { IUsersRepository } from 'src/infraestructure/repositories/interfaces/users-repository.interface';
+import { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
+import { UpdateUserDto } from 'src/infraestructure/dtos/users/update-user.dto';
 
 @Injectable()
 export class UsersService implements IUsersService {
@@ -24,6 +26,17 @@ export class UsersService implements IUsersService {
     @Inject(IHashServiceToken) private readonly hashService: IHashService,
     @Inject(IJwtServiceToken) private readonly jwtService: IJwtService,
   ) {}
+
+  async update(
+    userPayload: JwtPayload,
+    dto: UpdateUserDto,
+  ): Promise<{ token: string }> {
+    const user = await this.usersRepository.findByIdOrThrow(userPayload.id);
+    user.fullName = dto.fullName;
+    await this.usersRepository.save(user);
+    const token = this.jwtService.sign(user);
+    return { token };
+  }
 
   async create(dto: CreateUserDto) {
     const conflictingUser = await this.usersRepository.findByEmail(dto.email);
@@ -50,14 +63,7 @@ export class UsersService implements IUsersService {
       throw new UnauthorizedException('invalid login');
     }
 
-    const token = this.jwtService.sign({
-      address: user.address,
-      email: user.email,
-      fullName: user.fullName,
-      id: user.id,
-      userRole: user.userRole,
-      workshopName: user.workshopName,
-    });
+    const token = this.jwtService.sign(user);
 
     return { token };
   }
