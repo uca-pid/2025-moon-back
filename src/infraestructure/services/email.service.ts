@@ -40,10 +40,10 @@ export class EmailService implements IEmailService {
     try {
       await this.transporter.sendMail(mailOptions);
       this.logger.log(`Password recovery email sent to ${to}`);
-    } catch (err) {
+    } catch (err: unknown) {
       this.logger.error(
         'Error sending password recovery email:',
-        err?.message || err,
+        (err && (err as Error)?.message) || err,
       );
       throw err;
     }
