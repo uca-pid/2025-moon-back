@@ -40,7 +40,8 @@ export class EmailService implements IEmailService {
       await this.transporter.sendMail(mailOptions);
       console.log(`Password recovery email sent to ${to}`);
     } catch (err) {
-      console.error('Error sending password recovery email:', err);
+      // Log only the error message to avoid leaking sensitive information
+      console.error('Error sending password recovery email:', err?.message || err);
       throw err;
     }
   }
