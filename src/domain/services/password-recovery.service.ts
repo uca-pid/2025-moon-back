@@ -51,16 +51,20 @@ export class PasswordRecoveryService implements IPasswordRecoveryService {
       'FRONT_RECOVERY_PASSWORD_URL',
     );
     const url = `${baseUrl}?token=${tokenEntity.token}&email=${tokenEntity.email}`;
-    this.emailService.sendPasswordRecovery(url, dto.email);
+    await this.emailService.sendPasswordRecovery(url, dto.email);
   }
 
   private async generateUniqueRandomToken(): Promise<string> {
-    while (true) {
+    const MAX_RETRIES = 10;
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       const token = this.randomService.randomString(32);
       const entity = await this.passwordRecoveryRepo.findByToken(token);
       const tokenAlreadyExists = entity !== null;
       if (!tokenAlreadyExists) return token;
     }
+    throw new Error(
+      'Failed to generate a unique password recovery token after maximum retries',
+    );
   }
 
   async change(changePasswordDto: ChangePasswordDto) {

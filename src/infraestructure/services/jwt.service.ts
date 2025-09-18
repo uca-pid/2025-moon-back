@@ -21,7 +21,7 @@ export class JwtService implements IJwtService {
         this.configService.getOrThrow<string>('JWT_SECRET'),
       ) as JwtPayload;
     } catch {
-      throw new UnauthorizedException('Token invalido o no proporcionado');
+      throw new UnauthorizedException('Token inválido o no proporcionado');
     }
   }
 }
