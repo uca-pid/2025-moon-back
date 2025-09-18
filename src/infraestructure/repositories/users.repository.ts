@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from 'src/infraestructure/entities/users/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { IUsersRepository } from './interfaces/users-repository.interface';
@@ -14,7 +14,7 @@ export class UsersRepository
   async findByIdOrThrow(id: number): Promise<User> {
     const user = await this.findOneBy({ id });
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException('User not found');
     }
     return user;
   }
