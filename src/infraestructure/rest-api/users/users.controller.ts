@@ -14,6 +14,7 @@ import {
 import { UpdateUserDto } from 'src/infraestructure/dtos/users/update-user.dto';
 import { AuthenticatedUser } from '../decorators/authenticated-user.decorator';
 import type { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
+import { UpdateUserPasswordDto } from 'src/infraestructure/dtos/users/update-user-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -31,6 +32,14 @@ export class UsersController {
   @Put()
   update(@Body() dto: UpdateUserDto, @AuthenticatedUser() user: JwtPayload) {
     return this.usersService.update(user, dto);
+  }
+
+  @Put('/password')
+  updatePassword(
+    @Body() dto: UpdateUserPasswordDto,
+    @AuthenticatedUser() user: JwtPayload,
+  ) {
+    return this.usersService.updatePassword(user, dto);
   }
 
   @Post('/login')
