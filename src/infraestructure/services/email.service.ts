@@ -1,10 +1,11 @@
 import { IEmailService } from 'src/domain/interfaces/email-service.interface';
 import { Transporter, createTransport } from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class EmailService implements IEmailService {
+  private readonly logger = new Logger(EmailService.name, { timestamp: true });
   private readonly transporter: Transporter;
   private readonly from: string;
 
@@ -38,9 +39,9 @@ export class EmailService implements IEmailService {
 
     try {
       await this.transporter.sendMail(mailOptions);
-      console.log(`Password recovery email sent to ${to}`);
+      this.logger.log(`Password recovery email sent to ${to}`);
     } catch (err) {
-      console.error('Error sending password recovery email:', err);
+      this.logger.error('Error sending password recovery email:', err);
       throw err;
     }
   }
