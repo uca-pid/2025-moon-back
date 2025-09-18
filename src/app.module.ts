@@ -5,8 +5,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthenticateUserMiddleware } from 'src/infraestructure/rest-api/middleware/authenticate-user.middleware';
 import { User } from 'src/infraestructure/entities/user/user.entity';
 import { UserPasswordRecovery } from 'src/infraestructure/entities/user/password-recovery.entity';
+import { Appointment } from 'src/infraestructure/entities/appointment/appointment.entity';
+import { Service } from 'src/infraestructure/entities/service/service.entity';
 import { IJwtServiceToken } from './domain/interfaces/jwt-service.interface';
 import { JwtService } from './infraestructure/services/jwt.service';
+import { ServiceModule } from './infraestructure/rest-api/service/service.module';
 
 @Module({
   imports: [
@@ -20,13 +23,14 @@ import { JwtService } from './infraestructure/services/jwt.service';
         username: configService.get<string>('DB_USERNAME', 'postgres'),
         password: configService.get<string>('DB_PASSWORD', 'postgres'),
         database: configService.get<string>('DB_DATABASE', 'estaller'),
-        entities: [User, UserPasswordRecovery],
+        entities: [User, UserPasswordRecovery, Appointment, Service],
         synchronize:
           configService.get<string>('NODE_ENV', 'development') !== 'production',
       }),
       inject: [ConfigService],
     }),
     UsersModule,
+    ServiceModule,
   ],
   controllers: [],
   providers: [
