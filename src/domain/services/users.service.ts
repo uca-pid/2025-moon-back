@@ -17,6 +17,7 @@ import { IUsersRepositoryToken } from 'src/infraestructure/repositories/interfac
 import type { IUsersRepository } from 'src/infraestructure/repositories/interfaces/users-repository.interface';
 import { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
 import { UpdateUserDto } from 'src/infraestructure/dtos/users/update-user.dto';
+import { UpdateUserPasswordDto } from 'src/infraestructure/dtos/users/update-user-password.dto';
 
 @Injectable()
 export class UsersService implements IUsersService {
@@ -26,6 +27,19 @@ export class UsersService implements IUsersService {
     @Inject(IHashServiceToken) private readonly hashService: IHashService,
     @Inject(IJwtServiceToken) private readonly jwtService: IJwtService,
   ) {}
+  async updatePassword(
+    userPayload: JwtPayload,
+    dto: UpdateUserPasswordDto,
+  ): Promise<void> {
+    const user = await this.usersRepository.findByIdOrThrow(userPayload.id);
+    if (
+      !(await this.hashService.verify(dto.currentPassword, user.hashedPassword))
+    ) {
+      throw new UnauthorizedException('Invalid current password');
+    }
+    user.hashedPassword = await this.hashService.hash(dto.newPassword);
+    await this.usersRepository.save(user);
+  }
 
   async update(
     userPayload: JwtPayload,
