@@ -13,7 +13,6 @@ import {
 import { AuthenticatedUser } from '../decorators/authenticated-user.decorator';
 import type { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
 import { AuthenticatedMechanic } from '../decorators/authenticated-mechanic.decorator';
-import { Service } from 'src/infraestructure/entities/service/service.entity';
 import { CreateAppointmentDto } from 'src/infraestructure/dtos/appointment/create-appointment.dto';
 import {
   type IServiceService,
