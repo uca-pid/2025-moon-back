@@ -29,4 +29,15 @@ export class UserPasswordRecoveryRepository
     entity.used = true;
     return this.save(entity);
   }
+
+  async findLatestUnusedEmail(
+    email: string,
+  ): Promise<UserPasswordRecovery | null> {
+    const results = await this.find({
+      where: { email, used: false },
+      order: { createdAt: 'DESC' },
+      take: 1,
+    });
+    return results.length > 0 ? results[0] : null;
+  }
 }
