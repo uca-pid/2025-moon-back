@@ -30,6 +30,7 @@ export class AuthenticateUserMiddleware implements NestMiddleware {
       typeof authHeader !== 'string' ||
       !authHeader.startsWith('Bearer ')
     ) {
+      this.logger.warn('No token provided, proceeding as unauthenticated');
       // If no token is provided, allow the request to proceed as unauthenticated
       return next();
     }

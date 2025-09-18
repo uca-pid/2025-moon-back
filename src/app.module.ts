@@ -9,6 +9,7 @@ import { Appointment } from 'src/infraestructure/entities/appointment/appointmen
 import { Service } from 'src/infraestructure/entities/service/service.entity';
 import { IJwtServiceToken } from './domain/interfaces/jwt-service.interface';
 import { JwtService } from './infraestructure/services/jwt.service';
+import { AppointmentModule } from './infraestructure/rest-api/appointment/appointment.module';
 import { ServiceModule } from './infraestructure/rest-api/service/service.module';
 
 @Module({
@@ -30,6 +31,7 @@ import { ServiceModule } from './infraestructure/rest-api/service/service.module
       inject: [ConfigService],
     }),
     UsersModule,
+    AppointmentModule,
     ServiceModule,
   ],
   controllers: [],
