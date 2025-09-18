@@ -41,16 +41,23 @@ export class PasswordRecoveryService implements IPasswordRecoveryService {
     // if no user is found, just ignore request
     if (!user) return;
 
-    const token = await this.generateUniqueRandomToken();
-    const tokenEntity = await this.passwordRecoveryRepo.save({
-      email: dto.email,
-      token,
-    });
+    const existing = await this.passwordRecoveryRepo.findLatestUnusedEmail(
+      dto.email,
+    );
+    const tokenToUse = existing
+      ? existing.token
+      : await this.generateUniqueRandomToken();
+    if (!existing) {
+      await this.passwordRecoveryRepo.save({
+        email: dto.email,
+        token: tokenToUse,
+      });
+    }
 
     const baseUrl = this.configService.getOrThrow<string>(
       'FRONT_RECOVERY_PASSWORD_URL',
     );
-    const url = `${baseUrl}?token=${tokenEntity.token}&email=${tokenEntity.email}`;
+    const url = `${baseUrl}?token=${tokenToUse}&email=${dto.email}`;
     await this.emailService.sendPasswordRecovery(url, dto.email);
   }
 

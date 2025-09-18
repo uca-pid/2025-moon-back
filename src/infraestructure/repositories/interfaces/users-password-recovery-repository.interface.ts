@@ -10,6 +10,7 @@ export interface IUsersPasswordRecoveryRepository
 
   markAsUsed(entity: UserPasswordRecovery): Promise<UserPasswordRecovery>;
   findByToken(token: string): Promise<UserPasswordRecovery | null>;
+  findLatestUnusedEmail(email: string): Promise<UserPasswordRecovery | null>;
 }
 
 export const IUsersPasswordRecoveryRepositoryToken =
