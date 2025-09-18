@@ -51,7 +51,7 @@ export class PasswordRecoveryService implements IPasswordRecoveryService {
       'FRONT_RECOVERY_PASSWORD_URL',
     );
     const url = `${baseUrl}?token=${tokenEntity.token}&email=${tokenEntity.email}`;
-    this.emailService.sendPasswordRecovery(url, dto.email);
+    await this.emailService.sendPasswordRecovery(url, dto.email);
   }
 
   private async generateUniqueRandomToken(): Promise<string> {
