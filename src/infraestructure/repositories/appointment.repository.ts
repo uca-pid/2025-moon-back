@@ -42,12 +42,14 @@ export class AppointmentRepository
   async getNextAppointments(): Promise<Appointment[]> {
     const { today, nowTime } = this.getTodayAndNow();
     return this.createQueryBuilder('appointment')
+      .leftJoin('appointment.user', 'user')
       .leftJoinAndSelect('appointment.service', 'service')
       .where('appointment.date = :today AND appointment.time >= :nowTime', {
         today,
         nowTime,
       })
       .orWhere('appointment.date > :today', { today })
+      .addSelect(['user.id', 'user.fullName', 'user.email'])
       .getMany();
   }
 
