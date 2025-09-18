@@ -3,7 +3,7 @@ import { UsersService } from 'src/domain/services/users.service';
 import { UsersController } from './users.controller';
 import { UsersRepository } from 'src/infraestructure/repositories/users.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/infraestructure/entities/users/user.entity';
+import { User } from 'src/infraestructure/entities/user/user.entity';
 import { HashService } from 'src/infraestructure/services/hash.service';
 import { JwtService } from 'src/infraestructure/services/jwt.service';
 import { ConfigModule } from '@nestjs/config';
@@ -19,7 +19,7 @@ import { IRandomServiceToken } from 'src/infraestructure/repositories/interfaces
 import { RandomService } from 'src/infraestructure/services/random.service';
 import { IEmailServiceToken } from 'src/domain/interfaces/email-service.interface';
 import { EmailService } from 'src/infraestructure/services/email.service';
-import { UserPasswordRecovery } from 'src/infraestructure/entities/users/password-recovery.entity';
+import { UserPasswordRecovery } from 'src/infraestructure/entities/user/password-recovery.entity';
 
 @Module({
   imports: [

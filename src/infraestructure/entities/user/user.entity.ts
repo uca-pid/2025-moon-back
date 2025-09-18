@@ -1,5 +1,12 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToMany,
+} from 'typeorm';
 import { UserRole } from './user-role.enum';
+import { Appointment } from '../appointment/appointment.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -26,4 +33,7 @@ export class User extends BaseEntity {
 
   @Column()
   address: string;
+
+  @OneToMany(() => Appointment, (appointment) => appointment.user)
+  appointments: Appointment[];
 }

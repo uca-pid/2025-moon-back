@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { sign, verify } from 'jsonwebtoken';
 import { IJwtService } from 'src/domain/interfaces/jwt-service.interface';
 import { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
-import { User } from '../entities/users/user.entity';
+import { User } from '../entities/user/user.entity';
 
 @Injectable()
 export class JwtService implements IJwtService {

@@ -1,5 +1,5 @@
 import { IBaseRepository } from './base-repository.interface';
-import { UserPasswordRecovery } from 'src/infraestructure/entities/users/password-recovery.entity';
+import { UserPasswordRecovery } from 'src/infraestructure/entities/user/password-recovery.entity';
 
 export interface IUsersPasswordRecoveryRepository
   extends IBaseRepository<UserPasswordRecovery> {

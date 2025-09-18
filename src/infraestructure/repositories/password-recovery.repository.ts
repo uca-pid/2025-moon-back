@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
-import { UserPasswordRecovery } from 'src/infraestructure/entities/users/password-recovery.entity';
+import { UserPasswordRecovery } from 'src/infraestructure/entities/user/password-recovery.entity';
 import { IUsersPasswordRecoveryRepository } from './interfaces/users-password-recovery-repository.interface';
 
 @Injectable()

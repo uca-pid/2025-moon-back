@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from 'src/infraestructure/entities/users/user.entity';
+import { User } from 'src/infraestructure/entities/user/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { IUsersRepository } from './interfaces/users-repository.interface';
 

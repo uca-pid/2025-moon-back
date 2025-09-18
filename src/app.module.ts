@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'src/infraestructure/rest-api/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthenticateUserMiddleware } from 'src/infraestructure/rest-api/middleware/authenticate-user.middleware';
-import { User } from 'src/infraestructure/entities/users/user.entity';
-import { UserPasswordRecovery } from 'src/infraestructure/entities/users/password-recovery.entity';
+import { User } from 'src/infraestructure/entities/user/user.entity';
+import { UserPasswordRecovery } from 'src/infraestructure/entities/user/password-recovery.entity';
 import { IJwtServiceToken } from './domain/interfaces/jwt-service.interface';
 import { JwtService } from './infraestructure/services/jwt.service';
 

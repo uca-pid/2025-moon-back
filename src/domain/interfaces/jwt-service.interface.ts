@@ -1,4 +1,4 @@
-import { User } from 'src/infraestructure/entities/users/user.entity';
+import { User } from 'src/infraestructure/entities/user/user.entity';
 import { JwtPayload } from '../../infraestructure/dtos/shared/jwt-payload.interface';
 
 export interface IJwtService {

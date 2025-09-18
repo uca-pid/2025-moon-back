@@ -1,4 +1,4 @@
-import { User } from 'src/infraestructure/entities/users/user.entity';
+import { User } from 'src/infraestructure/entities/user/user.entity';
 import { IBaseRepository } from './base-repository.interface';
 
 export interface IUsersRepository extends IBaseRepository<User> {
