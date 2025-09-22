@@ -8,12 +8,14 @@ import { AppointmentRepository } from 'src/infraestructure/repositories/appointm
 import { IAppointmentServiceToken } from 'src/domain/interfaces/appointment-service.interface';
 import { AppointmentService } from 'src/domain/services/appointment.service';
 import { ServiceModule } from '../service/service.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Appointment]),
     ConfigModule,
     ServiceModule,
+    UsersModule,
   ],
   controllers: [AppointmentController],
   providers: [

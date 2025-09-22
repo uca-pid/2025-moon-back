@@ -18,6 +18,7 @@ import type { IUsersRepository } from 'src/infraestructure/repositories/interfac
 import { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
 import { UpdateUserDto } from 'src/infraestructure/dtos/users/update-user.dto';
 import { UpdateUserPasswordDto } from 'src/infraestructure/dtos/users/update-user-password.dto';
+import { User } from 'src/infraestructure/entities/user/user.entity';
 
 @Injectable()
 export class UsersService implements IUsersService {
@@ -27,6 +28,15 @@ export class UsersService implements IUsersService {
     @Inject(IHashServiceToken) private readonly hashService: IHashService,
     @Inject(IJwtServiceToken) private readonly jwtService: IJwtService,
   ) {}
+
+  getAllWorkshops(): Promise<User[]> {
+    return this.usersRepository.getAllWorkshops();
+  }
+
+  getWorkshopById(id: number): Promise<User | null> {
+    return this.usersRepository.findWorkshopById(id);
+  }
+
   async updatePassword(
     userPayload: JwtPayload,
     dto: UpdateUserPasswordDto,
@@ -47,7 +57,7 @@ export class UsersService implements IUsersService {
   ): Promise<{ token: string }> {
     const user = await this.usersRepository.findByIdOrThrow(userPayload.id);
     user.fullName = dto.fullName;
-    user.workshopName = dto.workshopName
+    user.workshopName = dto.workshopName;
     user.address = dto.address;
     user.addressLatitude = dto.addressLatitude;
     user.addressLongitude = dto.addressLongitude;

@@ -26,6 +26,7 @@ import { UserPasswordRecovery } from 'src/infraestructure/entities/user/password
     TypeOrmModule.forFeature([User, UserPasswordRecovery]),
     ConfigModule,
   ],
+  exports: [IUsersServiceToken],
   controllers: [UsersController],
   providers: [
     { provide: IUsersRepositoryToken, useClass: UsersRepository },

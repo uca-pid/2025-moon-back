@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Inject, Put } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Put, Get } from '@nestjs/common';
 import { CreateUserDto } from 'src/infraestructure/dtos/users/create-user.dto';
 import { LoginUserDto } from 'src/infraestructure/dtos/users/login-user.dto';
 import { PasswordRecoveryDto } from 'src/infraestructure/dtos/users/password-recovery.dto';
@@ -23,6 +23,11 @@ export class UsersController {
     @Inject(IPasswordRecoveryServiceToken)
     private readonly passwordRecoveryService: IPasswordRecoveryService,
   ) {}
+
+  @Get('/workshops')
+  getAllWorkshops() {
+    return this.usersService.getAllWorkshops();
+  }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {

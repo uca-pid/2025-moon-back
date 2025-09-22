@@ -7,6 +7,7 @@ import {
   type IAppointmentRepository,
   IAppointmentRepositoryToken,
 } from 'src/infraestructure/repositories/interfaces/appointment-repository.interface';
+import { User } from 'src/infraestructure/entities/user/user.entity';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
@@ -20,19 +21,22 @@ export class AppointmentService implements IAppointmentService {
     date: string,
     time: string,
     service: Service,
+    workshop: User,
   ): Promise<Appointment> {
     return this.appointmentRepository.createAppointment({
       userId: user.id,
       date,
       time,
       serviceId: service.id,
+      workshopId: workshop.id,
     });
   }
 
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]> {
     return this.appointmentRepository.getNextAppointmentsOfUser(userId);
   }
-  getNextAppointments(): Promise<Appointment[]> {
-    return this.appointmentRepository.getNextAppointments();
+
+  getNextAppointmentsOfWorkshop(workshopId: number): Promise<Appointment[]> {
+    return this.appointmentRepository.getNextAppointmentsOfWorkshop(workshopId);
   }
 }

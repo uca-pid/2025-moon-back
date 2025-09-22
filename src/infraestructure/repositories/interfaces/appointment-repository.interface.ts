@@ -5,11 +5,12 @@ export interface CreateAppointmentData {
   date: string;
   time: string;
   serviceId: number;
+  workshopId: number;
 }
 
 export interface IAppointmentRepository {
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]>;
-  getNextAppointments(): Promise<Appointment[]>;
+  getNextAppointmentsOfWorkshop(workshopId: number): Promise<Appointment[]>;
   createAppointment(entityData: CreateAppointmentData): Promise<Appointment>;
 }
 
