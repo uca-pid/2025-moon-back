@@ -5,6 +5,8 @@ export type JwtPayload = {
   email: string;
   fullName: string;
   userRole: UserRole;
-  workshopName: string;
-  address: string;
+  workshopName?: string;
+  address?: string;
+  addressLatitude?: number;
+  addressLongitude?: number;
 };

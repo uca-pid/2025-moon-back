@@ -13,7 +13,7 @@ export const AuthenticatedMechanic = createParamDecorator(
     if (!user) {
       throw new UnauthorizedException('User not authenticated');
     }
-    if ((user.userRole as UserRole) !== UserRole.MECHANIC) {
+    if (user.userRole !== UserRole.MECHANIC) {
       throw new UnauthorizedException('User is not a mechanic');
     }
     return user;

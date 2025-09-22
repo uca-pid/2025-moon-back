@@ -2,6 +2,8 @@ import { UserRole } from 'src/infraestructure/entities/user/user-role.enum';
 import {
   IsEmail,
   IsEnum,
+  IsLatitude,
+  IsLongitude,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -37,4 +39,12 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   address?: string;
+
+  @IsOptional()
+  @IsLatitude()
+  addressLatitude?: number;
+
+  @IsOptional()
+  @IsLongitude()
+  addressLongitude?: number;
 }

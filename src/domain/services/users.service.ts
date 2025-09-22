@@ -47,6 +47,9 @@ export class UsersService implements IUsersService {
   ): Promise<{ token: string }> {
     const user = await this.usersRepository.findByIdOrThrow(userPayload.id);
     user.fullName = dto.fullName;
+    user.address = dto.address;
+    user.addressLatitude = dto.addressLatitude;
+    user.addressLongitude = dto.addressLongitude;
     await this.usersRepository.save(user);
     const token = this.jwtService.sign(user);
     return { token };
@@ -60,6 +63,8 @@ export class UsersService implements IUsersService {
 
     return this.usersRepository.save({
       address: dto.address,
+      addressLatitude: dto.addressLatitude,
+      addressLongitude: dto.addressLongitude,
       email: dto.email,
       fullName: dto.fullName,
       hashedPassword: await this.hashService.hash(dto.password),
