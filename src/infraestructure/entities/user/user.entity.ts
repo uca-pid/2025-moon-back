@@ -34,10 +34,10 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   address?: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'float' })
   addressLatitude?: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'float' })
   addressLongitude?: number;
 
   @OneToMany(() => Appointment, (appointment) => appointment.user)
