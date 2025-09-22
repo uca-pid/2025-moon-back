@@ -28,11 +28,17 @@ export class User extends BaseEntity {
   })
   userRole: UserRole;
 
-  @Column()
-  workshopName: string;
+  @Column({ nullable: true })
+  workshopName?: string;
 
-  @Column()
-  address: string;
+  @Column({ nullable: true })
+  address?: string;
+
+  @Column({ nullable: true })
+  addressLatitude?: number;
+
+  @Column({ nullable: true })
+  addressLongitude?: number;
 
   @OneToMany(() => Appointment, (appointment) => appointment.user)
   appointments: Appointment[];

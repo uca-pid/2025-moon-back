@@ -12,6 +12,8 @@ export class JwtService implements IJwtService {
   public sign(user: User): string {
     const payload: JwtPayload = {
       address: user.address,
+      addressLatitude: user.addressLatitude,
+      addressLongitude: user.addressLongitude,
       email: user.email,
       fullName: user.fullName,
       id: user.id,
