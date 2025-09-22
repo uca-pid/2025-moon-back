@@ -13,6 +13,10 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
+  workshopName: string;
+
+  @IsOptional()
+  @IsString()
   address?: string;
 
   @IsOptional()

@@ -47,6 +47,7 @@ export class UsersService implements IUsersService {
   ): Promise<{ token: string }> {
     const user = await this.usersRepository.findByIdOrThrow(userPayload.id);
     user.fullName = dto.fullName;
+    user.workshopName = dto.workshopName
     user.address = dto.address;
     user.addressLatitude = dto.addressLatitude;
     user.addressLongitude = dto.addressLongitude;
