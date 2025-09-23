@@ -22,7 +22,7 @@ import { EmailService } from 'src/infraestructure/services/email.service';
 import { UserPasswordRecovery } from 'src/infraestructure/entities/user/password-recovery.entity';
 
 @Module({
-  imports: [
+  imports: [ 
     TypeOrmModule.forFeature([User, UserPasswordRecovery]),
     ConfigModule,
   ],
