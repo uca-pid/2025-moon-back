@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    container_name: back-estaller
+    ports:
+      - '3001:3001'
+    environment:
+      PORT: 3001
+      JWT_SECRET: secret
+      JWT_EXPIRES_IN: 7d
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: valenschg@gmail.com
+      SMTP_PASS: lkww bjii suhs tnhd
+      FRONT_RECOVERY_PASSWORD_URL: http://localhost:3000/change-password
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: estaller
+      TZ: America/Argentina/Buenos_Aires
+    depends_on:
+      - db
+    restart: unless-stopped
+    command: sh -c "pnpm run migration:run && node dist/main"
+
+  db:
+    image: postgres:16-alpine
+    container_name: estaller-db
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: estaller
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  db_data:
