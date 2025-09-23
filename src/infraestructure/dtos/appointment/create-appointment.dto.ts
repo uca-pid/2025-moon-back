@@ -17,4 +17,7 @@ export class CreateAppointmentDto {
 
   @IsNumber()
   serviceId: number;
+
+  @IsNumber()
+  workshopId: number;
 }

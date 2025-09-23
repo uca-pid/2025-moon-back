@@ -12,12 +12,16 @@ import {
 } from 'src/domain/interfaces/appointment-service.interface';
 import { AuthenticatedUser } from '../decorators/authenticated-user.decorator';
 import type { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
-import { AuthenticatedMechanic } from '../decorators/authenticated-mechanic.decorator';
+import { AuthenticatedWorkshop } from '../decorators/authenticated-mechanic.decorator';
 import { CreateAppointmentDto } from 'src/infraestructure/dtos/appointment/create-appointment.dto';
 import {
   type IServiceService,
   IServiceServiceToken,
 } from 'src/domain/interfaces/service-service.interface';
+import {
+  type IUsersService,
+  IUsersServiceToken,
+} from 'src/domain/interfaces/users-service.interface';
 
 @Controller('appointments')
 export class AppointmentController {
@@ -26,6 +30,8 @@ export class AppointmentController {
     private readonly appointmentService: IAppointmentService,
     @Inject(IServiceServiceToken)
     private readonly serviceService: IServiceService,
+    @Inject(IUsersServiceToken)
+    private readonly userService: IUsersService,
   ) {}
 
   @Get('/user')
@@ -34,10 +40,8 @@ export class AppointmentController {
   }
 
   @Get()
-  // will use mechanic in future, and we need the decorator to check the mechanic role
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getNextAppointments(@AuthenticatedMechanic() _: JwtPayload) {
-    return this.appointmentService.getNextAppointments();
+  getNextAppointments(@AuthenticatedWorkshop() workshop: JwtPayload) {
+    return this.appointmentService.getNextAppointmentsOfWorkshop(workshop.id);
   }
 
   @Post()
@@ -49,6 +53,17 @@ export class AppointmentController {
     if (!service) {
       throw new NotFoundException('Service not found');
     }
-    return this.appointmentService.create(user, dto.date, dto.time, service);
+    const workshop = await this.userService.getWorkshopById(dto.workshopId);
+    if (!workshop) {
+      throw new NotFoundException('Workshop not found');
+    }
+
+    return this.appointmentService.create(
+      user,
+      dto.date,
+      dto.time,
+      service,
+      workshop,
+    );
   }
 }

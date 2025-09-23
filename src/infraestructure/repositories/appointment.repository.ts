@@ -21,46 +21,65 @@ export class AppointmentRepository
   }
 
   async getNextAppointmentsOfUser(userId: number): Promise<Appointment[]> {
-    const { today, nowTime } = this.getTodayAndNow();
-    return this.createQueryBuilder('appointment')
-      .leftJoinAndSelect('appointment.service', 'service')
+    return this.baseQueryBuilder()
       .where('appointment.user_id = :userId', { userId })
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where(
-            'appointment.date = :today AND appointment.time >= :nowTime',
-            {
-              today,
-              nowTime,
-            },
-          ).orWhere('appointment.date > :today', { today });
-        }),
-      )
       .getMany();
   }
 
-  async getNextAppointments(): Promise<Appointment[]> {
-    const { today, nowTime } = this.getTodayAndNow();
-    return this.createQueryBuilder('appointment')
-      .leftJoin('appointment.user', 'user')
-      .leftJoinAndSelect('appointment.service', 'service')
-      .where('appointment.date = :today AND appointment.time >= :nowTime', {
-        today,
-        nowTime,
-      })
-      .orWhere('appointment.date > :today', { today })
-      .addSelect(['user.id', 'user.fullName', 'user.email'])
+  async getNextAppointmentsOfWorkshop(
+    workshopId: number,
+  ): Promise<Appointment[]> {
+    return this.baseQueryBuilder()
+      .where('appointment.workshop_id = :workshopId', { workshopId })
       .getMany();
+  }
+
+  private baseQueryBuilder() {
+    const { today, nowTime } = this.getTodayAndNow();
+    return (
+      this.createQueryBuilder('appointment')
+        .leftJoinAndSelect('appointment.service', 'service')
+        .leftJoin('appointment.user', 'user')
+        .leftJoin('appointment.workshop', 'workshop')
+        .addSelect([
+          'user.id',
+          'user.fullName',
+          'user.email',
+          'workshop.id',
+          'workshop.workshopName',
+          'workshop.address',
+          'workshop.addressLatitude',
+          'workshop.addressLongitude',
+        ])
+        // future appointment
+        .where(
+          new Brackets((qb) => {
+            qb.where(
+              'appointment.date = :today AND appointment.time >= :nowTime',
+              {
+                today,
+                nowTime,
+              },
+            ).orWhere('appointment.date > :today', { today });
+          }),
+        )
+    );
   }
 
   async createAppointment(
     entityData: CreateAppointmentData,
   ): Promise<Appointment> {
-    return await this.save({
+    const result = await this.save({
       date: entityData.date,
       time: entityData.time,
       user: { id: entityData.userId },
       service: { id: entityData.serviceId },
+      workshop: { id: entityData.workshopId },
     });
+    const appointment = await this.baseQueryBuilder()
+      .where('appointment.id = :id', { id: result.id })
+      .getOne();
+    if (!appointment) throw new Error('Appointment not found after creation');
+    return appointment;
   }
 }
