@@ -1,7 +1,7 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { PasswordRecoveryDto } from '../../infraestructure/dtos/users/password-recovery.dto';
-import { ChangePasswordDto } from '../../infraestructure/dtos/users/change-password.dto';
-import { IPasswordRecoveryService } from '../interfaces/password-recovery-service.interface';
+import { PasswordRecoveryDto } from 'src/infraestructure/dtos/users/password-recovery.dto';
+import { ChangePasswordDto } from 'src/infraestructure/dtos/users/change-password.dto';
+import { IPasswordRecoveryService } from 'src/domain/interfaces/password-recovery-service.interface';
 import {
   IUsersRepositoryToken,
   type IUsersRepository,
@@ -9,7 +9,7 @@ import {
 import {
   IHashServiceToken,
   type IHashService,
-} from '../interfaces/hash-service.interface';
+} from 'src/domain/interfaces/hash-service.interface';
 import {
   IUsersPasswordRecoveryRepositoryToken,
   type IUsersPasswordRecoveryRepository,
@@ -21,7 +21,7 @@ import {
 import {
   type IEmailService,
   IEmailServiceToken,
-} from '../interfaces/email-service.interface';
+} from 'src/domain/interfaces/email-service.interface';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
