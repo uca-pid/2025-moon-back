@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Inject } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Put, Get } from '@nestjs/common';
 import { CreateUserDto } from 'src/infraestructure/dtos/users/create-user.dto';
 import { LoginUserDto } from 'src/infraestructure/dtos/users/login-user.dto';
 import { PasswordRecoveryDto } from 'src/infraestructure/dtos/users/password-recovery.dto';
@@ -11,6 +11,10 @@ import {
   IPasswordRecoveryServiceToken,
   type IPasswordRecoveryService,
 } from 'src/domain/interfaces/password-recovery-service.interface';
+import { UpdateUserDto } from 'src/infraestructure/dtos/users/update-user.dto';
+import { AuthenticatedUser } from '../decorators/authenticated-user.decorator';
+import type { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
+import { UpdateUserPasswordDto } from 'src/infraestructure/dtos/users/update-user-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -20,9 +24,27 @@ export class UsersController {
     private readonly passwordRecoveryService: IPasswordRecoveryService,
   ) {}
 
+  @Get('/workshops')
+  getAllWorkshops() {
+    return this.usersService.getAllWorkshops();
+  }
+
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @Put()
+  update(@Body() dto: UpdateUserDto, @AuthenticatedUser() user: JwtPayload) {
+    return this.usersService.update(user, dto);
+  }
+
+  @Put('/password')
+  updatePassword(
+    @Body() dto: UpdateUserPasswordDto,
+    @AuthenticatedUser() user: JwtPayload,
+  ) {
+    return this.usersService.updatePassword(user, dto);
   }
 
   @Post('/login')

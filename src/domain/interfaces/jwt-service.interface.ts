@@ -1,7 +1,8 @@
-import { JwtPayload } from '../dtos/jwt-payload.interface';
+import { User } from 'src/infraestructure/entities/user/user.entity';
+import { JwtPayload } from '../../infraestructure/dtos/shared/jwt-payload.interface';
 
 export interface IJwtService {
-  sign(payload: JwtPayload): string;
+  sign(user: User): string;
   verify(token: string): JwtPayload;
 }
 
