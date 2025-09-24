@@ -12,22 +12,6 @@ export class UsersRepository
   constructor(private dataSource: DataSource) {
     super(User, dataSource.createEntityManager());
   }
-  
-  getAllWorkshops(): Promise<User[]> {
-    return this.find({ where: { userRole: UserRole.MECHANIC } });
-  }
-
-  findWorkshopById(id: number): Promise<User | null> {
-    return this.findOne({ where: { id, userRole: UserRole.MECHANIC } });
-  }
-
-  async findByIdOrThrow(id: number): Promise<User> {
-    const user = await this.findOneBy({ id });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    return user;
-  }
 
   getAllWorkshops(): Promise<User[]> {
     return this.find({ where: { userRole: UserRole.MECHANIC } });
