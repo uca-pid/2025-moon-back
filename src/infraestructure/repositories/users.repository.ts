@@ -12,7 +12,7 @@ export class UsersRepository
   constructor(private dataSource: DataSource) {
     super(User, dataSource.createEntityManager());
   }
-
+  
   getAllWorkshops(): Promise<User[]> {
     return this.find({ where: { userRole: UserRole.MECHANIC } });
   }
