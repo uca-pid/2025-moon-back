@@ -73,6 +73,7 @@ describe('UsersService', () => {
         newPassword: 'newpass',
       };
       await expect(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         usersService.updatePassword({ id: 1 } as any, dto),
       ).rejects.toThrow(UnauthorizedException);
     });
@@ -87,6 +88,7 @@ describe('UsersService', () => {
         currentPassword: 'correct',
         newPassword: 'newpass',
       };
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await usersService.updatePassword({ id: 1 } as any, dto);
       expect(user.hashedPassword).toBe('newHashed');
       expect(usersRepositoryMock.save).toHaveBeenCalledWith(user);
@@ -106,6 +108,7 @@ describe('UsersService', () => {
         addressLatitude: 1,
         addressLongitude: 2,
       };
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const result = await usersService.update({ id: 1 } as any, dto);
       expect(usersRepositoryMock.save).toHaveBeenCalledWith(user);
       expect(result.token).toBe('token123');

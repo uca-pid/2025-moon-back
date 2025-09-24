@@ -1,4 +1,3 @@
-
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'src/infraestructure/rest-api/users/users.module';
