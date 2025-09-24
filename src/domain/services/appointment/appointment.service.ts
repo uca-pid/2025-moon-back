@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IAppointmentService } from '../interfaces/appointment-service.interface';
+import { IAppointmentService } from 'src/domain/interfaces/appointment-service.interface';
 import { Appointment } from 'src/infraestructure/entities/appointment/appointment.entity';
 import { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
 import { Service } from 'src/infraestructure/entities/service/service.entity';
