@@ -8,6 +8,7 @@ import { JwtService } from './infraestructure/services/jwt.service';
 import { AppointmentModule } from './infraestructure/rest-api/appointment/appointment.module';
 import { ServiceModule } from './infraestructure/rest-api/service/service.module';
 import { createDataSource } from './data-source';
+import { VehicleModule } from './infraestructure/rest-api/vehicle/vehicle.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { createDataSource } from './data-source';
     UsersModule,
     AppointmentModule,
     ServiceModule,
+    VehicleModule,
   ],
   controllers: [],
   providers: [

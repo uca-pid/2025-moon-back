@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { UserRole } from './user-role.enum';
 import { Appointment } from '../appointment/appointment.entity';
+import { Vehicle } from '../vehicle/vehicle.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -42,4 +43,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Appointment, (appointment) => appointment.user)
   appointments: Appointment[];
+
+  @OneToMany(() => Vehicle, (vehicle) => vehicle.user)
+  vehicles: Vehicle[];
 }
