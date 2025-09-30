@@ -20,14 +20,14 @@ export class AppointmentService implements IAppointmentService {
     user: JwtPayload,
     date: string,
     time: string,
-    service: Service,
+    services: Service[],
     workshop: User,
   ): Promise<Appointment> {
     return this.appointmentRepository.createAppointment({
       userId: user.id,
       date,
       time,
-      serviceId: service.id,
+      serviceIds: services.map((service) => service.id),
       workshopId: workshop.id,
     });
   }
