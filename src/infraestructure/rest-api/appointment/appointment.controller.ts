@@ -49,10 +49,11 @@ export class AppointmentController {
     @AuthenticatedUser() user: JwtPayload,
     @Body() dto: CreateAppointmentDto,
   ) {
-    const service = await this.serviceService.getById(dto.serviceId);
-    if (!service) {
-      throw new NotFoundException('Service not found');
+    const services = await this.serviceService.getByIds(dto.serviceIds);
+    if (!services || services.length !== dto.serviceIds.length) {
+      throw new NotFoundException('Some services not found');
     }
+
     const workshop = await this.userService.getWorkshopById(dto.workshopId);
     if (!workshop) {
       throw new NotFoundException('Workshop not found');
@@ -62,7 +63,7 @@ export class AppointmentController {
       user,
       dto.date,
       dto.time,
-      service,
+      services,
       workshop,
     );
   }

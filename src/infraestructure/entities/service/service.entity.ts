@@ -18,6 +18,6 @@ export class Service extends BaseEntity {
   @Column()
   price: number;
 
-  @OneToMany(() => Appointment, (appointment) => appointment.service)
+  @OneToMany(() => Appointment, (appointment) => appointment.services)
   appointments: Appointment[];
 }

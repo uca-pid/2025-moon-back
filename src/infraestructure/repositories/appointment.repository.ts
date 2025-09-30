@@ -38,7 +38,7 @@ export class AppointmentRepository
     const { today, nowTime } = this.getTodayAndNow();
     return (
       this.createQueryBuilder('appointment')
-        .leftJoinAndSelect('appointment.service', 'service')
+        .leftJoinAndSelect('appointment.services', 'services')
         .leftJoin('appointment.user', 'user')
         .leftJoin('appointment.workshop', 'workshop')
         .addSelect([
@@ -73,7 +73,7 @@ export class AppointmentRepository
       date: entityData.date,
       time: entityData.time,
       user: { id: entityData.userId },
-      service: { id: entityData.serviceId },
+      services: entityData.serviceIds.map((id) => ({ id })),
       workshop: { id: entityData.workshopId },
     });
     const appointment = await this.baseQueryBuilder()

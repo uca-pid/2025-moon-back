@@ -83,22 +83,22 @@ describe('AppointmentController', () => {
 
   describe('createAppointment', () => {
     const dto: CreateAppointmentDto = {
-      serviceId: 1,
+      serviceIds: [1],
       workshopId: 2,
       date: '2024-06-01',
       time: '10:00',
     };
 
     it('should throw NotFoundException if service not found', async () => {
-      serviceServiceMock.getById.mockResolvedValue(null as any);
+      serviceServiceMock.getByIds.mockResolvedValue([] as any);
       await expect(
         controller.createAppointment(userPayload, dto),
       ).rejects.toThrow(NotFoundException);
-      expect(serviceServiceMock.getById).toHaveBeenCalledWith(1);
+      expect(serviceServiceMock.getByIds).toHaveBeenCalledWith([1]);
     });
 
     it('should throw NotFoundException if workshop not found', async () => {
-      serviceServiceMock.getById.mockResolvedValue(service as any);
+      serviceServiceMock.getByIds.mockResolvedValue([service] as any);
       usersServiceMock.getWorkshopById.mockResolvedValue(null);
       await expect(
         controller.createAppointment(userPayload, dto),
@@ -107,19 +107,19 @@ describe('AppointmentController', () => {
     });
 
     it('should call appointmentService.create with correct params', async () => {
-      serviceServiceMock.getById.mockResolvedValue(service as any);
+      serviceServiceMock.getByIds.mockResolvedValue([service] as any);
       usersServiceMock.getWorkshopById.mockResolvedValue(workshop as any);
       appointmentServiceMock.create.mockResolvedValue(appointment as any);
 
       const result = await controller.createAppointment(userPayload, dto);
 
-      expect(serviceServiceMock.getById).toHaveBeenCalledWith(1);
+      expect(serviceServiceMock.getByIds).toHaveBeenCalledWith([1]);
       expect(usersServiceMock.getWorkshopById).toHaveBeenCalledWith(2);
       expect(appointmentServiceMock.create).toHaveBeenCalledWith(
         userPayload,
         dto.date,
         dto.time,
-        service,
+        [service],
         workshop,
       );
       expect(result).toBe(appointment);

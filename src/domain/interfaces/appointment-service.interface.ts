@@ -10,7 +10,7 @@ export interface IAppointmentService {
     user: JwtPayload,
     date: string,
     time: string,
-    service: Service,
+    services: Service[],
     workshop: User,
   ): Promise<Appointment>;
 }
