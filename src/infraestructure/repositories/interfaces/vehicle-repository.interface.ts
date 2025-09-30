@@ -9,6 +9,7 @@ export interface CreateVehicleData {
 }
 
 export interface IVehicleRepository {
+  getVehiclesOfUser(userId: number): Promise<Vehicle[]>;
   createVehicle(entityData: CreateVehicleData): Promise<Vehicle>;
 }
 

@@ -25,7 +25,7 @@ export class Vehicle extends BaseEntity {
   @Column()
   km: Number;
 
-  @ManyToOne(() => User, (user) => user.vehicles)
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user: User;
 }

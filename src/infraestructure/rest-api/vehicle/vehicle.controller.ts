@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Inject } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Get } from '@nestjs/common';
 import { CreateVehicleDto } from '../../dtos/vehicle/create-vehicle.dto';
 import {
   type IVehicleService,
@@ -13,6 +13,11 @@ export class VehicleController {
     @Inject(IVehicleServiceToken)
     private readonly vehicleService: IVehicleService,
   ) {}
+
+  @Get('/user')
+  getVehiclesOfUser(@AuthenticatedUser() user: JwtPayload) {
+    return this.vehicleService.getVehiclesOfUser(user.id);
+  }
 
   @Post()
   create(@AuthenticatedUser() user: JwtPayload, @Body() dto: CreateVehicleDto) {

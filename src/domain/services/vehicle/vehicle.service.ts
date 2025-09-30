@@ -27,8 +27,7 @@ export class VehicleService {
     });
   }
 
-  // Obtener los vehículos de un usuario
-  //   getVehiclesOfUser(userId: number): Promise<Vehicle[]> {
-  //     return this.vehicleRepository.getVehiclesOfUser(userId);
-  //   }
+  getVehiclesOfUser(userId: number): Promise<Vehicle[]> {
+    return this.vehicleRepository.getVehiclesOfUser(userId);
+  }
 }

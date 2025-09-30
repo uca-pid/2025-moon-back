@@ -15,12 +15,12 @@ export class VehicleRepository
     super(Vehicle, dataSource.createEntityManager());
   }
 
-  //   async getVehiclesOfUser(userId: number): Promise<Vehicle[]> {
-  //     return this.createQueryBuilder('vehicle')
-  //       .leftJoinAndSelect('vehicle.user', 'user')
-  //       .where('user.id = :userId', { userId })
-  //       .getMany()
-  //   }
+  async getVehiclesOfUser(userId: number): Promise<Vehicle[]> {
+    return this.createQueryBuilder('users_vehicles')
+      .leftJoin('users_vehicles.user', 'user')
+      .where('user.id = :userId', { userId })
+      .getMany();
+  }
 
   async createVehicle(entityData: CreateVehicleData): Promise<Vehicle> {
     const result = await this.save({
