@@ -50,7 +50,7 @@ export class AppointmentController {
     @Body() dto: CreateAppointmentDto,
   ) {
     const services = await this.serviceService.getByIds(dto.serviceIds);
-    if (services.length !== dto.serviceIds.length) {
+    if (!services || services.length !== dto.serviceIds.length) {
       throw new NotFoundException('Some services not found');
     }
 
