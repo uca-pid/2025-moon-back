@@ -21,17 +21,43 @@ export class AppointmentRepository
   }
 
   async getNextAppointmentsOfUser(userId: number): Promise<Appointment[]> {
-    return this.baseQueryBuilder()
+    const now = new Date();
+    const appointments = await this.baseQueryBuilder()
       .where('appointment.user_id = :userId', { userId })
+      .andWhere(
+        `make_timestamp(
+          EXTRACT(YEAR FROM appointment.date)::int,
+          EXTRACT(MONTH FROM appointment.date)::int,
+          EXTRACT(DAY FROM appointment.date)::int,
+          EXTRACT(HOUR FROM appointment.time)::int,
+          EXTRACT(MINUTE FROM appointment.time)::int,
+          EXTRACT(SECOND FROM appointment.time)::int
+        ) >= :now`,
+        { now },
+      )
       .getMany();
+    return appointments;
   }
 
   async getNextAppointmentsOfWorkshop(
     workshopId: number,
   ): Promise<Appointment[]> {
-    return this.baseQueryBuilder()
+    const now = new Date();
+    const appointments = await this.baseQueryBuilder()
       .where('appointment.workshop_id = :workshopId', { workshopId })
+      .andWhere(
+        `make_timestamp(
+          EXTRACT(YEAR FROM appointment.date)::int,
+          EXTRACT(MONTH FROM appointment.date)::int,
+          EXTRACT(DAY FROM appointment.date)::int,
+          EXTRACT(HOUR FROM appointment.time)::int,
+          EXTRACT(MINUTE FROM appointment.time)::int,
+          EXTRACT(SECOND FROM appointment.time)::int
+        ) >= :now`,
+        { now },
+      )
       .getMany();
+    return appointments;
   }
 
   private baseQueryBuilder() {
