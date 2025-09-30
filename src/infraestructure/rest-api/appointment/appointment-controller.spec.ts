@@ -83,7 +83,7 @@ describe('AppointmentController', () => {
 
   describe('createAppointment', () => {
     const dto: CreateAppointmentDto = {
-      serviceId: 1,
+      serviceIds: [1],
       workshopId: 2,
       date: '2024-06-01',
       time: '10:00',
@@ -119,7 +119,7 @@ describe('AppointmentController', () => {
         userPayload,
         dto.date,
         dto.time,
-        service,
+        [service],
         workshop,
       );
       expect(result).toBe(appointment);
