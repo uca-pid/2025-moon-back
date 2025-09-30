@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { IServiceRepository } from './interfaces/service-repository.interface';
 import { Service } from '../entities/service/service.entity';
 
@@ -21,5 +21,13 @@ export class ServiceRepository
       throw new NotFoundException('Service not found');
     }
     return service;
+  }
+
+  async findByIds(ids: number[]) {
+    const services = await this.find({ where: { id: In(ids) } });
+    if (services.length !== ids.length) {
+      throw new NotFoundException('Some services not found');
+    }
+    return services;
   }
 }

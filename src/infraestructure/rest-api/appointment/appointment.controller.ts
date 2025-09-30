@@ -49,15 +49,7 @@ export class AppointmentController {
     @AuthenticatedUser() user: JwtPayload,
     @Body() dto: CreateAppointmentDto,
   ) {
-    const services = await Promise.all(
-      dto.serviceIds.map(async (serviceId) => {
-        const service = await this.serviceService.getById(serviceId);
-        if (!service) {
-          throw new NotFoundException('Service not found');
-        }
-        return service;
-      }),
-    );
+    const services = await this.serviceService.getByIds(dto.serviceIds);
 
     const workshop = await this.userService.getWorkshopById(dto.workshopId);
     if (!workshop) {
