@@ -21,17 +21,19 @@ export class AppointmentRepository
   }
 
   async getNextAppointmentsOfUser(userId: number): Promise<Appointment[]> {
-    return this.baseQueryBuilder()
-      .where('appointment.user_id = :userId', { userId })
+    const appointments = await this.baseQueryBuilder()
+      .andWhere('appointment.user_id = :userId', { userId })
       .getMany();
+    return appointments;
   }
 
   async getNextAppointmentsOfWorkshop(
     workshopId: number,
   ): Promise<Appointment[]> {
-    return this.baseQueryBuilder()
-      .where('appointment.workshop_id = :workshopId', { workshopId })
+    const appointments = await this.baseQueryBuilder()
+      .andWhere('appointment.workshop_id = :workshopId', { workshopId })
       .getMany();
+    return appointments;
   }
 
   private baseQueryBuilder() {
