@@ -9,6 +9,7 @@ import { IAppointmentServiceToken } from 'src/domain/interfaces/appointment-serv
 import { AppointmentService } from 'src/domain/services/appointment/appointment.service';
 import { ServiceModule } from '../service/service.module';
 import { UsersModule } from '../users/users.module';
+import { SparePartModule } from '../spare-part/spare-part.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UsersModule } from '../users/users.module';
     ConfigModule,
     ServiceModule,
     UsersModule,
+    SparePartModule,
   ],
   controllers: [AppointmentController],
   providers: [

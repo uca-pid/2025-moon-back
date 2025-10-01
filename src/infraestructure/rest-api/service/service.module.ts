@@ -6,9 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServiceRepository } from 'src/infraestructure/repositories/service.repository';
 import { IServiceRepositoryToken } from 'src/infraestructure/repositories/interfaces/service-repository.interface';
 import { IServiceServiceToken } from 'src/domain/interfaces/service-service.interface';
+import { UsersModule } from '../users/users.module';
+import { SparePartModule } from '../spare-part/spare-part.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Service])],
+  imports: [TypeOrmModule.forFeature([Service]), UsersModule, SparePartModule],
   controllers: [ServiceController],
   providers: [
     { provide: IServiceServiceToken, useClass: ServiceService },

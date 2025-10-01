@@ -8,28 +8,64 @@ import {
   IAppointmentRepositoryToken,
 } from 'src/infraestructure/repositories/interfaces/appointment-repository.interface';
 import { User } from 'src/infraestructure/entities/user/user.entity';
+import {
+  type IServiceService,
+  IServiceServiceToken,
+} from 'src/domain/interfaces/service-service.interface';
+import {
+  type ISparePartService,
+  ISparePartServiceToken,
+} from 'src/domain/interfaces/spare-part-service.interface';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
   constructor(
     @Inject(IAppointmentRepositoryToken)
     private readonly appointmentRepository: IAppointmentRepository,
+    @Inject(IServiceServiceToken)
+    private readonly serviceService: IServiceService,
+    @Inject(ISparePartServiceToken)
+    private readonly sparePartService: ISparePartService,
   ) {}
 
-  create(
+  async create(
     user: JwtPayload,
     date: string,
     time: string,
     services: Service[],
     workshop: User,
   ): Promise<Appointment> {
-    return this.appointmentRepository.createAppointment({
-      userId: user.id,
-      date,
-      time,
-      serviceIds: services.map((service) => service.id),
-      workshopId: workshop.id,
+    const createdAppointment =
+      await this.appointmentRepository.createAppointment({
+        userId: user.id,
+        date,
+        time,
+        serviceIds: services.map((service) => service.id),
+        workshopId: workshop.id,
+      });
+    await this.reduceStockFromSpareParts(createdAppointment);
+    return createdAppointment;
+  }
+
+  private async reduceStockFromSpareParts(appointment: Appointment) {
+    const services = await this.serviceService.getByIds(
+      appointment.services.map((s) => s.id),
+    );
+    const sparePartsNeeded = this.calculateSparePartsNeeded(services);
+    await this.sparePartService.reduceStockFromSpareParts(sparePartsNeeded);
+  }
+
+  private calculateSparePartsNeeded(services: Service[]) {
+    const sparePartsMap = new Map<number, number>();
+    const allSpareParts = services.flatMap((s) => s.spareParts);
+    allSpareParts.forEach((sparePart) => {
+      const currentQty = sparePartsMap.get(sparePart.sparePartId) || 0;
+      sparePartsMap.set(sparePart.sparePartId, currentQty + sparePart.quantity);
     });
+
+    return Array.from(sparePartsMap.entries()).map(
+      ([sparePartId, quantity]) => ({ sparePartId, quantity }),
+    );
   }
 
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]> {

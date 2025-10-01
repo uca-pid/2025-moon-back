@@ -14,10 +14,20 @@ import { Service } from 'src/infraestructure/entities/service/service.entity';
 import { User } from 'src/infraestructure/entities/user/user.entity';
 import { Appointment } from 'src/infraestructure/entities/appointment/appointment.entity';
 import { UserRole } from 'src/infraestructure/entities/user/user-role.enum';
+import {
+  IServiceService,
+  IServiceServiceToken,
+} from 'src/domain/interfaces/service-service.interface';
+import {
+  ISparePartService,
+  ISparePartServiceToken,
+} from 'src/domain/interfaces/spare-part-service.interface';
 
 describe('AppointmentService', () => {
   let appointmentService: IAppointmentService;
   const appointmentRepositoryMock = mockDeep<IAppointmentRepository>();
+  const sparePartsServiceMock = mockDeep<ISparePartService>();
+  const serviceServiceMock = mockDeep<IServiceService>();
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -27,6 +37,14 @@ describe('AppointmentService', () => {
         {
           provide: IAppointmentRepositoryToken,
           useValue: appointmentRepositoryMock,
+        },
+        {
+          provide: IServiceServiceToken,
+          useValue: serviceServiceMock,
+        },
+        {
+          provide: ISparePartServiceToken,
+          useValue: sparePartsServiceMock,
         },
       ],
     }).compile();
@@ -43,15 +61,24 @@ describe('AppointmentService', () => {
         email: 'test@test.com',
         userRole: UserRole.USER,
       } as any;
-      const service: Service = { id: 2 } as Service;
       const workshop: User = { id: 3 } as User;
       const date = '2024-06-01';
       const time = '10:00';
-      const appointment: Appointment = { id: 123 } as Appointment;
+      const service = {
+        id: 1,
+        name: 'Service 1',
+        spareParts: [],
+      } as unknown as Service;
+      const appointment: Appointment = {
+        id: 123,
+        services: [service],
+      } as unknown as Appointment;
 
       appointmentRepositoryMock.createAppointment.mockResolvedValue(
         appointment,
       );
+
+      serviceServiceMock.getByIds.mockResolvedValue([service]);
 
       const result = await appointmentService.create(
         user,
