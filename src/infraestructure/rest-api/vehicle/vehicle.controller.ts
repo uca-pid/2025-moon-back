@@ -52,7 +52,6 @@ export class VehicleController {
     @Param('id', new ParseIntPipe()) id: number,
     @Body() dto: UpdateVehicleDto,
   ) {
-    console.log(this.vehicleService);
     return this.vehicleService.updateVehicleOfUser(user.id, id, dto);
   }
 
