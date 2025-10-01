@@ -25,11 +25,15 @@ export class ServiceService implements IServiceService {
     await ServiceSparePart.save(
       dto.spareParts.map((sp) => ({
         service: { id: service.id },
-        sparePartId: sp.sparePartId,
+        sparePart: { id: sp.sparePartId },
         quantity: sp.quantity,
-      })),
+      })) as ServiceSparePart[],
     );
-    return service;
+    const entity = await this.serviceRepository.getById(service.id);
+    if (!entity) {
+      throw new Error('Service not found after creation');
+    }
+    return entity;
   }
 
   getByMechanicId(mechanic: User): Promise<Service[]> {

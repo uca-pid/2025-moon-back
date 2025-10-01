@@ -4,6 +4,7 @@ import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
 import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
 
 export interface IServiceRepository extends IBaseRepository<Service> {
+  getById(id: number): Promise<Service | null>;
   findByMechanicId(id: number): Promise<Service[]>;
   findPaginated(
     query: PaginatedQueryDto,

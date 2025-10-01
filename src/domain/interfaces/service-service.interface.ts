@@ -5,7 +5,7 @@ import { User } from 'src/infraestructure/entities/user/user.entity';
 import { CreateServiceDto } from 'src/infraestructure/dtos/services/create-service.dto';
 
 export interface IServiceService {
-  create(dto: CreateServiceDto, mechanic: User): unknown;
+  create(dto: CreateServiceDto, mechanic: User): Promise<Service>;
   getByMechanicId(mechanic: User): Promise<Service[]>;
   getPaginated(
     query: PaginatedQueryDto,

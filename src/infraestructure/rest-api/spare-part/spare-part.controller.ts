@@ -19,7 +19,6 @@ import { AuthenticatedWorkshop } from '../decorators/authenticated-mechanic.deco
 import { User } from 'src/infraestructure/entities/user/user.entity';
 import { CreateSparePartDto } from 'src/infraestructure/dtos/spare-part/create-spare-part.dto';
 import { UpdateSparePartDto } from 'src/infraestructure/dtos/spare-part/update-spare-part.dto';
-import e from 'express';
 
 @Controller('spare-parts')
 export class SparePartController {
@@ -33,7 +32,6 @@ export class SparePartController {
     @Query() query: PaginatedQueryDto,
     @AuthenticatedWorkshop() mechanic: User,
   ) {
-    console.log(query);
     return this.sparePartService.getPaginated(query, mechanic);
   }
 

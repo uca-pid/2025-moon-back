@@ -13,6 +13,12 @@ export class ServiceRepository
   constructor(private dataSource: DataSource) {
     super(Service, dataSource.createEntityManager());
   }
+  getById(id: number): Promise<Service | null> {
+    return this.findOne({
+      where: { id },
+      relations: ['spareParts', 'spareParts.sparePart'],
+    });
+  }
 
   findByMechanicId(id: number): Promise<Service[]> {
     return this.find({ where: { mechanic: { id } } });

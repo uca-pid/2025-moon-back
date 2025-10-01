@@ -65,11 +65,9 @@ export class ServiceController {
   async create(
     @Body() dto: CreateServiceDto,
     @AuthenticatedWorkshop() mechanic: User,
-  ): Promise<void> {
-    console.log(dto);
+  ): Promise<Service> {
     const sparePartIds = dto.spareParts.map((sp) => sp.sparePartId);
     const spareParts = await this.sparePartService.getByIds(sparePartIds);
-    console.log(spareParts);
     if (spareParts.length !== sparePartIds.length) {
       throw new NotFoundException('One or more spare parts not found');
     }
@@ -78,6 +76,6 @@ export class ServiceController {
         'One or more spare parts do not belong to the mechanic',
       );
     }
-    await this.serviceService.create(dto, mechanic);
+    return await this.serviceService.create(dto, mechanic);
   }
 }
