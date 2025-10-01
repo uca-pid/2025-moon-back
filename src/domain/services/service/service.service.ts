@@ -6,18 +6,20 @@ import { IServiceRepositoryToken } from 'src/infraestructure/repositories/interf
 import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
 import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
 import { User } from 'src/infraestructure/entities/user/user.entity';
-import {
-  CreateServiceDto,
-  ServiceSparePartDto,
-} from 'src/infraestructure/dtos/services/create-service.dto';
-import { ServiceSparePart } from 'src/infraestructure/entities/service/service-spare-part.entity';
+import { CreateServiceDto } from 'src/infraestructure/dtos/services/create-service.dto';
 import { UpdateServiceDto } from 'src/infraestructure/dtos/services/update-service.dto';
+import {
+  type ISparePartService,
+  ISparePartServiceToken,
+} from 'src/domain/interfaces/spare-part-service.interface';
 
 @Injectable()
 export class ServiceService implements IServiceService {
   constructor(
     @Inject(IServiceRepositoryToken)
     private readonly serviceRepository: IServiceRepository,
+    @Inject(ISparePartServiceToken)
+    private readonly sparePartService: ISparePartService,
   ) {}
 
   delete(entity: Service): Promise<void> {
@@ -30,7 +32,10 @@ export class ServiceService implements IServiceService {
       price: dto.price,
       mechanic: mechanic,
     });
-    await this.saveServiceSpareParts(service, dto.spareParts);
+    await this.sparePartService.assignSparePartsToService(
+      service,
+      dto.spareParts,
+    );
     const entity = await this.serviceRepository.getById(service.id);
     if (!entity) {
       throw new Error('Service not found after creation');
@@ -38,24 +43,14 @@ export class ServiceService implements IServiceService {
     return entity;
   }
 
-  private async saveServiceSpareParts(
-    service: Service,
-    dtos: ServiceSparePartDto[],
-  ) {
-    await ServiceSparePart.save(
-      dtos.map((sp) => ({
-        service: { id: service.id },
-        sparePart: { id: sp.sparePartId },
-        quantity: sp.quantity,
-      })) as ServiceSparePart[],
-    );
-  }
-
   async update(dto: UpdateServiceDto, entity: Service): Promise<Service> {
     entity.name = dto.name;
     entity.price = dto.price;
     const service = await this.serviceRepository.save(entity);
-    await this.saveServiceSpareParts(service, dto.spareParts);
+    await this.sparePartService.assignSparePartsToService(
+      service,
+      dto.spareParts,
+    );
 
     const savedEntity = await this.serviceRepository.getById(service.id);
     if (!savedEntity) {
