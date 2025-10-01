@@ -2,7 +2,6 @@ import {
   IsArray,
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsPositive,
   IsString,
   ValidateNested,
@@ -25,10 +24,6 @@ export class CreateServiceDto {
 }
 
 export class ServiceSparePartDto {
-  @IsOptional()
-  @IsNumber()
-  id: number;
-
   @IsNumber()
   sparePartId: number;
 

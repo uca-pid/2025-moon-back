@@ -6,8 +6,12 @@ import { IServiceRepositoryToken } from 'src/infraestructure/repositories/interf
 import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
 import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
 import { User } from 'src/infraestructure/entities/user/user.entity';
-import { CreateServiceDto } from 'src/infraestructure/dtos/services/create-service.dto';
+import {
+  CreateServiceDto,
+  ServiceSparePartDto,
+} from 'src/infraestructure/dtos/services/create-service.dto';
 import { ServiceSparePart } from 'src/infraestructure/entities/service/service-spare-part.entity';
+import { UpdateServiceDto } from 'src/infraestructure/dtos/services/update-service.dto';
 
 @Injectable()
 export class ServiceService implements IServiceService {
@@ -22,18 +26,66 @@ export class ServiceService implements IServiceService {
       price: dto.price,
       mechanic: mechanic,
     });
-    await ServiceSparePart.save(
-      dto.spareParts.map((sp) => ({
-        service: { id: service.id },
-        sparePart: { id: sp.sparePartId },
-        quantity: sp.quantity,
-      })) as ServiceSparePart[],
-    );
+    await this.createNewServiceSpareParts(service, dto.spareParts);
+
     const entity = await this.serviceRepository.getById(service.id);
     if (!entity) {
       throw new Error('Service not found after creation');
     }
     return entity;
+  }
+
+  private async createNewServiceSpareParts(
+    service: Service,
+    dtos: ServiceSparePartDto[],
+  ) {
+    await ServiceSparePart.save(
+      dtos.map((sp) => ({
+        service: { id: service.id },
+        sparePart: { id: sp.sparePartId },
+        quantity: sp.quantity,
+      })) as ServiceSparePart[],
+    );
+  }
+
+  async update(dto: UpdateServiceDto, entity: Service): Promise<Service> {
+    entity.name = dto.name;
+    entity.price = dto.price;
+    const service = await this.serviceRepository.save(entity);
+
+    const existingSpareParts = await ServiceSparePart.find({
+      where: { service: { id: service.id } },
+    });
+    const existingSparePartIds = existingSpareParts.map((sp) => sp.id);
+    const dtoSparePartIds = dto.spareParts
+      .map((sp) => sp.id)
+      .filter((id) => id !== undefined);
+    const sparePartsToRemove = existingSpareParts.filter(
+      (sp) => !dtoSparePartIds.includes(sp.id),
+    );
+    await ServiceSparePart.remove(sparePartsToRemove);
+    const sparePartsToAdd = dto.spareParts.filter(
+      (sp) => !existingSparePartIds.includes(sp.id),
+    );
+    await this.createNewServiceSpareParts(service, sparePartsToAdd);
+
+    // Update quantities for existing spare parts
+    const sparePartsToUpdate = existingSpareParts.filter((sp) =>
+      existingSparePartIds.includes(sp.id),
+    );
+    for (const sp of sparePartsToUpdate) {
+      const dtoSp = dto.spareParts.find((dsp) => dsp.id === sp.id);
+      if (dtoSp) {
+        sp.quantity = dtoSp.quantity;
+        await sp.save();
+      }
+    }
+
+    const savedEntity = await this.serviceRepository.getById(service.id);
+    if (!savedEntity) {
+      throw new Error('Service not found after creation');
+    }
+    return savedEntity;
   }
 
   getByMechanicId(mechanic: User): Promise<Service[]> {

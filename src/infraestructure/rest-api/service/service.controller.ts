@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -6,6 +7,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Put,
   Query,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -27,6 +29,7 @@ import {
   type ISparePartService,
   ISparePartServiceToken,
 } from 'src/domain/interfaces/spare-part-service.interface';
+import { UpdateServiceDto } from 'src/infraestructure/dtos/services/update-service.dto';
 
 @Controller('services')
 export class ServiceController {
@@ -66,7 +69,23 @@ export class ServiceController {
     @Body() dto: CreateServiceDto,
     @AuthenticatedWorkshop() mechanic: User,
   ): Promise<Service> {
+    await this.validateSpareParts(dto, mechanic);
+    return await this.serviceService.create(dto, mechanic);
+  }
+
+  private async validateSpareParts(
+    dto: CreateServiceDto | UpdateServiceDto,
+    mechanic: User,
+  ): Promise<void> {
     const sparePartIds = dto.spareParts.map((sp) => sp.sparePartId);
+
+    const duplicates = sparePartIds.filter(
+      (id, idx) => sparePartIds.indexOf(id) !== idx,
+    );
+    if (duplicates.length > 0) {
+      throw new BadRequestException('Duplicated spare parts detected');
+    }
+
     const spareParts = await this.sparePartService.getByIds(sparePartIds);
     if (spareParts.length !== sparePartIds.length) {
       throw new NotFoundException('One or more spare parts not found');
@@ -76,6 +95,20 @@ export class ServiceController {
         'One or more spare parts do not belong to the mechanic',
       );
     }
-    return await this.serviceService.create(dto, mechanic);
+  }
+
+  @Put('/:id')
+  async update(
+    @Param('id') id: number,
+    @Body() dto: CreateServiceDto,
+    @AuthenticatedWorkshop() mechanic: User,
+  ): Promise<Service> {
+    await this.validateSpareParts(dto, mechanic);
+    const entity = await this.serviceService.getById(id);
+    if (!entity) {
+      throw new NotFoundException('Service not found');
+    }
+
+    return await this.serviceService.update(dto, entity);
   }
 }
