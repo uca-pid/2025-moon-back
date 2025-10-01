@@ -13,17 +13,20 @@ export class Vehicle extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column()
   licensePlate: string;
 
   @Column()
   model: string;
 
   @Column()
-  year: Number;
+  year: number;
 
   @Column()
-  km: Number;
+  km: number;
+
+  @Column({ name: 'user_id' })
+  userId: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
