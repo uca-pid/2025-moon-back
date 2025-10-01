@@ -24,11 +24,14 @@ export class PaginatedQueryDto {
   @IsString()
   search?: string;
 
-  /**
-   * Format: field,order (e.g., name,asc or createdAt,desc etc)
-   */
   @IsOptional()
   @IsString()
-  @Matches(/^[a-zA-Z0-9_]+,(asc|desc)$/)
-  order?: string;
+  @Matches(/^(ASC|DESC)$/i, {
+    message: 'order must be either ASC or DESC',
+  })
+  orderDir?: 'ASC' | 'DESC' = 'DESC';
+
+  @IsOptional()
+  @IsString()
+  orderBy?: string = 'id';
 }

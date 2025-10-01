@@ -3,5 +3,6 @@ export class PaginatedResultDto<T> {
   total: number;
   page: number;
   pageSize: number;
-  order: string;
+  orderBy: string;
+  orderDir: 'ASC' | 'DESC';
 }

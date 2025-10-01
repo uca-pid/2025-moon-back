@@ -36,8 +36,13 @@ export class SparePartRepository
     query: PaginatedQueryDto,
     mechanicId: number,
   ): Promise<PaginatedResultDto<SparePart>> {
-    const { page = 1, pageSize = 10, search, order = 'id,desc' } = query;
-    const [orderBy, orderDirection] = order.split(',');
+    const {
+      page = 1,
+      pageSize = 10,
+      search,
+      orderDir = 'DESC',
+      orderBy = 'id',
+    } = query;
     const defaultWhere = {
       mechanic: { id: mechanicId },
     };
@@ -49,9 +54,9 @@ export class SparePartRepository
       take: pageSize,
       where,
       order: {
-        [orderBy]: orderDirection.toUpperCase(),
+        [orderBy]: orderDir,
       },
     });
-    return { data, total, page, pageSize, order };
+    return { data, total, page, pageSize, orderBy, orderDir };
   }
 }
