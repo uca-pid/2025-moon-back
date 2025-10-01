@@ -47,7 +47,7 @@ export class ServiceController {
     @Query() query: PaginatedQueryDto,
     @AuthenticatedWorkshop() mechanic: User,
   ): Promise<PaginatedResultDto<Service>> {
-    return this.serviceService.getPaginated(query, mechanic);
+    return await this.serviceService.getPaginated(query, mechanic);
   }
 
   @Get('/mechanic/:id')
