@@ -57,16 +57,11 @@ export class AppointmentService implements IAppointmentService {
 
   private calculateSparePartsNeeded(services: Service[]) {
     const sparePartsMap = new Map<number, number>();
-
-    for (const service of services) {
-      for (const sparePart of service.spareParts) {
-        const currentQty = sparePartsMap.get(sparePart.sparePartId) || 0;
-        sparePartsMap.set(
-          sparePart.sparePartId,
-          currentQty + sparePart.quantity,
-        );
-      }
-    }
+    const allSpareParts = services.flatMap((s) => s.spareParts);
+    allSpareParts.forEach((sparePart) => {
+      const currentQty = sparePartsMap.get(sparePart.sparePartId) || 0;
+      sparePartsMap.set(sparePart.sparePartId, currentQty + sparePart.quantity);
+    });
 
     return Array.from(sparePartsMap.entries()).map(
       ([sparePartId, quantity]) => ({ sparePartId, quantity }),
