@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   NotFoundException,
@@ -104,11 +105,28 @@ export class ServiceController {
     @AuthenticatedWorkshop() mechanic: User,
   ): Promise<Service> {
     await this.validateSpareParts(dto, mechanic);
-    const entity = await this.serviceService.getById(id);
-    if (!entity) {
+    const entity = await this.serviceService.getByIdWithMechanic(id);
+    if (!entity || entity.mechanic.id !== mechanic.id) {
       throw new NotFoundException('Service not found');
     }
 
     return await this.serviceService.update(dto, entity);
+  }
+
+  @Delete('/:id')
+  async delete(
+    @Param('id') id: number,
+    @AuthenticatedWorkshop() mechanic: User,
+  ): Promise<void> {
+    const entity = await this.serviceService.getByIdWithMechanic(id);
+    if (!entity || entity.mechanic.id !== mechanic.id) {
+      throw new NotFoundException('Service not found');
+    }
+    if (entity.mechanic.id !== mechanic.id) {
+      throw new UnauthorizedException(
+        'You do not have permission to delete this service',
+      );
+    }
+    await this.serviceService.delete(entity);
   }
 }

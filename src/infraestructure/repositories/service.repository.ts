@@ -4,6 +4,7 @@ import { IServiceRepository } from './interfaces/service-repository.interface';
 import { Service } from '../entities/service/service.entity';
 import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
 import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
+import { ServiceSparePart } from '../entities/service/service-spare-part.entity';
 
 @Injectable()
 export class ServiceRepository
@@ -12,6 +13,23 @@ export class ServiceRepository
 {
   constructor(private dataSource: DataSource) {
     super(Service, dataSource.createEntityManager());
+  }
+
+  findByIdWithMechanic(id: number): Promise<Service | null> {
+    return this.findOne({
+      where: { id },
+      relations: ['spareParts', 'spareParts.sparePart', 'mechanic'],
+    });
+  }
+
+  async removeById(id: number): Promise<void> {
+    await ServiceSparePart.delete({ service: { id } });
+    const result = await this.delete(id);
+
+    if (result.affected === 0) {
+      throw new NotFoundException('Service not found');
+    }
+    return;
   }
   getById(id: number): Promise<Service | null> {
     return this.findOne({
@@ -47,6 +65,7 @@ export class ServiceRepository
       },
       take: pageSize,
       skip,
+      relations: ['spareParts', 'spareParts.sparePart'],
     });
 
     return {

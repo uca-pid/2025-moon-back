@@ -20,6 +20,10 @@ export class ServiceService implements IServiceService {
     private readonly serviceRepository: IServiceRepository,
   ) {}
 
+  delete(entity: Service): Promise<void> {
+    return this.serviceRepository.removeById(entity.id);
+  }
+
   async create(dto: CreateServiceDto, mechanic: User): Promise<Service> {
     const service = await this.serviceRepository.save({
       name: dto.name,
@@ -105,6 +109,10 @@ export class ServiceService implements IServiceService {
 
   async getById(id: number): Promise<Service> {
     return this.serviceRepository.findById(id);
+  }
+
+  async getByIdWithMechanic(id: number): Promise<Service | null> {
+    return this.serviceRepository.findByIdWithMechanic(id);
   }
 
   async getByIds(ids: number[]): Promise<Service[]> {

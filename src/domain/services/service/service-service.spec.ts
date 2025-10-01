@@ -50,7 +50,7 @@ describe('ServiceService', () => {
       const service: Service = { id: 1, name: 'Service 1' } as Service;
       serviceRepositoryMock.findById.mockResolvedValue(service);
 
-      const result = await serviceService.getById(1);
+      const result = await serviceService.getByIdWithMechanic(1);
 
       expect(serviceRepositoryMock.findById).toHaveBeenCalledWith(1);
       expect(result).toEqual(service);
@@ -60,7 +60,7 @@ describe('ServiceService', () => {
       // @ts-expect-error is undefined
       serviceRepositoryMock.findById.mockResolvedValue(undefined);
 
-      const result = await serviceService.getById(999);
+      const result = await serviceService.getByIdWithMechanic(999);
 
       expect(serviceRepositoryMock.findById).toHaveBeenCalledWith(999);
       expect(result).toBeUndefined();

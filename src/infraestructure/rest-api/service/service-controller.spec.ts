@@ -43,21 +43,23 @@ describe('ServiceController', () => {
   describe('getById', () => {
     it('should return a service by id', async () => {
       const service: Service = { id: 1, name: 'Service 1' } as Service;
-      serviceServiceMock.getById.mockResolvedValue(service);
+      serviceServiceMock.getByIdWithMechanic.mockResolvedValue(service);
 
       const result = await controller.getById(1);
 
       expect(result).toEqual(service);
-      expect(serviceServiceMock.getById).toHaveBeenCalledWith(1);
+      expect(serviceServiceMock.getByIdWithMechanic).toHaveBeenCalledWith(1);
     });
 
     it('should return undefined if service not found', async () => {
-      serviceServiceMock.getById.mockResolvedValue(undefined as any);
+      serviceServiceMock.getByIdWithMechanic.mockResolvedValue(
+        undefined as any,
+      );
 
       const result = await controller.getById(999);
 
       expect(result).toBeUndefined();
-      expect(serviceServiceMock.getById).toHaveBeenCalledWith(999);
+      expect(serviceServiceMock.getByIdWithMechanic).toHaveBeenCalledWith(999);
     });
   });
 });
