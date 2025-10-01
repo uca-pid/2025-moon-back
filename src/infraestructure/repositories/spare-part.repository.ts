@@ -5,7 +5,7 @@ import {
 } from './interfaces/spare-part-repository.interface';
 import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
 import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
-import { DataSource, In, Like, Repository } from 'typeorm';
+import { DataSource, ILike, In, Repository } from 'typeorm';
 import { SparePart } from '../entities/spare-part/spare-part.entity';
 
 @Injectable()
@@ -52,7 +52,7 @@ export class SparePartRepository
       mechanic: { id: mechanicId },
     };
     const where = search
-      ? { ...defaultWhere, name: Like(`%${search}%`) }
+      ? { ...defaultWhere, name: ILike(`%${search}%`) }
       : defaultWhere;
     const [data, total] = await this.findAndCount({
       skip: (page - 1) * pageSize,
