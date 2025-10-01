@@ -12,6 +12,10 @@ import {
   type IServiceService,
   IServiceServiceToken,
 } from 'src/domain/interfaces/service-service.interface';
+import {
+  type ISparePartService,
+  ISparePartServiceToken,
+} from 'src/domain/interfaces/spare-part-service.interface';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
@@ -20,6 +24,8 @@ export class AppointmentService implements IAppointmentService {
     private readonly appointmentRepository: IAppointmentRepository,
     @Inject(IServiceServiceToken)
     private readonly serviceService: IServiceService,
+    @Inject(ISparePartServiceToken)
+    private readonly sparePartService: ISparePartService,
   ) {}
 
   async create(
@@ -45,16 +51,25 @@ export class AppointmentService implements IAppointmentService {
     const services = await this.serviceService.getByIds(
       appointment.services.map((s) => s.id),
     );
-    await Promise.all(
-      services.map(
-        async (service) =>
-          await Promise.all(
-            service.spareParts.map(async (sp) => {
-              sp.sparePart.stock -= sp.quantity;
-              return await sp.sparePart.save();
-            }),
-          ),
-      ),
+    const sparePartsNeeded = this.calculateSparePartsNeeded(services);
+    await this.sparePartService.reduceStockFromSpareParts(sparePartsNeeded);
+  }
+
+  private calculateSparePartsNeeded(services: Service[]) {
+    const sparePartsMap = new Map<number, number>();
+
+    for (const service of services) {
+      for (const sparePart of service.spareParts) {
+        const currentQty = sparePartsMap.get(sparePart.sparePartId) || 0;
+        sparePartsMap.set(
+          sparePart.sparePartId,
+          currentQty + sparePart.quantity,
+        );
+      }
+    }
+
+    return Array.from(sparePartsMap.entries()).map(
+      ([sparePartId, quantity]) => ({ sparePartId, quantity }),
     );
   }
 

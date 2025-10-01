@@ -5,6 +5,11 @@ import { User } from 'src/infraestructure/entities/user/user.entity';
 import { CreateSparePartDto } from 'src/infraestructure/dtos/spare-part/create-spare-part.dto';
 import { UpdateSparePartDto } from 'src/infraestructure/dtos/spare-part/update-spare-part.dto';
 
+export interface ReduceStockData {
+  sparePartId: number;
+  quantity: number;
+}
+
 export interface ISparePartService {
   delete(part: SparePart): void;
   update(part: SparePart, dto: UpdateSparePartDto): Promise<SparePart>;
@@ -15,6 +20,7 @@ export interface ISparePartService {
   ): Promise<PaginatedResultDto<SparePart>>;
   getById(id: number): Promise<SparePart>;
   getByIds(ids: number[]): Promise<SparePart[]>;
+  reduceStockFromSpareParts(stockChanges: ReduceStockData[]): Promise<void>;
 }
 
 export const ISparePartServiceToken = 'ISparePartService';
