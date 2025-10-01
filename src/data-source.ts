@@ -4,8 +4,15 @@ import { UserPasswordRecovery } from './infraestructure/entities/user/password-r
 import { Appointment } from './infraestructure/entities/appointment/appointment.entity';
 import { Service } from './infraestructure/entities/service/service.entity';
 import { ConfigService } from '@nestjs/config';
+import { SparePart } from './infraestructure/entities/spare-part/spare-part.entity';
 
-export const entities = [User, UserPasswordRecovery, Appointment, Service];
+export const entities = [
+  User,
+  UserPasswordRecovery,
+  Appointment,
+  Service,
+  SparePart,
+];
 
 export const createDataSource = (configService: ConfigService) =>
   new DataSource({

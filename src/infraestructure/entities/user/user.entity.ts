@@ -4,9 +4,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   OneToMany,
+  JoinTable,
 } from 'typeorm';
 import { UserRole } from './user-role.enum';
 import { Appointment } from '../appointment/appointment.entity';
+import { SparePart } from '../spare-part/spare-part.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -42,4 +44,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Appointment, (appointment) => appointment.user)
   appointments: Appointment[];
+
+  @OneToMany(() => SparePart, (sparePart) => sparePart.mechanic)
+  spareParts: SparePart[];
 }
