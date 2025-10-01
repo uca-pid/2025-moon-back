@@ -18,10 +18,15 @@ import {
   IServiceService,
   IServiceServiceToken,
 } from 'src/domain/interfaces/service-service.interface';
+import {
+  ISparePartService,
+  ISparePartServiceToken,
+} from 'src/domain/interfaces/spare-part-service.interface';
 
 describe('AppointmentService', () => {
   let appointmentService: IAppointmentService;
   const appointmentRepositoryMock = mockDeep<IAppointmentRepository>();
+  const sparePartsServiceMock = mockDeep<ISparePartService>();
   const serviceServiceMock = mockDeep<IServiceService>();
 
   beforeEach(async () => {
@@ -36,6 +41,10 @@ describe('AppointmentService', () => {
         {
           provide: IServiceServiceToken,
           useValue: serviceServiceMock,
+        },
+        {
+          provide: ISparePartServiceToken,
+          useValue: sparePartsServiceMock,
         },
       ],
     }).compile();
