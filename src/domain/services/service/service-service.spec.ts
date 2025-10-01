@@ -10,10 +10,15 @@ import {
 } from 'src/infraestructure/repositories/interfaces/service-repository.interface';
 import { ServiceService } from './service.service';
 import { Service } from 'src/infraestructure/entities/service/service.entity';
+import {
+  ISparePartService,
+  ISparePartServiceToken,
+} from 'src/domain/interfaces/spare-part-service.interface';
 
 describe('ServiceService', () => {
   let serviceService: IServiceService;
   const serviceRepositoryMock = mockDeep<IServiceRepository>();
+  const sparePartServiceMock = mockDeep<ISparePartService>();
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -23,6 +28,10 @@ describe('ServiceService', () => {
         {
           provide: IServiceRepositoryToken,
           useValue: serviceRepositoryMock,
+        },
+        {
+          provide: ISparePartServiceToken,
+          useValue: sparePartServiceMock,
         },
       ],
     }).compile();
