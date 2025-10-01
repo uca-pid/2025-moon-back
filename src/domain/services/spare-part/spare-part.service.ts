@@ -1,7 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
 import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
-import { ISparePartService } from 'src/domain/interfaces/spare-part-service.interface';
+import {
+  ISparePartService,
+  ReduceStockData,
+} from 'src/domain/interfaces/spare-part-service.interface';
 import { CreateSparePartDto } from 'src/infraestructure/dtos/spare-part/create-spare-part.dto';
 import { UpdateSparePartDto } from 'src/infraestructure/dtos/spare-part/update-spare-part.dto';
 import { SparePart } from 'src/infraestructure/entities/spare-part/spare-part.entity';
@@ -49,5 +52,29 @@ export class SparePartService implements ISparePartService {
 
   getById(id: number): Promise<SparePart> {
     return this.repository.getById(id);
+  }
+
+  async reduceStockFromSpareParts(
+    stockChanges: ReduceStockData[],
+  ): Promise<void> {
+    const spareParts = await this.repository.getByIds(
+      stockChanges.map((s) => s.sparePartId),
+    );
+    stockChanges.forEach(({ sparePartId, quantity }) => {
+      const sparePart = spareParts.find((sp) => sp.id === sparePartId);
+      if (!sparePart) {
+        throw new BadRequestException(
+          `Spare part with id ${sparePartId} not found`,
+        );
+      }
+      const newStock = sparePart.stock - quantity;
+      if (newStock < 0) {
+        throw new BadRequestException(
+          `Not enough stock for spare part with id ${sparePart.id}`,
+        );
+      }
+      sparePart.stock = newStock;
+    });
+    await this.repository.save(spareParts);
   }
 }
