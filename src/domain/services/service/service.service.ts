@@ -30,8 +30,7 @@ export class ServiceService implements IServiceService {
       price: dto.price,
       mechanic: mechanic,
     });
-    await this.createNewServiceSpareParts(service, dto.spareParts);
-
+    await this.saveServiceSpareParts(service, dto.spareParts);
     const entity = await this.serviceRepository.getById(service.id);
     if (!entity) {
       throw new Error('Service not found after creation');
@@ -39,7 +38,7 @@ export class ServiceService implements IServiceService {
     return entity;
   }
 
-  private async createNewServiceSpareParts(
+  private async saveServiceSpareParts(
     service: Service,
     dtos: ServiceSparePartDto[],
   ) {
@@ -56,34 +55,7 @@ export class ServiceService implements IServiceService {
     entity.name = dto.name;
     entity.price = dto.price;
     const service = await this.serviceRepository.save(entity);
-
-    const existingSpareParts = await ServiceSparePart.find({
-      where: { service: { id: service.id } },
-    });
-    const existingSparePartIds = existingSpareParts.map((sp) => sp.id);
-    const dtoSparePartIds = dto.spareParts
-      .map((sp) => sp.id)
-      .filter((id) => id !== undefined);
-    const sparePartsToRemove = existingSpareParts.filter(
-      (sp) => !dtoSparePartIds.includes(sp.id),
-    );
-    await ServiceSparePart.remove(sparePartsToRemove);
-    const sparePartsToAdd = dto.spareParts.filter(
-      (sp) => !existingSparePartIds.includes(sp.id),
-    );
-    await this.createNewServiceSpareParts(service, sparePartsToAdd);
-
-    // Update quantities for existing spare parts
-    const sparePartsToUpdate = existingSpareParts.filter((sp) =>
-      existingSparePartIds.includes(sp.id),
-    );
-    for (const sp of sparePartsToUpdate) {
-      const dtoSp = dto.spareParts.find((dsp) => dsp.id === sp.id);
-      if (dtoSp) {
-        sp.quantity = dtoSp.quantity;
-        await sp.save();
-      }
-    }
+    await this.saveServiceSpareParts(service, dto.spareParts);
 
     const savedEntity = await this.serviceRepository.getById(service.id);
     if (!savedEntity) {
