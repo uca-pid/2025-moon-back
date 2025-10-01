@@ -18,4 +18,8 @@ export class ServiceService implements IServiceService {
   async getById(id: number): Promise<Service> {
     return this.serviceRepository.findById(id);
   }
+
+  async getByIds(ids: number[]): Promise<Service[]> {
+    return this.serviceRepository.findByIds(ids);
+  }
 }

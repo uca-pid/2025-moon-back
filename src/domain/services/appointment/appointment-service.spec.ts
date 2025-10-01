@@ -57,7 +57,7 @@ describe('AppointmentService', () => {
         user,
         date,
         time,
-        service,
+        [service],
         workshop,
       );
 
@@ -65,7 +65,7 @@ describe('AppointmentService', () => {
         userId: user.id,
         date,
         time,
-        serviceId: service.id,
+        serviceIds: [service.id],
         workshopId: workshop.id,
       });
       expect(result).toBe(appointment);

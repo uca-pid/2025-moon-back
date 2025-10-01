@@ -21,24 +21,26 @@ export class AppointmentRepository
   }
 
   async getNextAppointmentsOfUser(userId: number): Promise<Appointment[]> {
-    return this.baseQueryBuilder()
-      .where('appointment.user_id = :userId', { userId })
+    const appointments = await this.baseQueryBuilder()
+      .andWhere('appointment.user_id = :userId', { userId })
       .getMany();
+    return appointments;
   }
 
   async getNextAppointmentsOfWorkshop(
     workshopId: number,
   ): Promise<Appointment[]> {
-    return this.baseQueryBuilder()
-      .where('appointment.workshop_id = :workshopId', { workshopId })
+    const appointments = await this.baseQueryBuilder()
+      .andWhere('appointment.workshop_id = :workshopId', { workshopId })
       .getMany();
+    return appointments;
   }
 
   private baseQueryBuilder() {
     const { today, nowTime } = this.getTodayAndNow();
     return (
       this.createQueryBuilder('appointment')
-        .leftJoinAndSelect('appointment.service', 'service')
+        .leftJoinAndSelect('appointment.services', 'services')
         .leftJoin('appointment.user', 'user')
         .leftJoin('appointment.workshop', 'workshop')
         .addSelect([
@@ -73,7 +75,7 @@ export class AppointmentRepository
       date: entityData.date,
       time: entityData.time,
       user: { id: entityData.userId },
-      service: { id: entityData.serviceId },
+      services: entityData.serviceIds.map((id) => ({ id })),
       workshop: { id: entityData.workshopId },
     });
     const appointment = await this.baseQueryBuilder()

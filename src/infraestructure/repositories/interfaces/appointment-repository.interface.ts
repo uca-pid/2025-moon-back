@@ -4,7 +4,7 @@ export interface CreateAppointmentData {
   userId: number;
   date: string;
   time: string;
-  serviceId: number;
+  serviceIds: number[];
   workshopId: number;
 }
 

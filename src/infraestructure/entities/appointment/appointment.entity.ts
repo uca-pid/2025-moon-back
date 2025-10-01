@@ -5,6 +5,8 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
 } from 'typeorm';
 import { Service } from '../service/service.entity';
 import { User } from '../user/user.entity';
@@ -28,7 +30,11 @@ export class Appointment extends BaseEntity {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Service)
-  @JoinColumn({ name: 'service_id' })
-  service: Service;
+  @ManyToMany(() => Service, { eager: false })
+  @JoinTable({
+    name: 'appointment_services',
+    joinColumn: { name: 'appointment_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'service_id', referencedColumnName: 'id' },
+  })
+  services: Service[];
 }
