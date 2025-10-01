@@ -38,6 +38,7 @@ describe('ServiceService', () => {
       ];
       serviceRepositoryMock.findAll.mockResolvedValue(services);
 
+      // getAll calls serviceRepository.findAll
       const result = await serviceService.getAll();
 
       expect(serviceRepositoryMock.findAll).toHaveBeenCalledTimes(1);
@@ -45,25 +46,28 @@ describe('ServiceService', () => {
     });
   });
 
-  describe('getById', () => {
-    it('should return a service by id', async () => {
+  describe('getByIdWithMechanic', () => {
+    it('should return a service by id with mechanic', async () => {
       const service: Service = { id: 1, name: 'Service 1' } as Service;
-      serviceRepositoryMock.findById.mockResolvedValue(service);
+      serviceRepositoryMock.findByIdWithMechanic.mockResolvedValue(service);
 
-      const result = await serviceService.getById(1);
+      const result = await serviceService.getByIdWithMechanic(1);
 
-      expect(serviceRepositoryMock.findById).toHaveBeenCalledWith(1);
+      expect(serviceRepositoryMock.findByIdWithMechanic).toHaveBeenCalledWith(
+        1,
+      );
       expect(result).toEqual(service);
     });
 
-    it('should return undefined if service not found', async () => {
-      // @ts-expect-error is undefined
-      serviceRepositoryMock.findById.mockResolvedValue(undefined);
+    it('should return null if service not found', async () => {
+      serviceRepositoryMock.findByIdWithMechanic.mockResolvedValue(null);
 
-      const result = await serviceService.getById(999);
+      const result = await serviceService.getByIdWithMechanic(999);
 
-      expect(serviceRepositoryMock.findById).toHaveBeenCalledWith(999);
-      expect(result).toBeUndefined();
+      expect(serviceRepositoryMock.findByIdWithMechanic).toHaveBeenCalledWith(
+        999,
+      );
+      expect(result).toBeNull();
     });
   });
 });

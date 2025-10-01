@@ -4,8 +4,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { Appointment } from '../appointment/appointment.entity';
+import { User } from '../user/user.entity';
+import { ServiceSparePart } from './service-spare-part.entity';
 
 @Entity('services')
 export class Service extends BaseEntity {
@@ -17,6 +20,15 @@ export class Service extends BaseEntity {
 
   @Column()
   price: number;
+
+  @ManyToOne(() => User, (user) => user.services)
+  mechanic: User;
+
+  @OneToMany(
+    () => ServiceSparePart,
+    (serviceSparePart) => serviceSparePart.service,
+  )
+  spareParts: ServiceSparePart[];
 
   @OneToMany(() => Appointment, (appointment) => appointment.services)
   appointments: Appointment[];
