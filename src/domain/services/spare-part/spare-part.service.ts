@@ -18,6 +18,10 @@ export class SparePartService implements ISparePartService {
     private readonly repository: ISparePartRepository,
   ) {}
 
+  getByIds(ids: number[]): Promise<SparePart[]> {
+    return this.repository.getByIds(ids);
+  }
+
   delete(part: SparePart): void {
     this.repository.delete(part.id);
   }

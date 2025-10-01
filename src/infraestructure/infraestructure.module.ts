@@ -9,7 +9,7 @@ import { createDataSource } from 'src/data-source';
 import { AuthenticateUserMiddleware } from './rest-api/middleware/authenticate-user.middleware';
 import { IJwtServiceToken } from 'src/domain/interfaces/jwt-service.interface';
 import { JwtService } from './services/jwt.service';
-import { SparePartModule } from './rest-api/spare-part/spart-part.module';
+import { SparePartModule } from './rest-api/spare-part/spare-part.module';
 
 @Module({
   imports: [

@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, ILike, In, Repository } from 'typeorm';
 import { IServiceRepository } from './interfaces/service-repository.interface';
 import { Service } from '../entities/service/service.entity';
+import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
+import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
 
 @Injectable()
 export class ServiceRepository
@@ -11,6 +13,46 @@ export class ServiceRepository
   constructor(private dataSource: DataSource) {
     super(Service, dataSource.createEntityManager());
   }
+
+  findByMechanicId(id: number): Promise<Service[]> {
+    return this.find({ where: { mechanic: { id } } });
+  }
+
+  async findPaginated(
+    query: PaginatedQueryDto,
+    mechanicId: number,
+  ): Promise<PaginatedResultDto<Service>> {
+    const {
+      page = 1,
+      pageSize = 10,
+      search,
+      orderBy = 'id',
+      orderDir = 'DESC',
+    } = query;
+    const skip = (page - 1) * pageSize;
+
+    const [items, total] = await this.findAndCount({
+      where: {
+        mechanic: { id: mechanicId },
+        ...(search && { name: ILike(`%${search}%`) }),
+      },
+      order: {
+        [orderBy]: orderDir,
+      },
+      take: pageSize,
+      skip,
+    });
+
+    return {
+      data: items,
+      total,
+      page,
+      pageSize,
+      orderBy,
+      orderDir,
+    };
+  }
+
   async findAll() {
     return this.find();
   }

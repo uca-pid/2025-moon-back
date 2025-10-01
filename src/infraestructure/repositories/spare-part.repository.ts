@@ -5,7 +5,7 @@ import {
 } from './interfaces/spare-part-repository.interface';
 import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
 import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
-import { DataSource, Like, Repository } from 'typeorm';
+import { DataSource, In, Like, Repository } from 'typeorm';
 import { SparePart } from '../entities/spare-part/spare-part.entity';
 
 @Injectable()
@@ -16,6 +16,11 @@ export class SparePartRepository
   constructor(private dataSource: DataSource) {
     super(SparePart, dataSource.createEntityManager());
   }
+
+  getByIds(ids: number[]): Promise<SparePart[]> {
+    return this.find({ where: { id: In(ids) }, relations: ['mechanic'] });
+  }
+
   async getById(id: number): Promise<SparePart> {
     const part = await this.findOne({ where: { id }, relations: ['mechanic'] });
     if (!part) {

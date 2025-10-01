@@ -14,6 +14,7 @@ export interface ISparePartService {
     mechanic: User,
   ): Promise<PaginatedResultDto<SparePart>>;
   getById(id: number): Promise<SparePart>;
+  getByIds(ids: number[]): Promise<SparePart[]>;
 }
 
 export const ISparePartServiceToken = 'ISparePartService';

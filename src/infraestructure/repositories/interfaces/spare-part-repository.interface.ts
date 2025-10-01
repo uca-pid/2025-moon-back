@@ -10,6 +10,7 @@ export interface CreateSparePartData {
 }
 
 export interface ISparePartRepository extends IBaseRepository<SparePart> {
+  getByIds(ids: number[]): Promise<SparePart[]>;
   getById(id: number): Promise<SparePart>;
   getPaginated(
     query: PaginatedQueryDto,
