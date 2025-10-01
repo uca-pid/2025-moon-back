@@ -8,28 +8,54 @@ import {
   IAppointmentRepositoryToken,
 } from 'src/infraestructure/repositories/interfaces/appointment-repository.interface';
 import { User } from 'src/infraestructure/entities/user/user.entity';
+import {
+  type IServiceService,
+  IServiceServiceToken,
+} from 'src/domain/interfaces/service-service.interface';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
   constructor(
     @Inject(IAppointmentRepositoryToken)
     private readonly appointmentRepository: IAppointmentRepository,
+    @Inject(IServiceServiceToken)
+    private readonly serviceService: IServiceService,
   ) {}
 
-  create(
+  async create(
     user: JwtPayload,
     date: string,
     time: string,
     services: Service[],
     workshop: User,
   ): Promise<Appointment> {
-    return this.appointmentRepository.createAppointment({
-      userId: user.id,
-      date,
-      time,
-      serviceIds: services.map((service) => service.id),
-      workshopId: workshop.id,
-    });
+    const createdAppointment =
+      await this.appointmentRepository.createAppointment({
+        userId: user.id,
+        date,
+        time,
+        serviceIds: services.map((service) => service.id),
+        workshopId: workshop.id,
+      });
+    await this.reduceStockFromSpareParts(createdAppointment);
+    return createdAppointment;
+  }
+
+  private async reduceStockFromSpareParts(appointment: Appointment) {
+    const services = await this.serviceService.getByIds(
+      appointment.services.map((s) => s.id),
+    );
+    await Promise.all(
+      services.map(
+        async (service) =>
+          await Promise.all(
+            service.spareParts.map(async (sp) => {
+              sp.sparePart.stock -= sp.quantity;
+              return await sp.sparePart.save();
+            }),
+          ),
+      ),
+    );
   }
 
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]> {

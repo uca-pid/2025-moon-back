@@ -91,7 +91,10 @@ export class ServiceRepository
   }
 
   async findByIds(ids: number[]) {
-    const services = await this.find({ where: { id: In(ids) } });
+    const services = await this.find({
+      where: { id: In(ids) },
+      relations: ['spareParts', 'spareParts.sparePart'],
+    });
     if (services.length !== ids.length) {
       throw new NotFoundException('Some services not found');
     }
