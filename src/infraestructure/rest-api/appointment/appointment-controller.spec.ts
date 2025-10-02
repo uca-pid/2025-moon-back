@@ -15,6 +15,7 @@ import {
 import { NotFoundException } from '@nestjs/common';
 import { mockDeep, MockProxy } from 'jest-mock-extended';
 import { CreateAppointmentDto } from 'src/infraestructure/dtos/appointment/create-appointment.dto';
+import { DateFilter } from 'src/infraestructure/repositories/interfaces/appointment-repository.interface';
 
 describe('AppointmentController', () => {
   let controller: AppointmentController;
@@ -24,6 +25,7 @@ describe('AppointmentController', () => {
 
   const userPayload = { id: 'user-1' } as any;
   const workshopPayload = { id: 2 } as any;
+  const queryPayload = { dateFilter: DateFilter.FUTURE };
   const service = { id: 1 };
   const workshop = { id: 2 };
   const appointment = { id: 'appointment-1' };
@@ -73,10 +75,13 @@ describe('AppointmentController', () => {
       appointmentServiceMock.getNextAppointmentsOfWorkshop.mockResolvedValue([
         appointment as any,
       ]);
-      const result = await controller.getNextAppointments(workshopPayload);
+      const result = await controller.getNextAppointments(
+        workshopPayload,
+        queryPayload,
+      );
       expect(
         appointmentServiceMock.getNextAppointmentsOfWorkshop,
-      ).toHaveBeenCalledWith(2);
+      ).toHaveBeenCalledWith(2, DateFilter.FUTURE);
       expect(result).toEqual([appointment]);
     });
   });

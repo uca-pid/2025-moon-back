@@ -4,6 +4,7 @@ import { Appointment } from 'src/infraestructure/entities/appointment/appointmen
 import { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
 import { Service } from 'src/infraestructure/entities/service/service.entity';
 import {
+  DateFilter,
   type IAppointmentRepository,
   IAppointmentRepositoryToken,
 } from 'src/infraestructure/repositories/interfaces/appointment-repository.interface';
@@ -72,7 +73,13 @@ export class AppointmentService implements IAppointmentService {
     return this.appointmentRepository.getNextAppointmentsOfUser(userId);
   }
 
-  getNextAppointmentsOfWorkshop(workshopId: number): Promise<Appointment[]> {
-    return this.appointmentRepository.getNextAppointmentsOfWorkshop(workshopId);
+  getNextAppointmentsOfWorkshop(
+    workshopId: number,
+    dateFilter: DateFilter,
+  ): Promise<Appointment[]> {
+    return this.appointmentRepository.getAppointmentsOfWorkshop(
+      workshopId,
+      dateFilter,
+    );
   }
 }

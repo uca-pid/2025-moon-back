@@ -8,9 +8,18 @@ export interface CreateAppointmentData {
   workshopId: number;
 }
 
+export enum DateFilter {
+  PAST = 'past',
+  TODAY = 'today',
+  FUTURE = 'future',
+}
+
 export interface IAppointmentRepository {
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]>;
-  getNextAppointmentsOfWorkshop(workshopId: number): Promise<Appointment[]>;
+  getAppointmentsOfWorkshop(
+    workshopId: number,
+    dateFilter: DateFilter,
+  ): Promise<Appointment[]>;
   createAppointment(entityData: CreateAppointmentData): Promise<Appointment>;
 }
 
