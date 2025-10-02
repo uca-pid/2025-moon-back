@@ -18,7 +18,6 @@ import {
 import { AuthenticatedUser } from '../decorators/authenticated-user.decorator';
 import type { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
 import { UpdateVehicleDto } from 'src/infraestructure/dtos/vehicle/update-vehicle.dto';
-import { User } from 'src/infraestructure/entities/user/user.entity';
 
 @Controller('vehicle')
 export class VehicleController {
