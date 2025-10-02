@@ -10,7 +10,7 @@ import { AppointmentService } from 'src/domain/services/appointment/appointment.
 import { ServiceModule } from '../service/service.module';
 import { UsersModule } from '../users/users.module';
 import { SparePartModule } from '../spare-part/spare-part.module';
-
+import { VehicleModule } from '../vehicle/vehicle.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Appointment]),
@@ -18,6 +18,7 @@ import { SparePartModule } from '../spare-part/spare-part.module';
     ServiceModule,
     UsersModule,
     SparePartModule,
+    VehicleModule,
   ],
   controllers: [AppointmentController],
   providers: [

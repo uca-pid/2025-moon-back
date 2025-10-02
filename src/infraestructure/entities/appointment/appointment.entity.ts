@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Service } from '../service/service.entity';
 import { User } from '../user/user.entity';
+import { Vehicle } from '../vehicle/vehicle.entity';
 
 @Entity('appointments')
 export class Appointment extends BaseEntity {
@@ -37,4 +38,8 @@ export class Appointment extends BaseEntity {
     inverseJoinColumn: { name: 'service_id', referencedColumnName: 'id' },
   })
   services: Service[];
+
+  @ManyToOne(() => Vehicle)
+  @JoinColumn({ name: 'vehicle_id' })
+  vehicle: Vehicle;
 }

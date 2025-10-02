@@ -6,6 +6,7 @@ export interface CreateAppointmentData {
   time: string;
   serviceIds: number[];
   workshopId: number;
+  vehicleId: number;
 }
 
 export enum DateFilter {

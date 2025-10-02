@@ -17,6 +17,7 @@ import {
   type ISparePartService,
   ISparePartServiceToken,
 } from 'src/domain/interfaces/spare-part-service.interface';
+import { Vehicle } from 'src/infraestructure/entities/vehicle/vehicle.entity';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
@@ -35,6 +36,7 @@ export class AppointmentService implements IAppointmentService {
     time: string,
     services: Service[],
     workshop: User,
+    vehicle: Vehicle,
   ): Promise<Appointment> {
     const createdAppointment =
       await this.appointmentRepository.createAppointment({
@@ -43,6 +45,7 @@ export class AppointmentService implements IAppointmentService {
         time,
         serviceIds: services.map((service) => service.id),
         workshopId: workshop.id,
+        vehicleId: vehicle.id,
       });
     await this.reduceStockFromSpareParts(createdAppointment);
     return createdAppointment;

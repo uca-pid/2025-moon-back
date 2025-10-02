@@ -21,4 +21,7 @@ export class CreateAppointmentDto {
 
   @IsNumber()
   workshopId: number;
+
+  @IsNumber()
+  vehicleId: number;
 }

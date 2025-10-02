@@ -16,5 +16,6 @@ import { VehicleRepository } from 'src/infraestructure/repositories/vehicle.repo
     { provide: IVehicleRepositoryToken, useClass: VehicleRepository },
     { provide: IVehicleServiceToken, useClass: VehicleService },
   ],
+  exports: [IVehicleServiceToken],
 })
 export class VehicleModule {}
