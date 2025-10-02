@@ -7,8 +7,9 @@ import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
 import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
 import { DataSource, ILike, In, Repository } from 'typeorm';
 import { SparePart } from '../entities/spare-part/spare-part.entity';
-import { ServiceSparePartDto } from '../dtos/services/create-service.dto';
 import { Service } from '../entities/service/service.entity';
+import { ServiceStatusEnum } from '../entities/service/service.enum';
+import { ServiceSparePartDto } from '../dtos/services/create-service.dto';
 import { ServiceSparePart } from '../entities/service/service-spare-part.entity';
 
 @Injectable()
@@ -95,5 +96,31 @@ export class SparePartRepository
       },
     });
     return { data, total, page, pageSize, orderBy, orderDir };
+  }
+
+  async blockServicesBySparePartId(id: number): Promise<void> {
+    await this.manager
+      .createQueryBuilder()
+      .update(Service)
+      .set({ status: ServiceStatusEnum.BLOCKED })
+      .where(() => {
+        const subQuery = this.manager
+          .createQueryBuilder()
+          .select('ssp.serviceId')
+          .from(ServiceSparePart, 'ssp')
+          .where('ssp.sparePartId = :id')
+          .getQuery();
+        return `id IN (${subQuery})`;
+      })
+      .setParameter('id', id)
+      .execute();
+  }
+
+  async removeById(id: number): Promise<void> {
+    await ServiceSparePart.delete({ sparePartId: id });
+    const result = await this.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException('Spare part not found');
+    }
   }
 }

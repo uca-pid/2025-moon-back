@@ -13,7 +13,7 @@ export interface ReduceStockData {
 }
 
 export interface ISparePartService {
-  delete(part: SparePart): void;
+  delete(part: SparePart): Promise<void>;
   update(part: SparePart, dto: UpdateSparePartDto): Promise<SparePart>;
   create(dto: CreateSparePartDto, mechanic: User): Promise<SparePart>;
   getPaginated(
