@@ -5,8 +5,10 @@ import {
   ISparePartService,
   ReduceStockData,
 } from 'src/domain/interfaces/spare-part-service.interface';
+import { ServiceSparePartDto } from 'src/infraestructure/dtos/services/create-service.dto';
 import { CreateSparePartDto } from 'src/infraestructure/dtos/spare-part/create-spare-part.dto';
 import { UpdateSparePartDto } from 'src/infraestructure/dtos/spare-part/update-spare-part.dto';
+import { Service } from 'src/infraestructure/entities/service/service.entity';
 import { SparePart } from 'src/infraestructure/entities/spare-part/spare-part.entity';
 import { User } from 'src/infraestructure/entities/user/user.entity';
 import {
@@ -77,5 +79,12 @@ export class SparePartService implements ISparePartService {
       sparePart.stock = newStock;
     });
     await this.repository.save(spareParts);
+  }
+
+  async assignSparePartsToService(
+    service: Service,
+    spareParts: ServiceSparePartDto[],
+  ): Promise<void> {
+    await this.repository.assignSparePartsToService(service, spareParts);
   }
 }
