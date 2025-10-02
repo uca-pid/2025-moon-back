@@ -91,6 +91,7 @@ export class AppointmentRepository
       .leftJoinAndSelect('appointment.services', 'services')
       .leftJoin('appointment.user', 'user')
       .leftJoin('appointment.workshop', 'workshop')
+      .leftJoinAndSelect('appointment.vehicle', 'vehicle')
       .addSelect([
         'user.id',
         'user.fullName',
@@ -112,6 +113,7 @@ export class AppointmentRepository
       user: { id: entityData.userId },
       services: entityData.serviceIds.map((id) => ({ id })),
       workshop: { id: entityData.workshopId },
+      vehicle: { id: entityData.vehicleId },
     });
     const appointment = await this.baseQueryBuilder()
       .where('appointment.id = :id', { id: result.id })
