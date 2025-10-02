@@ -80,13 +80,11 @@ export class VehicleRepository
     return this.save(vehicle);
   }
 
-  async getByLicensePlate(licensePlate: string): Promise<Vehicle> {
+  async getByLicensePlate(licensePlate: string): Promise<Vehicle | null> {
     const vehicle = await this.findOne({
       where: { licensePlate },
     });
-    if (!vehicle) {
-      throw new NotFoundException('Vehicle not found');
-    }
-    return vehicle;
+
+    return vehicle || null;
   }
 }

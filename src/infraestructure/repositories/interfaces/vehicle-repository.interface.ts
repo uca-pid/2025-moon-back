@@ -23,7 +23,7 @@ export interface IVehicleRepository extends IBaseRepository<Vehicle> {
   getVehiclesOfUser(userId: number): Promise<Vehicle[]>;
   createVehicle(entityData: CreateVehicleData): Promise<Vehicle>;
   updateVehicleOfUser(data: UpdateVehicleData): Promise<Vehicle>;
-  getByLicensePlate(licensePlate: string): Promise<Vehicle>;
+  getByLicensePlate(licensePlate: string): Promise<Vehicle | null>;
 }
 
 export const IVehicleRepositoryToken = 'IVehicleRepository';

@@ -17,7 +17,7 @@ export interface IVehicleService {
     vehicleId: number,
     updates: Partial<Pick<Vehicle, 'licensePlate' | 'model' | 'year' | 'km'>>,
   ): Promise<Vehicle>;
-  getByLicensePlate(licensePlate: string): Promise<Vehicle>;
+  getByLicensePlate(licensePlate: string): Promise<Vehicle | null>;
 }
 
 export const IVehicleServiceToken = 'IVehicleService';
