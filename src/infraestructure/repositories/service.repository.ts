@@ -5,6 +5,7 @@ import { Service } from '../entities/service/service.entity';
 import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
 import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
 import { ServiceSparePart } from '../entities/service/service-spare-part.entity';
+import { ServiceStatusEnum } from '../entities/service/service.enum';
 
 @Injectable()
 export class ServiceRepository
@@ -38,8 +39,14 @@ export class ServiceRepository
     });
   }
 
-  findByMechanicId(id: number): Promise<Service[]> {
-    return this.find({ where: { mechanic: { id } } });
+  async findByMechanicId(id: number): Promise<Service[]> {
+    return this.createQueryBuilder('s')
+      .leftJoinAndSelect('s.spareParts', 'ss')
+      .leftJoinAndSelect('ss.sparePart', 'sp')
+      .where('s.mechanicId = :id', { id })
+      .andWhere('s.status = :status', { status: ServiceStatusEnum.ACTIVE })
+      .andWhere('sp.stock >= ss.quantity')
+      .getMany();
   }
 
   async findPaginated(

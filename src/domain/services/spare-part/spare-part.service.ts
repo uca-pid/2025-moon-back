@@ -25,8 +25,9 @@ export class SparePartService implements ISparePartService {
     return this.repository.getByIds(ids);
   }
 
-  delete(part: SparePart): void {
-    this.repository.delete(part.id);
+  async delete(part: SparePart): Promise<void> {
+    await this.repository.blockServicesBySparePartId(part.id);
+    await this.repository.removeById(part.id);
   }
 
   async update(part: SparePart, dto: UpdateSparePartDto): Promise<SparePart> {

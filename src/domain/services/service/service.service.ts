@@ -12,6 +12,7 @@ import {
 } from 'src/infraestructure/dtos/services/create-service.dto';
 import { ServiceSparePart } from 'src/infraestructure/entities/service/service-spare-part.entity';
 import { UpdateServiceDto } from 'src/infraestructure/dtos/services/update-service.dto';
+import { ServiceStatusEnum } from 'src/infraestructure/entities/service/service.enum';
 
 @Injectable()
 export class ServiceService implements IServiceService {
@@ -29,6 +30,7 @@ export class ServiceService implements IServiceService {
       name: dto.name,
       price: dto.price,
       mechanic: mechanic,
+      status: ServiceStatusEnum.ACTIVE,
     });
     await this.saveServiceSpareParts(service, dto.spareParts);
     const entity = await this.serviceRepository.getById(service.id);
@@ -54,6 +56,7 @@ export class ServiceService implements IServiceService {
   async update(dto: UpdateServiceDto, entity: Service): Promise<Service> {
     entity.name = dto.name;
     entity.price = dto.price;
+    entity.status = ServiceStatusEnum.ACTIVE;
     const service = await this.serviceRepository.save(entity);
     await this.saveServiceSpareParts(service, dto.spareParts);
 
