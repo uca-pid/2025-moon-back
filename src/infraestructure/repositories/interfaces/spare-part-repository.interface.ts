@@ -23,6 +23,8 @@ export interface ISparePartRepository extends IBaseRepository<SparePart> {
     mechanicId: number,
   ): Promise<PaginatedResultDto<SparePart>>;
   createSparePart(data: CreateSparePartData): Promise<SparePart>;
+  blockServicesBySparePartId(id: number): Promise<void>;
+  removeById(id: number): Promise<void>;
 }
 
 export const ISparePartRepositoryToken = 'ISparePartRepository';

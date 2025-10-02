@@ -8,6 +8,7 @@ import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
 import { User } from 'src/infraestructure/entities/user/user.entity';
 import { CreateServiceDto } from 'src/infraestructure/dtos/services/create-service.dto';
 import { UpdateServiceDto } from 'src/infraestructure/dtos/services/update-service.dto';
+import { ServiceStatusEnum } from 'src/infraestructure/entities/service/service.enum';
 import {
   type ISparePartService,
   ISparePartServiceToken,
@@ -31,6 +32,7 @@ export class ServiceService implements IServiceService {
       name: dto.name,
       price: dto.price,
       mechanic: mechanic,
+      status: ServiceStatusEnum.ACTIVE,
     });
     await this.sparePartService.assignSparePartsToService(
       service,
@@ -46,6 +48,7 @@ export class ServiceService implements IServiceService {
   async update(dto: UpdateServiceDto, entity: Service): Promise<Service> {
     entity.name = dto.name;
     entity.price = dto.price;
+    entity.status = ServiceStatusEnum.ACTIVE;
     const service = await this.serviceRepository.save(entity);
     await this.sparePartService.assignSparePartsToService(
       service,
