@@ -1,4 +1,4 @@
-import { IsNumber, IsString, Matches } from 'class-validator';
+import { IsArray, IsNumber, IsString, Matches } from 'class-validator';
 import { IsNotPastDate } from 'src/infraestructure/rest-api/decorators/is-not-past-date.decorator';
 
 export class CreateAppointmentDto {
@@ -15,9 +15,13 @@ export class CreateAppointmentDto {
   })
   time: string;
 
-  @IsNumber()
-  serviceId: number;
+  @IsArray()
+  @IsNumber({}, { each: true })
+  serviceIds: number[];
 
   @IsNumber()
   workshopId: number;
+
+  @IsNumber()
+  vehicleId: number;
 }

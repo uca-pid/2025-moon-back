@@ -12,7 +12,10 @@ async function bootstrap() {
   );
 
   const origin =
-    process.env.NODE_ENV !== 'production' ? '*' : process.env.CORS_ORIGIN;
+    process.env.NODE_ENV !== 'production'
+      ? ['http://localhost:3000']
+      : [process.env.CORS_ORIGIN ?? ''];
+
   app.enableCors({
     origin,
     credentials: true,

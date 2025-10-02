@@ -5,6 +5,7 @@ import {
   Post,
   NotFoundException,
   Body,
+  Query,
 } from '@nestjs/common';
 import {
   type IAppointmentService,
@@ -22,6 +23,11 @@ import {
   type IUsersService,
   IUsersServiceToken,
 } from 'src/domain/interfaces/users-service.interface';
+import { GetWorkshopAppointmentQueryDto } from 'src/infraestructure/dtos/appointment/get-workshop-appointment-query.dto';
+import {
+  type IVehicleService,
+  IVehicleServiceToken,
+} from 'src/domain/interfaces/vehicle-service.interface';
 
 @Controller('appointments')
 export class AppointmentController {
@@ -32,6 +38,8 @@ export class AppointmentController {
     private readonly serviceService: IServiceService,
     @Inject(IUsersServiceToken)
     private readonly userService: IUsersService,
+    @Inject(IVehicleServiceToken)
+    private readonly vehicleService: IVehicleService,
   ) {}
 
   @Get('/user')
@@ -40,8 +48,14 @@ export class AppointmentController {
   }
 
   @Get()
-  getNextAppointments(@AuthenticatedWorkshop() workshop: JwtPayload) {
-    return this.appointmentService.getNextAppointmentsOfWorkshop(workshop.id);
+  getNextAppointments(
+    @AuthenticatedWorkshop() workshop: JwtPayload,
+    @Query() query: GetWorkshopAppointmentQueryDto,
+  ) {
+    return this.appointmentService.getNextAppointmentsOfWorkshop(
+      workshop.id,
+      query.dateFilter,
+    );
   }
 
   @Post()
@@ -49,21 +63,28 @@ export class AppointmentController {
     @AuthenticatedUser() user: JwtPayload,
     @Body() dto: CreateAppointmentDto,
   ) {
-    const service = await this.serviceService.getById(dto.serviceId);
-    if (!service) {
-      throw new NotFoundException('Service not found');
+    const services = await this.serviceService.getByIds(dto.serviceIds);
+    if (!services || services.length !== dto.serviceIds.length) {
+      throw new NotFoundException('Some services not found');
     }
+
     const workshop = await this.userService.getWorkshopById(dto.workshopId);
     if (!workshop) {
       throw new NotFoundException('Workshop not found');
+    }
+
+    const vehicle = await this.vehicleService.getById(dto.vehicleId);
+    if (!vehicle) {
+      throw new NotFoundException('Vehicle not found');
     }
 
     return this.appointmentService.create(
       user,
       dto.date,
       dto.time,
-      service,
+      services,
       workshop,
+      vehicle,
     );
   }
 }

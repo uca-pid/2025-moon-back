@@ -5,14 +5,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreateUserDto } from '../../infraestructure/dtos/users/create-user.dto';
-import { LoginUserDto } from '../../infraestructure/dtos/users/login-user.dto';
-import { IUsersService } from '../interfaces/users-service.interface';
+import { CreateUserDto } from 'src/infraestructure/dtos/users/create-user.dto';
+import { LoginUserDto } from 'src/infraestructure/dtos/users/login-user.dto';
+import { IUsersService } from 'src/domain/interfaces/users-service.interface';
 
-import { IHashServiceToken } from '../interfaces/hash-service.interface';
-import type { IHashService } from '../interfaces/hash-service.interface';
-import type { IJwtService } from '../interfaces/jwt-service.interface';
-import { IJwtServiceToken } from '../interfaces/jwt-service.interface';
+import { IHashServiceToken } from 'src/domain/interfaces/hash-service.interface';
+import type { IHashService } from 'src/domain/interfaces/hash-service.interface';
+import type { IJwtService } from 'src/domain/interfaces/jwt-service.interface';
+import { IJwtServiceToken } from 'src/domain/interfaces/jwt-service.interface';
 import { IUsersRepositoryToken } from 'src/infraestructure/repositories/interfaces/users-repository.interface';
 import type { IUsersRepository } from 'src/infraestructure/repositories/interfaces/users-repository.interface';
 import { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
