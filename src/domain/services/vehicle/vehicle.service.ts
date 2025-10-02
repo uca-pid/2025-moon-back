@@ -66,7 +66,7 @@ export class VehicleService implements IVehicleService {
     });
   }
 
-  getByLicensePlate(licensePlate: string): Promise<Vehicle> {
+  getByLicensePlate(licensePlate: string): Promise<Vehicle | null> {
     return this.vehicleRepository.getByLicensePlate(licensePlate);
   }
 }
