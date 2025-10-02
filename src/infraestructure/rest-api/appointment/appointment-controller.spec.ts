@@ -16,12 +16,17 @@ import { NotFoundException } from '@nestjs/common';
 import { mockDeep, MockProxy } from 'jest-mock-extended';
 import { CreateAppointmentDto } from 'src/infraestructure/dtos/appointment/create-appointment.dto';
 import { DateFilter } from 'src/infraestructure/repositories/interfaces/appointment-repository.interface';
+import {
+  IVehicleService,
+  IVehicleServiceToken,
+} from 'src/domain/interfaces/vehicle-service.interface';
 
 describe('AppointmentController', () => {
   let controller: AppointmentController;
   let appointmentServiceMock: MockProxy<IAppointmentService>;
   let serviceServiceMock: MockProxy<IServiceService>;
   let usersServiceMock: MockProxy<IUsersService>;
+  let vehicleServiceMock: MockProxy<IVehicleService>;
 
   const userPayload = { id: 'user-1' } as any;
   const workshopPayload = { id: 2 } as any;
@@ -34,6 +39,7 @@ describe('AppointmentController', () => {
     appointmentServiceMock = mockDeep<IAppointmentService>();
     serviceServiceMock = mockDeep<IServiceService>();
     usersServiceMock = mockDeep<IUsersService>();
+    vehicleServiceMock = mockDeep<IVehicleService>();
     jest.clearAllMocks();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -50,6 +56,10 @@ describe('AppointmentController', () => {
         {
           provide: IUsersServiceToken,
           useValue: usersServiceMock,
+        },
+        {
+          provide: IVehicleServiceToken,
+          useValue: vehicleServiceMock,
         },
       ],
     }).compile();
@@ -90,6 +100,7 @@ describe('AppointmentController', () => {
     const dto: CreateAppointmentDto = {
       serviceIds: [1],
       workshopId: 2,
+      vehicleId: 9,
       date: '2024-06-01',
       time: '10:00',
     };
@@ -111,21 +122,34 @@ describe('AppointmentController', () => {
       expect(usersServiceMock.getWorkshopById).toHaveBeenCalledWith(2);
     });
 
+    it('should throw NotFoundException if vehicle not found', async () => {
+      serviceServiceMock.getByIds.mockResolvedValue([service] as any);
+      usersServiceMock.getWorkshopById.mockResolvedValue(workshop as any);
+      vehicleServiceMock.getById.mockResolvedValue(null as any);
+      await expect(
+        controller.createAppointment(userPayload, dto),
+      ).rejects.toThrow(NotFoundException);
+      expect(vehicleServiceMock.getById).toHaveBeenCalledWith(9);
+    });
+
     it('should call appointmentService.create with correct params', async () => {
       serviceServiceMock.getByIds.mockResolvedValue([service] as any);
       usersServiceMock.getWorkshopById.mockResolvedValue(workshop as any);
+      vehicleServiceMock.getById.mockResolvedValue({ id: 9 } as any);
       appointmentServiceMock.create.mockResolvedValue(appointment as any);
 
       const result = await controller.createAppointment(userPayload, dto);
 
       expect(serviceServiceMock.getByIds).toHaveBeenCalledWith([1]);
       expect(usersServiceMock.getWorkshopById).toHaveBeenCalledWith(2);
+      expect(vehicleServiceMock.getById).toHaveBeenCalledWith(9);
       expect(appointmentServiceMock.create).toHaveBeenCalledWith(
         userPayload,
         dto.date,
         dto.time,
         [service],
         workshop,
+        { id: 9 },
       );
       expect(result).toBe(appointment);
     });

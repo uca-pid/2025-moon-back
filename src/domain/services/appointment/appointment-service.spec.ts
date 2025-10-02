@@ -23,6 +23,7 @@ import {
   ISparePartService,
   ISparePartServiceToken,
 } from 'src/domain/interfaces/spare-part-service.interface';
+import { Vehicle } from 'src/infraestructure/entities/vehicle/vehicle.entity';
 
 describe('AppointmentService', () => {
   let appointmentService: IAppointmentService;
@@ -63,6 +64,7 @@ describe('AppointmentService', () => {
         userRole: UserRole.USER,
       } as any;
       const workshop: User = { id: 3 } as User;
+      const vehicle: Vehicle = { id: 5 } as any;
       const date = '2024-06-01';
       const time = '10:00';
       const service = {
@@ -87,6 +89,7 @@ describe('AppointmentService', () => {
         time,
         [service],
         workshop,
+        vehicle,
       );
 
       expect(appointmentRepositoryMock.createAppointment).toHaveBeenCalledWith({
@@ -95,6 +98,7 @@ describe('AppointmentService', () => {
         time,
         serviceIds: [service.id],
         workshopId: workshop.id,
+        vehicleId: vehicle.id,
       });
       expect(result).toBe(appointment);
     });
