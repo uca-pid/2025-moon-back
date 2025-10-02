@@ -5,6 +5,7 @@ import {
   Post,
   NotFoundException,
   Body,
+  Query,
 } from '@nestjs/common';
 import {
   type IAppointmentService,
@@ -22,6 +23,7 @@ import {
   type IUsersService,
   IUsersServiceToken,
 } from 'src/domain/interfaces/users-service.interface';
+import { GetWorkshopAppointmentQueryDto } from 'src/infraestructure/dtos/appointment/get-workshop-appointment-query.dto';
 
 @Controller('appointments')
 export class AppointmentController {
@@ -40,8 +42,14 @@ export class AppointmentController {
   }
 
   @Get()
-  getNextAppointments(@AuthenticatedWorkshop() workshop: JwtPayload) {
-    return this.appointmentService.getNextAppointmentsOfWorkshop(workshop.id);
+  getNextAppointments(
+    @AuthenticatedWorkshop() workshop: JwtPayload,
+    @Query() query: GetWorkshopAppointmentQueryDto,
+  ) {
+    return this.appointmentService.getNextAppointmentsOfWorkshop(
+      workshop.id,
+      query.dateFilter,
+    );
   }
 
   @Post()

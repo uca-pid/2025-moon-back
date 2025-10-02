@@ -6,6 +6,7 @@ import {
 } from 'src/domain/interfaces/appointment-service.interface';
 import { AppointmentService } from './appointment.service';
 import {
+  DateFilter,
   IAppointmentRepository,
   IAppointmentRepositoryToken,
 } from 'src/infraestructure/repositories/interfaces/appointment-repository.interface';
@@ -120,16 +121,18 @@ describe('AppointmentService', () => {
     it('should call appointmentRepository.getNextAppointmentsOfWorkshop and return the result', async () => {
       const workshopId = 2;
       const appointments: Appointment[] = [{ id: 2 } as Appointment];
-      appointmentRepositoryMock.getNextAppointmentsOfWorkshop.mockResolvedValue(
+      appointmentRepositoryMock.getAppointmentsOfWorkshop.mockResolvedValue(
         appointments,
       );
 
-      const result =
-        await appointmentService.getNextAppointmentsOfWorkshop(workshopId);
+      const result = await appointmentService.getNextAppointmentsOfWorkshop(
+        workshopId,
+        DateFilter.FUTURE,
+      );
 
       expect(
-        appointmentRepositoryMock.getNextAppointmentsOfWorkshop,
-      ).toHaveBeenCalledWith(workshopId);
+        appointmentRepositoryMock.getAppointmentsOfWorkshop,
+      ).toHaveBeenCalledWith(workshopId, DateFilter.FUTURE);
       expect(result).toBe(appointments);
     });
   });
