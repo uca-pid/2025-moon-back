@@ -40,12 +40,16 @@ export class ServiceRepository
   }
 
   async findByMechanicId(id: number): Promise<Service[]> {
-    return this.createQueryBuilder('s')
-      .leftJoinAndSelect('s.spareParts', 'ss')
-      .leftJoinAndSelect('ss.sparePart', 'sp')
+    return this.manager
+      .getRepository(Service)
+      .createQueryBuilder('s')
+      .innerJoin('s.spareParts', 'ss')
+      .innerJoin('ss.sparePart', 'sp')
       .where('s.mechanicId = :id', { id })
       .andWhere('s.status = :status', { status: ServiceStatusEnum.ACTIVE })
-      .andWhere('sp.stock >= ss.quantity')
+      .groupBy('s.id')
+      .having('MIN(sp.stock - ss.quantity) >= 0')
+      .orderBy('s.id', 'DESC')
       .getMany();
   }
 
