@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
-
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsGreaterThanZero } from 'src/infraestructure/rest-api/decorators/is-greater-than-zero-decorator';
 export class CreateSparePartDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
   @IsNumber()
-  @IsPositive()
+  @IsGreaterThanZero()
   stock: number;
 }
