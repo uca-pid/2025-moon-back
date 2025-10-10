@@ -16,6 +16,7 @@ export enum DateFilter {
 }
 
 export interface IAppointmentRepository {
+  deletePendingAppointmentsOfVehicle(id: number): Promise<void>;
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]>;
   getAppointmentsOfWorkshop(
     workshopId: number,

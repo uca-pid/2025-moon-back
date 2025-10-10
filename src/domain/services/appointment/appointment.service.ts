@@ -30,6 +30,10 @@ export class AppointmentService implements IAppointmentService {
     private readonly sparePartService: ISparePartService,
   ) {}
 
+  deletePendingAppointmentsOfVehicle(id: number): Promise<void> {
+    return this.appointmentRepository.deletePendingAppointmentsOfVehicle(id);
+  }
+
   async create(
     user: JwtPayload,
     date: string,

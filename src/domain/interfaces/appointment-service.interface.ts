@@ -6,6 +6,7 @@ import { Vehicle } from 'src/infraestructure/entities/vehicle/vehicle.entity';
 import { DateFilter } from 'src/infraestructure/repositories/interfaces/appointment-repository.interface';
 
 export interface IAppointmentService {
+  deletePendingAppointmentsOfVehicle(id: number): Promise<void>;
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]>;
   getNextAppointmentsOfWorkshop(
     workshopId: number,

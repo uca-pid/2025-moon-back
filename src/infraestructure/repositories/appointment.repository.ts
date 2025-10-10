@@ -16,6 +16,22 @@ export class AppointmentRepository
   constructor(private dataSource: DataSource) {
     super(Appointment, dataSource.createEntityManager());
   }
+  async deletePendingAppointmentsOfVehicle(id: number): Promise<void> {
+    const { today, nowTime } = this.getTodayAndNow();
+    await this.createQueryBuilder()
+      .delete()
+      .from(Appointment)
+      .where('vehicle_id = :id', { id })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('date > :today', { today }).orWhere(
+            'date = :today AND time >= :nowTime',
+            { today, nowTime },
+          );
+        }),
+      )
+      .execute();
+  }
   getAppointmentsOfWorkshop(
     workshopId: number,
     dateFilter: DateFilter,

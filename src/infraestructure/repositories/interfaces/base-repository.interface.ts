@@ -13,4 +13,5 @@ export interface IBaseRepository<T> {
   save(data: DeepPartial<T> | DeepPartial<T>[]): Promise<T>;
   update(id: number | string, data: DeepPartial<T>): Promise<UpdateResult>;
   delete(id: number | string): Promise<DeleteResult>;
+  softDelete(id: number | string): Promise<UpdateResult>;
 }

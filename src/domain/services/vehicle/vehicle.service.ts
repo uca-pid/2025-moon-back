@@ -6,12 +6,18 @@ import {
   IVehicleRepositoryToken,
 } from 'src/infraestructure/repositories/interfaces/vehicle-repository.interface';
 import { IVehicleService } from 'src/domain/interfaces/vehicle-service.interface';
+import {
+  type IAppointmentService,
+  IAppointmentServiceToken,
+} from 'src/domain/interfaces/appointment-service.interface';
 
 @Injectable()
 export class VehicleService implements IVehicleService {
   constructor(
     @Inject(IVehicleRepositoryToken)
     private readonly vehicleRepository: IVehicleRepository,
+    @Inject(IAppointmentServiceToken)
+    private readonly appointmentService: IAppointmentService,
   ) {}
 
   private async validateLicensePlate(licensePlate: string): Promise<void> {
@@ -22,7 +28,7 @@ export class VehicleService implements IVehicleService {
     }
   }
 
-  getVehiclesOfUser(userId: number): Promise<Vehicle[]> {
+  getVehiclesOfUser(userId: number) {
     return this.vehicleRepository.getVehiclesOfUser(userId);
   }
 
@@ -47,8 +53,11 @@ export class VehicleService implements IVehicleService {
     return this.vehicleRepository.getById(id);
   }
 
-  delete(vehicle: Vehicle): void {
-    this.vehicleRepository.delete(vehicle.id);
+  async delete(vehicle: Vehicle): Promise<void> {
+    await this.appointmentService.deletePendingAppointmentsOfVehicle(
+      vehicle.id,
+    );
+    await this.vehicleRepository.softDelete(vehicle.id);
   }
 
   async updateVehicleOfUser(
