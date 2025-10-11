@@ -104,6 +104,7 @@ export class AppointmentRepository
 
   private baseQueryBuilder() {
     return this.createQueryBuilder('appointment')
+      .withDeleted()
       .leftJoinAndSelect('appointment.services', 'services')
       .leftJoin('appointment.user', 'user')
       .leftJoin('appointment.workshop', 'workshop')
