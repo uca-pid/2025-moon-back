@@ -11,6 +11,7 @@ import {
 import { Service } from '../service/service.entity';
 import { User } from '../user/user.entity';
 import { Vehicle } from '../vehicle/vehicle.entity';
+import { AppointmentStatus } from './appointment-status.enum';
 
 @Entity('appointments')
 export class Appointment extends BaseEntity {
@@ -30,6 +31,13 @@ export class Appointment extends BaseEntity {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @Column({
+    type: 'enum',
+    enum: AppointmentStatus,
+    default: AppointmentStatus.PENDING,
+  })
+  status: AppointmentStatus;
 
   @ManyToMany(() => Service, { eager: false })
   @JoinTable({

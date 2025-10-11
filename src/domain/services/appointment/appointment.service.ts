@@ -1,4 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { IAppointmentService } from 'src/domain/interfaces/appointment-service.interface';
 import { Appointment } from 'src/infraestructure/entities/appointment/appointment.entity';
 import { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
@@ -18,6 +24,8 @@ import {
   ISparePartServiceToken,
 } from 'src/domain/interfaces/spare-part-service.interface';
 import { Vehicle } from 'src/infraestructure/entities/vehicle/vehicle.entity';
+import { AppointmentStatus } from 'src/infraestructure/entities/appointment/appointment-status.enum';
+import { UserRole } from 'src/infraestructure/entities/user/user-role.enum';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
@@ -29,6 +37,76 @@ export class AppointmentService implements IAppointmentService {
     @Inject(ISparePartServiceToken)
     private readonly sparePartService: ISparePartService,
   ) {}
+
+  async updateStatus(
+    appointmentId: number,
+    newStatus: AppointmentStatus,
+    user: JwtPayload,
+  ): Promise<Appointment> {
+    // This is the normal flow a appointment should follow and be cancelled ony if its pending or confirmed
+    // by the user or the mechanic
+    // PENDING -> CONFIRMED -> IN_SERVICE -> SERVICE_COMPLETED -> COMPLETED
+    const cancellableStatuses = [
+      AppointmentStatus.PENDING,
+      AppointmentStatus.CONFIRMED,
+    ];
+    const defaultStatusFlow = [
+      AppointmentStatus.PENDING,
+      AppointmentStatus.CONFIRMED,
+      AppointmentStatus.IN_SERVICE,
+      AppointmentStatus.SERVICE_COMPLETED,
+      AppointmentStatus.COMPLETED,
+    ];
+    const appointment =
+      await this.appointmentRepository.findById(appointmentId);
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+    if (
+      appointment.user.id !== user.id &&
+      appointment.workshop.id !== user.id
+    ) {
+      throw new UnauthorizedException(
+        'Not authorized to update this appointment',
+      );
+    }
+
+    if (appointment.status === AppointmentStatus.CANCELLED) {
+      throw new BadRequestException('Cannot update a cancelled appointment');
+    }
+
+    if (
+      newStatus !== AppointmentStatus.CANCELLED &&
+      user.userRole !== UserRole.MECHANIC
+    ) {
+      throw new UnauthorizedException(
+        'Only mechanics can update the status except to CANCELLED',
+      );
+    }
+
+    if (
+      newStatus === AppointmentStatus.CANCELLED &&
+      !cancellableStatuses.includes(appointment.status)
+    ) {
+      throw new BadRequestException(
+        `Cannot cancel this appointment. Appointments can only be cancelled when in one of the following statuses: ${cancellableStatuses.join(', ')}.`,
+      );
+    }
+
+    const currentStatusIndex = defaultStatusFlow.indexOf(appointment.status);
+    const newStatusIndex = defaultStatusFlow.indexOf(newStatus);
+    if (
+      newStatus !== AppointmentStatus.CANCELLED &&
+      newStatusIndex !== currentStatusIndex + 1
+    ) {
+      throw new BadRequestException('Invalid status transition');
+    }
+
+    appointment.status = newStatus;
+    await this.appointmentRepository.save(appointment);
+
+    return appointment;
+  }
 
   deletePendingAppointmentsOfVehicle(id: number): Promise<void> {
     return this.appointmentRepository.deletePendingAppointmentsOfVehicle(id);
