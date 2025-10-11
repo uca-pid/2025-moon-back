@@ -11,6 +11,7 @@ import { IJwtServiceToken } from 'src/domain/interfaces/jwt-service.interface';
 import { JwtService } from './services/jwt.service';
 import { VehicleModule } from './rest-api/vehicle/vehicle.module';
 import { SparePartModule } from './rest-api/spare-part/spare-part.module';
+import { ClientDashboardModule } from './rest-api/dashboard/client/client-dashboard.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SparePartModule } from './rest-api/spare-part/spare-part.module';
     AppointmentModule,
     VehicleModule,
     SparePartModule,
+    ClientDashboardModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
