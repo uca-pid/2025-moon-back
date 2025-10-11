@@ -121,6 +121,7 @@ export class AppointmentRepository
         'workshop.id',
         'workshop.workshopName',
         'workshop.address',
+        'workshop.email',
         'workshop.addressLatitude',
         'workshop.addressLongitude',
       ]);

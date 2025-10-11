@@ -24,6 +24,7 @@ import {
   ISparePartServiceToken,
 } from 'src/domain/interfaces/spare-part-service.interface';
 import { Vehicle } from 'src/infraestructure/entities/vehicle/vehicle.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('AppointmentService', () => {
   let appointmentService: IAppointmentService;
@@ -47,6 +48,10 @@ describe('AppointmentService', () => {
         {
           provide: ISparePartServiceToken,
           useValue: sparePartsServiceMock,
+        },
+        {
+          provide: EventEmitter2,
+          useValue: { emit: jest.fn() },
         },
       ],
     }).compile();
