@@ -2,7 +2,7 @@ import { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interfac
 import { Vehicle } from 'src/infraestructure/entities/vehicle/vehicle.entity';
 
 export interface IVehicleService {
-  delete(vehicle: Vehicle): void;
+  delete(vehicle: Vehicle): Promise<void>;
   getById(id: number): Promise<Vehicle>;
   getVehiclesOfUser(userId: number): Promise<Vehicle[]>;
   create(

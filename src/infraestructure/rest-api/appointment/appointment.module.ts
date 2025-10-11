@@ -25,5 +25,6 @@ import { VehicleModule } from '../vehicle/vehicle.module';
     { provide: IAppointmentRepositoryToken, useClass: AppointmentRepository },
     { provide: IAppointmentServiceToken, useClass: AppointmentService },
   ],
+  exports: [IAppointmentServiceToken],
 })
 export class AppointmentModule {}
