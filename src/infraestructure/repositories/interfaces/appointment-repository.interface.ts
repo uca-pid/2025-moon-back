@@ -22,7 +22,7 @@ export interface IAppointmentRepository extends IBaseRepository<Appointment> {
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]>;
   getAppointmentsOfWorkshop(
     workshopId: number,
-    dateFilter: DateFilter,
+    dateFilter?: DateFilter,
   ): Promise<Appointment[]>;
   createAppointment(entityData: CreateAppointmentData): Promise<Appointment>;
 }

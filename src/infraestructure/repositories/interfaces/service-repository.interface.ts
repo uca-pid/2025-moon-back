@@ -15,6 +15,9 @@ export interface IServiceRepository extends IBaseRepository<Service> {
   findAll(): Promise<Service[]>;
   findById(id: number): Promise<Service>;
   findByIds(ids: number[]): Promise<Service[]>;
+  findRequestedServices(
+    mechanicId: number,
+  ): Promise<(Service & { appointmentsCount: number })[]>;
 }
 
 export const IServiceRepositoryToken = 'IServiceRepository';
