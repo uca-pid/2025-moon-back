@@ -12,6 +12,8 @@ import { JwtService } from './services/jwt.service';
 import { VehicleModule } from './rest-api/vehicle/vehicle.module';
 import { SparePartModule } from './rest-api/spare-part/spare-part.module';
 import { ClientDashboardModule } from './rest-api/dashboard/client/client-dashboard.module';
+import { NotificationModule } from './rest-api/notification/notification.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { ClientDashboardModule } from './rest-api/dashboard/client/client-dashbo
     VehicleModule,
     SparePartModule,
     ClientDashboardModule,
+    NotificationModule,
+    EventEmitterModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

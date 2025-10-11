@@ -16,6 +16,11 @@ export class AppointmentRepository
   constructor(private dataSource: DataSource) {
     super(Appointment, dataSource.createEntityManager());
   }
+
+  findById(id: number): Promise<Appointment | null> {
+    return this.findOne({ where: { id }, relations: ['user', 'workshop'] });
+  }
+
   async deletePendingAppointmentsOfVehicle(id: number): Promise<void> {
     const { today, nowTime } = this.getTodayAndNow();
     await this.createQueryBuilder()
@@ -104,6 +109,7 @@ export class AppointmentRepository
 
   private baseQueryBuilder() {
     return this.createQueryBuilder('appointment')
+      .withDeleted()
       .leftJoinAndSelect('appointment.services', 'services')
       .leftJoin('appointment.user', 'user')
       .leftJoin('appointment.workshop', 'workshop')
@@ -115,6 +121,7 @@ export class AppointmentRepository
         'workshop.id',
         'workshop.workshopName',
         'workshop.address',
+        'workshop.email',
         'workshop.addressLatitude',
         'workshop.addressLongitude',
       ]);

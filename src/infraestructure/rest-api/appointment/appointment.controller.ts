@@ -6,6 +6,9 @@ import {
   NotFoundException,
   Body,
   Query,
+  Put,
+  Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   type IAppointmentService,
@@ -28,6 +31,7 @@ import {
   type IVehicleService,
   IVehicleServiceToken,
 } from 'src/domain/interfaces/vehicle-service.interface';
+import { UpdateAppointmentStatusDto } from 'src/infraestructure/dtos/appointment/update-appointment.status.dto';
 
 @Controller('appointments')
 export class AppointmentController {
@@ -86,5 +90,14 @@ export class AppointmentController {
       workshop,
       vehicle,
     );
+  }
+
+  @Put('/:id/status')
+  updateStatus(
+    @AuthenticatedUser() user: JwtPayload,
+    @Body() dto: UpdateAppointmentStatusDto,
+    @Param('id', new ParseIntPipe()) id: number,
+  ) {
+    return this.appointmentService.updateStatus(id, dto.status, user);
   }
 }
