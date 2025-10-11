@@ -16,7 +16,7 @@ export interface IAppointmentService {
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]>;
   getNextAppointmentsOfWorkshop(
     workshopId: number,
-    dateFilter: DateFilter,
+    dateFilter?: DateFilter,
   ): Promise<Appointment[]>;
   create(
     user: JwtPayload,

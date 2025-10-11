@@ -138,7 +138,6 @@ export class AppointmentService implements IAppointmentService {
         vehicleId: vehicle.id,
       });
     await this.reduceStockFromSpareParts(createdAppointment);
-    console.log(user);
     this.eventEmitter.emit(
       APPOINTMENT_EVENTS.STATUS_CHANGED,
       new AppointmentStatusChangedEvent(createdAppointment, user),
@@ -173,7 +172,7 @@ export class AppointmentService implements IAppointmentService {
 
   getNextAppointmentsOfWorkshop(
     workshopId: number,
-    dateFilter: DateFilter,
+    dateFilter?: DateFilter,
   ): Promise<Appointment[]> {
     return this.appointmentRepository.getAppointmentsOfWorkshop(
       workshopId,

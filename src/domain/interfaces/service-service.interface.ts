@@ -16,6 +16,9 @@ export interface IServiceService {
   ): Promise<PaginatedResultDto<Service>>;
   getById(id: number): Promise<Service>;
   getByIds(ids: number[]): Promise<Service[]>;
+  getRequestedServices(
+    mechanic: User,
+  ): Promise<(Service & { appointmentsCount: number })[]>;
 }
 
 export const IServiceServiceToken = 'IServiceService';

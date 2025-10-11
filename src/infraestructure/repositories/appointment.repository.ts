@@ -39,10 +39,13 @@ export class AppointmentRepository
   }
   getAppointmentsOfWorkshop(
     workshopId: number,
-    dateFilter: DateFilter,
+    dateFilter?: DateFilter,
   ): Promise<Appointment[]> {
-    const qb = this.baseQueryBuilder();
-    const appointments = this.addDateFilterCondition(qb, dateFilter)
+    let qb = this.baseQueryBuilder();
+    if (dateFilter) {
+      qb = this.addDateFilterCondition(qb, dateFilter);
+    }
+    const appointments = qb
       .andWhere('appointment.workshop_id = :workshopId', { workshopId })
       .getMany();
     return appointments;
@@ -76,7 +79,7 @@ export class AppointmentRepository
         qb.andWhere('appointment.date > :today', { today });
         break;
       default:
-        throw new Error('Invalid date filter');
+        break;
     }
     return qb;
   }
