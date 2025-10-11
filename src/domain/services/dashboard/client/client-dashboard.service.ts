@@ -19,4 +19,8 @@ export class ClientDashboardService implements IClientDashboardService {
   getPastAppointmentsOfUser(userId: number): Promise<Appointment[]> {
     return this.clientDashboardRepository.getPastAppointmentsOfUser(userId);
   }
+
+  async getServiceStatsByVehicle(userId: number) {
+    return this.clientDashboardRepository.getServiceStatsByVehicle(userId);
+  }
 }

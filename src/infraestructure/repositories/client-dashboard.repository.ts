@@ -68,6 +68,44 @@ export class ClientDashboardRepository
         'vehicle.model',
       ]);
   }
+  async getServiceStatsByVehicle(userId: number) {
+    const rawData = await this.createQueryBuilder('appointment')
+      .leftJoin('appointment.services', 'service')
+      .leftJoin('appointment.vehicle', 'vehicle')
+      .select('service.name', 'serviceName')
+      .addSelect('vehicle.licensePlate', 'vehiclePlate')
+      .addSelect('COUNT(appointment.id)', 'count')
+      .addSelect('SUM(service.price)', 'totalCost')
+      .where('appointment.user_id = :userId', { userId })
+      .groupBy('service.name')
+      .addGroupBy('vehicle.licensePlate')
+      .getRawMany();
+
+    const grouped = rawData.reduce((acc, row) => {
+      const service = acc.find((s) => s.serviceName === row.serviceName);
+      if (service) {
+        service.vehicles.push({
+          vehiclePlate: row.vehiclePlate,
+          count: Number(row.count),
+          totalCost: Number(row.totalCost),
+        });
+      } else {
+        acc.push({
+          serviceName: row.serviceName,
+          vehicles: [
+            {
+              vehiclePlate: row.vehiclePlate,
+              count: Number(row.count),
+              totalCost: Number(row.totalCost),
+            },
+          ],
+        });
+      }
+      return acc;
+    }, []);
+
+    return grouped;
+  }
 
   private getTodayAndNow() {
     const today = new Date();

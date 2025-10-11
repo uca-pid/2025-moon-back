@@ -45,4 +45,10 @@ export class ClientDashboardController {
       services: a.services.map((s) => s.name),
     }));
   }
+
+  @Get('stats')
+  async getServiceStats(@AuthenticatedUser() user: JwtPayload) {
+    const stats = await this.dashboardService.getServiceStatsByVehicle(user.id);
+    return stats;
+  }
 }
