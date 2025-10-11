@@ -5,6 +5,15 @@ import { User } from 'src/infraestructure/entities/user/user.entity';
 import { CreateServiceDto } from 'src/infraestructure/dtos/services/create-service.dto';
 
 export interface IServiceService {
+  getServiceStatsByUser(
+    userId: number,
+  ): Promise<
+    {
+      serviceName: string;
+      vehicles: { vehiclePlate: string; count: number; totalCost: number }[];
+    }[]
+  >;
+
   getByIdWithMechanic(id: number): Promise<Service | null>;
   delete(entity: Service): Promise<void>;
   create(dto: CreateServiceDto, mechanic: User): Promise<Service>;

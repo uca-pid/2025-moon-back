@@ -94,4 +94,15 @@ export class ServiceService implements IServiceService {
   ): Promise<(Service & { appointmentsCount: number })[]> {
     return await this.serviceRepository.findRequestedServices(mechanic.id);
   }
+
+  async getServiceStatsByUser(
+    userId: number,
+  ): Promise<
+    {
+      serviceName: string;
+      vehicles: { vehiclePlate: string; count: number; totalCost: number }[];
+    }[]
+  > {
+    return this.serviceRepository.findServiceStatsByUserId(userId);
+  }
 }
