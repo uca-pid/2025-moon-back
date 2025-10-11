@@ -11,6 +11,8 @@ import { IJwtServiceToken } from 'src/domain/interfaces/jwt-service.interface';
 import { JwtService } from './services/jwt.service';
 import { VehicleModule } from './rest-api/vehicle/vehicle.module';
 import { SparePartModule } from './rest-api/spare-part/spare-part.module';
+import { NotificationModule } from './rest-api/notification/notification.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { SparePartModule } from './rest-api/spare-part/spare-part.module';
     AppointmentModule,
     VehicleModule,
     SparePartModule,
+    NotificationModule,
+    EventEmitterModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

@@ -26,6 +26,9 @@ import {
 import { Vehicle } from 'src/infraestructure/entities/vehicle/vehicle.entity';
 import { AppointmentStatus } from 'src/infraestructure/entities/appointment/appointment-status.enum';
 import { UserRole } from 'src/infraestructure/entities/user/user-role.enum';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { APPOINTMENT_EVENTS } from 'src/domain/events/appointments/appointment-events';
+import { AppointmentStatusChangedEvent } from 'src/domain/events/appointments/appointment-status-changed-event';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
@@ -36,6 +39,7 @@ export class AppointmentService implements IAppointmentService {
     private readonly serviceService: IServiceService,
     @Inject(ISparePartServiceToken)
     private readonly sparePartService: ISparePartService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async updateStatus(
@@ -105,6 +109,10 @@ export class AppointmentService implements IAppointmentService {
     appointment.status = newStatus;
     await this.appointmentRepository.save(appointment);
 
+    this.eventEmitter.emit(
+      APPOINTMENT_EVENTS.STATUS_CHANGED,
+      new AppointmentStatusChangedEvent(appointment, user),
+    );
     return appointment;
   }
 
@@ -130,6 +138,11 @@ export class AppointmentService implements IAppointmentService {
         vehicleId: vehicle.id,
       });
     await this.reduceStockFromSpareParts(createdAppointment);
+    console.log(user);
+    this.eventEmitter.emit(
+      APPOINTMENT_EVENTS.STATUS_CHANGED,
+      new AppointmentStatusChangedEvent(createdAppointment, user),
+    );
     return createdAppointment;
   }
 
