@@ -111,4 +111,55 @@ export class ServiceRepository
     }
     return services;
   }
+
+  async findRequestedServices(
+    mechanicId: number,
+  ): Promise<(Service & { appointmentsCount: number })[]> {
+    return this.createQueryBuilder('service')
+      .leftJoinAndSelect('service.spareParts', 'spareParts')
+      .leftJoin('spareParts.sparePart', 'sp')
+      .leftJoin('appointment_services', 'apse', 'apse.service_id = service.id')
+      .leftJoin(
+        'appointments',
+        'appointment',
+        'appointment.id = apse.appointment_id',
+      )
+      .where('service.mechanicId = :mechanicId', { mechanicId })
+      .groupBy('service.id')
+      .addGroupBy('spareParts.serviceId')
+      .addGroupBy('spareParts.sparePartId')
+      .addGroupBy('sp.name')
+      .select([
+        'service',
+        'spareParts',
+        'sp.name AS "sparePartName"',
+        'COUNT(DISTINCT apse.appointment_id) AS "appointmentsCount"',
+      ])
+      .orderBy('"appointmentsCount"', 'DESC')
+      .getRawAndEntities()
+      .then(({ entities, raw }) => {
+        return entities.map((service) => {
+          const rowsForService = raw.filter((r) => r.service_id === service.id);
+          const firstRow = rowsForService[0];
+          const appointmentsCount = firstRow
+            ? Number(firstRow.appointmentsCount)
+            : 0;
+          service.spareParts.forEach((spItem) => {
+            const matchRow = rowsForService.find(
+              (r) => r.spareParts_sparePartId === spItem.sparePartId,
+            );
+            if (matchRow && matchRow.sparePartName) {
+              Object.assign(spItem as unknown as Record<string, unknown>, {
+                sparePartName: matchRow.sparePartName,
+              });
+            }
+          });
+
+          return {
+            ...service,
+            appointmentsCount,
+          } as Service & { appointmentsCount: number };
+        });
+      });
+  }
 }

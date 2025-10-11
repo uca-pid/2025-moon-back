@@ -50,6 +50,13 @@ export class ServiceController {
     return await this.serviceService.getPaginated(query, mechanic);
   }
 
+  @Get('/requested-services')
+  async getRequestedServices(
+    @AuthenticatedWorkshop() mechanic: User,
+  ): Promise<Service[]> {
+    return await this.serviceService.getRequestedServices(mechanic);
+  }
+
   @Get('/mechanic/:id')
   async getByMechanic(@Param('id') id: number): Promise<Service[]> {
     const mechanic = await this.usersService.getWorkshopById(id);

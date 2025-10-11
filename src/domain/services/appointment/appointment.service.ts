@@ -173,7 +173,7 @@ export class AppointmentService implements IAppointmentService {
 
   getNextAppointmentsOfWorkshop(
     workshopId: number,
-    dateFilter: DateFilter,
+    dateFilter?: DateFilter,
   ): Promise<Appointment[]> {
     return this.appointmentRepository.getAppointmentsOfWorkshop(
       workshopId,
