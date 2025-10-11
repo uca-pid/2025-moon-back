@@ -5,9 +5,7 @@ import { User } from 'src/infraestructure/entities/user/user.entity';
 import { CreateServiceDto } from 'src/infraestructure/dtos/services/create-service.dto';
 
 export interface IServiceService {
-  getServiceStatsByUser(
-    userId: number,
-  ): Promise<
+  getServiceStatsByUser(userId: number): Promise<
     {
       serviceName: string;
       vehicles: { vehiclePlate: string; count: number; totalCost: number }[];
