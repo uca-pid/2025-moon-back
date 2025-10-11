@@ -16,6 +16,11 @@ export class AppointmentRepository
   constructor(private dataSource: DataSource) {
     super(Appointment, dataSource.createEntityManager());
   }
+
+  findById(id: number): Promise<Appointment | null> {
+    return this.findOne({ where: { id }, relations: ['user', 'workshop'] });
+  }
+
   async deletePendingAppointmentsOfVehicle(id: number): Promise<void> {
     const { today, nowTime } = this.getTodayAndNow();
     await this.createQueryBuilder()
