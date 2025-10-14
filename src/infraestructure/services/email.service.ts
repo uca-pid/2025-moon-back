@@ -56,7 +56,6 @@ export class EmailService implements IEmailService {
   async createNotification(event: AppointmentStatusChangedEvent) {
     const message = event.getMessage();
     const userToNotify = event.getUserToNotify();
-    console.log(userToNotify);
     if (!message) return;
 
     await this.transporter.sendMail({

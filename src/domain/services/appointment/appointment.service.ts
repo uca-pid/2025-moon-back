@@ -138,7 +138,6 @@ export class AppointmentService implements IAppointmentService {
         vehicleId: vehicle.id,
       });
     await this.reduceStockFromSpareParts(createdAppointment);
-    console.log(user);
     this.eventEmitter.emit(
       APPOINTMENT_EVENTS.STATUS_CHANGED,
       new AppointmentStatusChangedEvent(createdAppointment, user),
