@@ -22,6 +22,11 @@ export interface IAppointmentService {
     workshopId: number,
     dateFilter?: DateFilter,
   ): Promise<Appointment[]>;
+  getAppointmentsBySearch(
+    workshopId: number,
+    status?: AppointmentStatus,
+    dateFilter?: DateFilter,
+  ): Promise<Appointment[]>;
   create(
     user: JwtPayload,
     date: string,
