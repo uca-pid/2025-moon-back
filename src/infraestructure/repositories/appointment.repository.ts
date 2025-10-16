@@ -16,12 +16,44 @@ export class AppointmentRepository
   constructor(private dataSource: DataSource) {
     super(Appointment, dataSource.createEntityManager());
   }
+
+  async getNextAppointmentsOfUser(userId: number): Promise<Appointment[]> {
+    const qb = this.baseQueryBuilder();
+    const appointments = this.addFutureAppointmentCondition(qb)
+      .andWhere('appointment.user_id = :userId', { userId })
+      .getMany();
+    return appointments;
+  }
+
+  findById(id: number): Promise<Appointment | null> {
+    return this.findOne({ where: { id }, relations: ['user', 'workshop'] });
+  }
+
+  async deletePendingAppointmentsOfVehicle(id: number): Promise<void> {
+    const { today, nowTime } = this.getTodayAndNow();
+    await this.createQueryBuilder()
+      .delete()
+      .from(Appointment)
+      .where('vehicle_id = :id', { id })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('date > :today', { today }).orWhere(
+            'date = :today AND time >= :nowTime',
+            { today, nowTime },
+          );
+        }),
+      )
+      .execute();
+  }
   getAppointmentsOfWorkshop(
     workshopId: number,
-    dateFilter: DateFilter,
+    dateFilter?: DateFilter,
   ): Promise<Appointment[]> {
-    const qb = this.baseQueryBuilder();
-    const appointments = this.addDateFilterCondition(qb, dateFilter)
+    let qb = this.baseQueryBuilder();
+    if (dateFilter) {
+      qb = this.addDateFilterCondition(qb, dateFilter);
+    }
+    const appointments = qb
       .andWhere('appointment.workshop_id = :workshopId', { workshopId })
       .getMany();
     return appointments;
@@ -55,7 +87,7 @@ export class AppointmentRepository
         qb.andWhere('appointment.date > :today', { today });
         break;
       default:
-        throw new Error('Invalid date filter');
+        break;
     }
     return qb;
   }
@@ -66,11 +98,20 @@ export class AppointmentRepository
     return { today, nowTime };
   }
 
-  async getNextAppointmentsOfUser(userId: number): Promise<Appointment[]> {
-    const qb = this.baseQueryBuilder();
-    const appointments = this.addFutureAppointmentCondition(qb)
+  async getAppointmentsOfUser(
+    userId: number,
+    dateFilter?: DateFilter,
+  ): Promise<Appointment[]> {
+    let qb = this.baseQueryBuilder();
+
+    if (dateFilter) {
+      qb = this.addDateFilterCondition(qb, dateFilter);
+    }
+
+    const appointments = qb
       .andWhere('appointment.user_id = :userId', { userId })
       .getMany();
+
     return appointments;
   }
 
@@ -88,6 +129,7 @@ export class AppointmentRepository
 
   private baseQueryBuilder() {
     return this.createQueryBuilder('appointment')
+      .withDeleted()
       .leftJoinAndSelect('appointment.services', 'services')
       .leftJoin('appointment.user', 'user')
       .leftJoin('appointment.workshop', 'workshop')
@@ -99,6 +141,7 @@ export class AppointmentRepository
         'workshop.id',
         'workshop.workshopName',
         'workshop.address',
+        'workshop.email',
         'workshop.addressLatitude',
         'workshop.addressLongitude',
       ]);

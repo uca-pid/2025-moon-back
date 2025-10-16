@@ -6,6 +6,7 @@ import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
 import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
 import { ServiceSparePart } from '../entities/service/service-spare-part.entity';
 import { ServiceStatusEnum } from '../entities/service/service.enum';
+import { Appointment } from '../entities/appointment/appointment.entity';
 
 @Injectable()
 export class ServiceRepository
@@ -110,5 +111,108 @@ export class ServiceRepository
       throw new NotFoundException('Some services not found');
     }
     return services;
+  }
+
+  async findRequestedServices(
+    mechanicId: number,
+  ): Promise<(Service & { appointmentsCount: number })[]> {
+    return this.createQueryBuilder('service')
+      .leftJoinAndSelect('service.spareParts', 'spareParts')
+      .leftJoin('spareParts.sparePart', 'sp')
+      .leftJoin('appointment_services', 'apse', 'apse.service_id = service.id')
+      .leftJoin(
+        'appointments',
+        'appointment',
+        'appointment.id = apse.appointment_id',
+      )
+      .where('service.mechanicId = :mechanicId', { mechanicId })
+      .groupBy('service.id')
+      .addGroupBy('spareParts.serviceId')
+      .addGroupBy('spareParts.sparePartId')
+      .addGroupBy('sp.name')
+      .select([
+        'service',
+        'spareParts',
+        'sp.name AS "sparePartName"',
+        'COUNT(DISTINCT apse.appointment_id) AS "appointmentsCount"',
+      ])
+      .orderBy('"appointmentsCount"', 'DESC')
+      .getRawAndEntities()
+      .then(({ entities, raw }) => {
+        return entities.map((service) => {
+          const rowsForService = raw.filter((r) => r.service_id === service.id);
+          const firstRow = rowsForService[0];
+          const appointmentsCount = firstRow
+            ? Number(firstRow.appointmentsCount)
+            : 0;
+          service.spareParts.forEach((spItem) => {
+            const matchRow = rowsForService.find(
+              (r) => r.spareParts_sparePartId === spItem.sparePartId,
+            );
+            if (matchRow && matchRow.sparePartName) {
+              Object.assign(spItem as unknown as Record<string, unknown>, {
+                sparePartName: matchRow.sparePartName,
+              });
+            }
+          });
+
+          return {
+            ...service,
+            appointmentsCount,
+          } as Service & { appointmentsCount: number };
+        });
+      });
+  }
+
+  async findServiceStatsByUserId(userId: number): Promise<
+    {
+      serviceName: string;
+      vehicles: { vehiclePlate: string; count: number; totalCost: number }[];
+    }[]
+  > {
+    const rawData = await this.dataSource
+      .getRepository(Appointment)
+      .createQueryBuilder('appointment')
+      .leftJoin('appointment.services', 'service')
+      .leftJoin('appointment.vehicle', 'vehicle')
+      .select('service.name', 'serviceName')
+      .addSelect('vehicle.licensePlate', 'vehiclePlate')
+      .addSelect('COUNT(appointment.id)', 'count')
+      .addSelect('SUM(service.price)', 'totalCost')
+      .where('appointment.user_id = :userId', { userId })
+      .groupBy('service.name')
+      .addGroupBy('vehicle.licensePlate')
+      .getRawMany();
+
+    const grouped = rawData.reduce(
+      (acc, row) => {
+        const service = acc.find((s) => s.serviceName === row.serviceName);
+        if (service) {
+          service.vehicles.push({
+            vehiclePlate: row.vehiclePlate,
+            count: Number(row.count),
+            totalCost: Number(row.totalCost),
+          });
+        } else {
+          acc.push({
+            serviceName: row.serviceName,
+            vehicles: [
+              {
+                vehiclePlate: row.vehiclePlate,
+                count: Number(row.count),
+                totalCost: Number(row.totalCost),
+              },
+            ],
+          });
+        }
+        return acc;
+      },
+      [] as {
+        serviceName: string;
+        vehicles: { vehiclePlate: string; count: number; totalCost: number }[];
+      }[],
+    );
+
+    return grouped;
   }
 }

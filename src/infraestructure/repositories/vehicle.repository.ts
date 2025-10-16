@@ -31,7 +31,9 @@ export class VehicleRepository
   async getVehiclesOfUser(userId: number): Promise<Vehicle[]> {
     return this.createQueryBuilder('vehicle')
       .leftJoin('vehicle.user', 'user')
+      .leftJoin('vehicle.appointments', 'appointments')
       .where('user.id = :userId', { userId })
+      .groupBy('vehicle.id')
       .getMany();
   }
 

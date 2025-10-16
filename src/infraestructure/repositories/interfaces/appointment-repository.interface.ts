@@ -1,4 +1,5 @@
 import { Appointment } from 'src/infraestructure/entities/appointment/appointment.entity';
+import { IBaseRepository } from './base-repository.interface';
 
 export interface CreateAppointmentData {
   userId: number;
@@ -15,11 +16,17 @@ export enum DateFilter {
   FUTURE = 'future',
 }
 
-export interface IAppointmentRepository {
+export interface IAppointmentRepository extends IBaseRepository<Appointment> {
+  findById(id: number): Promise<Appointment | null>;
+  deletePendingAppointmentsOfVehicle(id: number): Promise<void>;
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]>;
   getAppointmentsOfWorkshop(
     workshopId: number,
-    dateFilter: DateFilter,
+    dateFilter?: DateFilter,
+  ): Promise<Appointment[]>;
+  getAppointmentsOfUser(
+    user_id: number,
+    dateFilter?: DateFilter,
   ): Promise<Appointment[]>;
   createAppointment(entityData: CreateAppointmentData): Promise<Appointment>;
 }

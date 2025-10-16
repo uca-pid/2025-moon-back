@@ -2,6 +2,9 @@ import { IEmailService } from 'src/domain/interfaces/email-service.interface';
 import { Transporter, createTransport } from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 import { Injectable, Logger } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
+import { APPOINTMENT_EVENTS } from 'src/domain/events/appointments/appointment-events';
+import { AppointmentStatusChangedEvent } from 'src/domain/events/appointments/appointment-status-changed-event';
 
 @Injectable()
 export class EmailService implements IEmailService {
@@ -47,5 +50,19 @@ export class EmailService implements IEmailService {
       );
       throw err;
     }
+  }
+
+  @OnEvent(APPOINTMENT_EVENTS.STATUS_CHANGED)
+  async createNotification(event: AppointmentStatusChangedEvent) {
+    const message = event.getMessage();
+    const userToNotify = event.getUserToNotify();
+    if (!message) return;
+
+    await this.transporter.sendMail({
+      from: this.from,
+      to: userToNotify.email,
+      subject: 'Notificación del turno de tu auto',
+      html: `<p>${message}</p>`,
+    });
   }
 }

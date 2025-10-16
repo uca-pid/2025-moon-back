@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Vehicle } from './infraestructure/entities/vehicle/vehicle.entity';
 import { SparePart } from './infraestructure/entities/spare-part/spare-part.entity';
 import { ServiceSparePart } from './infraestructure/entities/service/service-spare-part.entity';
+import { Notification } from './infraestructure/entities/notification/notification.entity';
 
 export const entities = [
   User,
@@ -16,6 +17,7 @@ export const entities = [
   Vehicle,
   ServiceSparePart,
   SparePart,
+  Notification,
 ];
 
 export const createDataSource = (configService: ConfigService) =>

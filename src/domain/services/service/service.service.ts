@@ -88,4 +88,21 @@ export class ServiceService implements IServiceService {
   async getByIds(ids: number[]): Promise<Service[]> {
     return this.serviceRepository.findByIds(ids);
   }
+
+  async getRequestedServices(
+    mechanic: User,
+  ): Promise<(Service & { appointmentsCount: number })[]> {
+    return await this.serviceRepository.findRequestedServices(mechanic.id);
+  }
+
+  async getServiceStatsByUser(
+    userId: number,
+  ): Promise<
+    {
+      serviceName: string;
+      vehicles: { vehiclePlate: string; count: number; totalCost: number }[];
+    }[]
+  > {
+    return this.serviceRepository.findServiceStatsByUserId(userId);
+  }
 }
