@@ -7,6 +7,7 @@ import {
   IAppointmentRepository,
 } from './interfaces/appointment-repository.interface';
 import { SelectQueryBuilder } from 'typeorm/browser';
+import { AppointmentStatus } from '../entities/appointment/appointment-status.enum';
 
 @Injectable()
 export class AppointmentRepository
@@ -57,6 +58,23 @@ export class AppointmentRepository
       .andWhere('appointment.workshop_id = :workshopId', { workshopId })
       .getMany();
     return appointments;
+  }
+
+  getAppointmentsBySearch(
+    workshopId: number,
+    status?: AppointmentStatus,
+    dateFilter?: DateFilter,
+  ): Promise<Appointment[]> {
+    let qb = this.baseQueryBuilder();
+    if (dateFilter) {
+      qb = this.addDateFilterCondition(qb, dateFilter);
+    }
+    if (status) {
+      qb.andWhere('appointment.status = :status', { status });
+    }
+    return qb
+      .andWhere('appointment.workshop_id = :workshopId', { workshopId })
+      .getMany();
   }
 
   private addDateFilterCondition(

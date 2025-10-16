@@ -1,5 +1,6 @@
 import { Appointment } from 'src/infraestructure/entities/appointment/appointment.entity';
 import { IBaseRepository } from './base-repository.interface';
+import { AppointmentStatus } from 'src/infraestructure/entities/appointment/appointment-status.enum';
 
 export interface CreateAppointmentData {
   userId: number;
@@ -22,6 +23,11 @@ export interface IAppointmentRepository extends IBaseRepository<Appointment> {
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]>;
   getAppointmentsOfWorkshop(
     workshopId: number,
+    dateFilter?: DateFilter,
+  ): Promise<Appointment[]>;
+  getAppointmentsBySearch(
+    workshopId: number,
+    status?: AppointmentStatus,
     dateFilter?: DateFilter,
   ): Promise<Appointment[]>;
   getAppointmentsOfUser(

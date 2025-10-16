@@ -180,6 +180,18 @@ export class AppointmentService implements IAppointmentService {
     );
   }
 
+  getAppointmentsBySearch(
+    workshopId: number,
+    status?: AppointmentStatus,
+    dateFilter?: DateFilter,
+  ): Promise<Appointment[]> {
+    return this.appointmentRepository.getAppointmentsBySearch(
+      workshopId,
+      status,
+      dateFilter,
+    );
+  }
+
   getAppointmentsOfUser(
     userId: number,
     dateFilter?: DateFilter,

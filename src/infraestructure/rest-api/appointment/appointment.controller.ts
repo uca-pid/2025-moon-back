@@ -33,6 +33,7 @@ import {
 } from 'src/domain/interfaces/vehicle-service.interface';
 import { UpdateAppointmentStatusDto } from 'src/infraestructure/dtos/appointment/update-appointment.status.dto';
 import { DateFilter } from 'src/infraestructure/repositories/interfaces/appointment-repository.interface';
+import { AppointmentStatus } from 'src/infraestructure/entities/appointment/appointment-status.enum';
 
 @Controller('appointments')
 export class AppointmentController {
@@ -63,14 +64,27 @@ export class AppointmentController {
     );
   }
 
+  @Get('search')
+  async getAppointmentsByStatus(
+    @AuthenticatedWorkshop() workshop: JwtPayload,
+    @Query('status') status?: AppointmentStatus,
+    @Query('dateFilter') dateFilter?: DateFilter,
+  ) {
+    return await this.appointmentService.getAppointmentsBySearch(
+      workshop.id,
+      status,
+      dateFilter,
+    );
+  }
+
   @Get('/user/history')
   async getAppointmentsOfUser(
     @AuthenticatedUser() user: JwtPayload,
     @Query('dateFilter') dateFilter?: DateFilter,
   ) {
-    return this.appointmentService.getAppointmentsOfUser(
+    return await this.appointmentService.getAppointmentsOfUser(
       user.id,
-      dateFilter as DateFilter | undefined,
+      dateFilter,
     );
   }
 
