@@ -13,6 +13,10 @@ export interface IAppointmentService {
     user: JwtPayload,
   ): Promise<Appointment>;
   deletePendingAppointmentsOfVehicle(id: number): Promise<void>;
+  getAppointmentsOfUser(
+    userId: number,
+    dateFilter?: DateFilter,
+  ): Promise<Appointment[]>;
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]>;
   getNextAppointmentsOfWorkshop(
     workshopId: number,

@@ -31,6 +31,8 @@ import {
   ISparePartServiceToken,
 } from 'src/domain/interfaces/spare-part-service.interface';
 import { UpdateServiceDto } from 'src/infraestructure/dtos/services/update-service.dto';
+import { AuthenticatedUser } from '../decorators/authenticated-user.decorator';
+import type { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
 
 @Controller('services')
 export class ServiceController {
@@ -135,5 +137,10 @@ export class ServiceController {
       );
     }
     await this.serviceService.delete(entity);
+  }
+
+  @Get('/stats/user')
+  async getServiceStatsByUser(@AuthenticatedUser() user: JwtPayload) {
+    return this.serviceService.getServiceStatsByUser(user.id);
   }
 }

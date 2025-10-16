@@ -6,6 +6,7 @@ import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
 import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
 import { ServiceSparePart } from '../entities/service/service-spare-part.entity';
 import { ServiceStatusEnum } from '../entities/service/service.enum';
+import { Appointment } from '../entities/appointment/appointment.entity';
 
 @Injectable()
 export class ServiceRepository
@@ -161,5 +162,57 @@ export class ServiceRepository
           } as Service & { appointmentsCount: number };
         });
       });
+  }
+
+  async findServiceStatsByUserId(userId: number): Promise<
+    {
+      serviceName: string;
+      vehicles: { vehiclePlate: string; count: number; totalCost: number }[];
+    }[]
+  > {
+    const rawData = await this.dataSource
+      .getRepository(Appointment)
+      .createQueryBuilder('appointment')
+      .leftJoin('appointment.services', 'service')
+      .leftJoin('appointment.vehicle', 'vehicle')
+      .select('service.name', 'serviceName')
+      .addSelect('vehicle.licensePlate', 'vehiclePlate')
+      .addSelect('COUNT(appointment.id)', 'count')
+      .addSelect('SUM(service.price)', 'totalCost')
+      .where('appointment.user_id = :userId', { userId })
+      .groupBy('service.name')
+      .addGroupBy('vehicle.licensePlate')
+      .getRawMany();
+
+    const grouped = rawData.reduce(
+      (acc, row) => {
+        const service = acc.find((s) => s.serviceName === row.serviceName);
+        if (service) {
+          service.vehicles.push({
+            vehiclePlate: row.vehiclePlate,
+            count: Number(row.count),
+            totalCost: Number(row.totalCost),
+          });
+        } else {
+          acc.push({
+            serviceName: row.serviceName,
+            vehicles: [
+              {
+                vehiclePlate: row.vehiclePlate,
+                count: Number(row.count),
+                totalCost: Number(row.totalCost),
+              },
+            ],
+          });
+        }
+        return acc;
+      },
+      [] as {
+        serviceName: string;
+        vehicles: { vehiclePlate: string; count: number; totalCost: number }[];
+      }[],
+    );
+
+    return grouped;
   }
 }

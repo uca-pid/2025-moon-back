@@ -17,6 +17,14 @@ export class AppointmentRepository
     super(Appointment, dataSource.createEntityManager());
   }
 
+  async getNextAppointmentsOfUser(userId: number): Promise<Appointment[]> {
+    const qb = this.baseQueryBuilder();
+    const appointments = this.addFutureAppointmentCondition(qb)
+      .andWhere('appointment.user_id = :userId', { userId })
+      .getMany();
+    return appointments;
+  }
+
   findById(id: number): Promise<Appointment | null> {
     return this.findOne({ where: { id }, relations: ['user', 'workshop'] });
   }
@@ -90,11 +98,20 @@ export class AppointmentRepository
     return { today, nowTime };
   }
 
-  async getNextAppointmentsOfUser(userId: number): Promise<Appointment[]> {
-    const qb = this.baseQueryBuilder();
-    const appointments = this.addFutureAppointmentCondition(qb)
+  async getAppointmentsOfUser(
+    userId: number,
+    dateFilter?: DateFilter,
+  ): Promise<Appointment[]> {
+    let qb = this.baseQueryBuilder();
+
+    if (dateFilter) {
+      qb = this.addDateFilterCondition(qb, dateFilter);
+    }
+
+    const appointments = qb
       .andWhere('appointment.user_id = :userId', { userId })
       .getMany();
+
     return appointments;
   }
 
