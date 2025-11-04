@@ -30,6 +30,13 @@ export class AppointmentRepository
     return this.findOne({ where: { id }, relations: ['user', 'workshop'] });
   }
 
+  findDetailsById(id: number): Promise<Appointment | null> {
+    return this.findOne({
+      where: { id },
+      relations: ['user', 'workshop', 'vehicle', 'services'],
+    });
+  }
+
   async deletePendingAppointmentsOfVehicle(id: number): Promise<void> {
     const { today, nowTime } = this.getTodayAndNow();
     await this.createQueryBuilder()

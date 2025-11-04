@@ -19,6 +19,7 @@ export enum DateFilter {
 
 export interface IAppointmentRepository extends IBaseRepository<Appointment> {
   findById(id: number): Promise<Appointment | null>;
+  findDetailsById(id: number): Promise<Appointment | null>;
   deletePendingAppointmentsOfVehicle(id: number): Promise<void>;
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]>;
   getAppointmentsOfWorkshop(

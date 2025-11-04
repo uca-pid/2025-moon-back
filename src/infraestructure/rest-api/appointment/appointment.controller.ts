@@ -129,6 +129,6 @@ export class AppointmentController {
 
   @Get('/:id')
   getAppointment(@Param('id', new ParseIntPipe()) id: number) {
-    return this.appointmentService.findById(id);
+    return this.appointmentService.findDetailsById(id);
   }
 }

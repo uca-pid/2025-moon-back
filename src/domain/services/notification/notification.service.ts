@@ -8,6 +8,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { JwtPayload } from 'src/domain/dtos/jwt-payload.interface';
 import { APPOINTMENT_EVENTS } from 'src/domain/events/appointments/appointment-events';
 import { AppointmentStatusChangedEvent } from 'src/domain/events/appointments/appointment-status-changed-event';
+import { AppointmentStatus } from 'src/infraestructure/entities/appointment/appointment-status.enum';
 import { INotificationService } from 'src/domain/interfaces/notification-service.interface';
 import {
   INotificationRepositoryToken,
@@ -49,6 +50,19 @@ export class NotificationService implements INotificationService {
     await this.notificationRepository.save({
       user: { id: userToNotify.id },
       message,
+    });
+  }
+
+  @OnEvent(APPOINTMENT_EVENTS.STATUS_CHANGED)
+  async createReviewRequestNotification(event: AppointmentStatusChangedEvent) {
+    if (event.appointment.status !== AppointmentStatus.COMPLETED) return;
+
+    const appt = event.appointment;
+    const reviewMessage = `⭐ Te invitamos a calificar tu turno #${appt.id}.`;
+
+    await this.notificationRepository.save({
+      user: { id: appt.user.id },
+      message: reviewMessage,
     });
   }
 }

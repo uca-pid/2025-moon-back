@@ -50,6 +50,14 @@ export class AppointmentService implements IAppointmentService {
     return appointment;
   }
 
+  async findDetailsById(id: number): Promise<Appointment> {
+    const appointment = await this.appointmentRepository.findDetailsById(id);
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+    return appointment;
+  }
+
   async updateStatus(
     appointmentId: number,
     newStatus: AppointmentStatus,
@@ -117,9 +125,12 @@ export class AppointmentService implements IAppointmentService {
     appointment.status = newStatus;
     await this.appointmentRepository.save(appointment);
 
+    const detailedAppointment =
+      (await this.appointmentRepository.findDetailsById(appointment.id)) ||
+      appointment;
     this.eventEmitter.emit(
       APPOINTMENT_EVENTS.STATUS_CHANGED,
-      new AppointmentStatusChangedEvent(appointment, user),
+      new AppointmentStatusChangedEvent(detailedAppointment, user),
     );
     return appointment;
   }
