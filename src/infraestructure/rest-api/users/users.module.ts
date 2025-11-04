@@ -4,6 +4,7 @@ import { UsersController } from './users.controller';
 import { UsersRepository } from 'src/infraestructure/repositories/users.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/infraestructure/entities/user/user.entity';
+import { UserReview } from 'src/infraestructure/entities/user/user-review.entity';
 import { HashService } from 'src/infraestructure/services/hash.service';
 import { JwtService } from 'src/infraestructure/services/jwt.service';
 import { ConfigModule } from '@nestjs/config';
@@ -20,10 +21,14 @@ import { RandomService } from 'src/infraestructure/services/random.service';
 import { IEmailServiceToken } from 'src/domain/interfaces/email-service.interface';
 import { EmailService } from 'src/infraestructure/services/email.service';
 import { UserPasswordRecovery } from 'src/infraestructure/entities/user/password-recovery.entity';
+import { UserReviewService } from 'src/domain/services/users/user-review.service';
+import { IUserReviewServiceToken } from 'src/domain/interfaces/user-review.interface';
+import { UserReviewRepository } from 'src/infraestructure/repositories/user-review.repository';
+import { IUserReviewRepositoryToken } from 'src/infraestructure/repositories/interfaces/user-review.repository.interface';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, UserPasswordRecovery]),
+    TypeOrmModule.forFeature([User, UserPasswordRecovery, UserReview]),
     ConfigModule,
   ],
   exports: [IUsersServiceToken],
@@ -43,6 +48,8 @@ import { UserPasswordRecovery } from 'src/infraestructure/entities/user/password
     { provide: IHashServiceToken, useClass: HashService },
     { provide: IRandomServiceToken, useClass: RandomService },
     { provide: IEmailServiceToken, useClass: EmailService },
+    { provide: IUserReviewRepositoryToken, useClass: UserReviewRepository },
+    { provide: IUserReviewServiceToken, useClass: UserReviewService },
   ],
 })
 export class UsersModule {}

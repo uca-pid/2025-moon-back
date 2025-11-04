@@ -126,4 +126,9 @@ export class AppointmentController {
   ) {
     return this.appointmentService.updateStatus(id, dto.status, user);
   }
+
+  @Get('/:id')
+  getAppointment(@Param('id', new ParseIntPipe()) id: number) {
+    return this.appointmentService.findDetailsById(id);
+  }
 }

@@ -8,6 +8,7 @@ import { Vehicle } from './infraestructure/entities/vehicle/vehicle.entity';
 import { SparePart } from './infraestructure/entities/spare-part/spare-part.entity';
 import { ServiceSparePart } from './infraestructure/entities/service/service-spare-part.entity';
 import { Notification } from './infraestructure/entities/notification/notification.entity';
+import { UserReview } from './infraestructure/entities/user/user-review.entity';
 
 export const entities = [
   User,
@@ -18,6 +19,7 @@ export const entities = [
   ServiceSparePart,
   SparePart,
   Notification,
+  UserReview,
 ];
 
 export const createDataSource = (configService: ConfigService) =>

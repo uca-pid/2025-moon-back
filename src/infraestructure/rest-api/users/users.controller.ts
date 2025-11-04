@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Inject, Put, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Inject,
+  Put,
+  Get,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { CreateUserDto } from 'src/infraestructure/dtos/users/create-user.dto';
 import { LoginUserDto } from 'src/infraestructure/dtos/users/login-user.dto';
 import { PasswordRecoveryDto } from 'src/infraestructure/dtos/users/password-recovery.dto';
@@ -15,6 +24,11 @@ import { UpdateUserDto } from 'src/infraestructure/dtos/users/update-user.dto';
 import { AuthenticatedUser } from '../decorators/authenticated-user.decorator';
 import type { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
 import { UpdateUserPasswordDto } from 'src/infraestructure/dtos/users/update-user-password.dto';
+import { ReviewDto } from 'src/infraestructure/dtos/users/review.dto';
+import {
+  IUserReviewServiceToken,
+  type IUserReviewService,
+} from 'src/domain/interfaces/user-review.interface';
 
 @Controller('users')
 export class UsersController {
@@ -22,6 +36,8 @@ export class UsersController {
     @Inject(IUsersServiceToken) private readonly usersService: IUsersService,
     @Inject(IPasswordRecoveryServiceToken)
     private readonly passwordRecoveryService: IPasswordRecoveryService,
+    @Inject(IUserReviewServiceToken)
+    private readonly userReviewService: IUserReviewService,
   ) {}
 
   @Get('/workshops')
@@ -60,5 +76,38 @@ export class UsersController {
   @Post('/change-password')
   changePassword(@Body() changePasswordDto: ChangePasswordDto) {
     return this.passwordRecoveryService.change(changePasswordDto);
+  }
+
+  @Post('/review')
+  review(@Body() reviewDto: ReviewDto, @AuthenticatedUser() user: JwtPayload) {
+    return this.userReviewService.setReview(
+      user.id,
+      reviewDto.mechanicId,
+      reviewDto.review,
+      reviewDto.subCategories,
+    );
+  }
+
+  @Get('/review')
+  async getReviews(@AuthenticatedUser() user: JwtPayload) {
+    const reviews = await this.userReviewService.getUserReviews(user.id);
+    return { reviews };
+  }
+
+  @Get('/review/:mechanicId')
+  async getReview(
+    @Param('mechanicId') mechanicId: string,
+    @AuthenticatedUser() user: JwtPayload,
+  ) {
+    const review = await this.userReviewService.getReview(
+      user.id,
+      Number(mechanicId),
+    );
+    return { review };
+  }
+
+  @Get('/:id')
+  getUser(@Param('id', new ParseIntPipe()) id: number) {
+    return this.usersService.findById(id);
   }
 }

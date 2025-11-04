@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { APPOINTMENT_EVENTS } from 'src/domain/events/appointments/appointment-events';
+import { AppointmentStatus } from 'src/infraestructure/entities/appointment/appointment-status.enum';
 import { AppointmentStatusChangedEvent } from 'src/domain/events/appointments/appointment-status-changed-event';
 
 @Injectable()
@@ -63,6 +64,39 @@ export class EmailService implements IEmailService {
       to: userToNotify.email,
       subject: 'Notificación del turno de tu auto',
       html: `<p>${message}</p>`,
+    });
+  }
+
+  @OnEvent(APPOINTMENT_EVENTS.STATUS_CHANGED)
+  async sendReviewRequestEmail(event: AppointmentStatusChangedEvent) {
+    if (event.appointment.status !== AppointmentStatus.COMPLETED) return;
+
+    const appt = event.appointment;
+    const servicesList = appt.services?.map((s) => s.name).join(', ') || 'N/A';
+    const vehicle = appt.vehicle;
+    const vehicleInfo = vehicle
+      ? `${vehicle.model} ${vehicle.year} · ${vehicle.licensePlate}`
+      : 'N/A';
+    const workshopName = appt.workshop?.workshopName || 'tu mecánico';
+
+    const html = `
+      <h3>¡Contanos cómo fue tu experiencia!</h3>
+      <p>Tu turno #${appt.id} fue completado. Nos ayuda mucho tu reseña.</p>
+      <ul>
+        <li><strong>Fecha:</strong> ${appt.date?.toString?.() || appt.date.toString()}</li>
+        <li><strong>Horario:</strong> ${appt.time}</li>
+        <li><strong>Mecánico/Taller:</strong> ${workshopName}</li>
+        <li><strong>Vehículo:</strong> ${vehicleInfo}</li>
+        <li><strong>Servicios:</strong> ${servicesList}</li>
+      </ul>
+      <p>Ingresá a la app para dejar tu reseña. ¡Gracias!</p>
+    `;
+
+    await this.transporter.sendMail({
+      from: this.from,
+      to: appt.user.email,
+      subject: `Calificá tu turno #${appt.id}`,
+      html,
     });
   }
 }
