@@ -15,12 +15,18 @@ import { PasswordRecoveryDto } from 'src/infraestructure/dtos/users/password-rec
 import { ChangePasswordDto } from 'src/infraestructure/dtos/users/change-password.dto';
 import { UpdateUserDto } from 'src/infraestructure/dtos/users/update-user.dto';
 import { UpdateUserPasswordDto } from 'src/infraestructure/dtos/users/update-user-password.dto';
+import {
+  IUserReviewService,
+  IUserReviewServiceToken,
+} from 'src/domain/interfaces/user-review.interface';
 
 describe('UsersController', () => {
   let controller: UsersController;
   const usersServiceMock: MockProxy<IUsersService> = mockDeep<IUsersService>();
   const passwordRecoveryServiceMock: MockProxy<IPasswordRecoveryService> =
     mockDeep<IPasswordRecoveryService>();
+  const userReviewServiceMock: MockProxy<IUserReviewService> =
+    mockDeep<IUserReviewService>();
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -32,6 +38,10 @@ describe('UsersController', () => {
         {
           provide: IPasswordRecoveryServiceToken,
           useValue: passwordRecoveryServiceMock,
+        },
+        {
+          provide: IUserReviewServiceToken,
+          useValue: userReviewServiceMock,
         },
       ],
     }).compile();
