@@ -15,6 +15,14 @@ export interface IUserReviewService {
   getReview(userId: number, mechanicId: number): Promise<ReviewEnum>;
   getUserReviews(userId: number): Promise<UserReview[]>;
   handle(event: AppointmentStatusChangedEvent): Promise<void>;
+  getMechanicsReviews(
+    mechanicIds: number[],
+  ): Promise<
+    Record<
+      number,
+      { reviews: ReviewEnum[]; subCategories: SubCategroriesEnum[] }
+    >
+  >;
 }
 
 export const IUserReviewServiceToken = 'IUserReviewService';

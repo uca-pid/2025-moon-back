@@ -1,5 +1,5 @@
 import { IUserReviewRepository } from './interfaces/user-review.repository.interface';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { UserReview } from '../entities/user/user-review.entity';
 import { Injectable } from '@nestjs/common';
 import { ReviewEnum, SubCategroriesEnum } from '../entities/user/review.enum';
@@ -65,5 +65,11 @@ export class UserReviewRepository
       where: { userId },
     });
     return reviews;
+  }
+
+  async getByMechanicIds(mechanicIds: number[]): Promise<UserReview[]> {
+    if (!mechanicIds.length) return [];
+    const reviewRepo = this.manager.getRepository(UserReview);
+    return reviewRepo.find({ where: { mechanicId: In(mechanicIds) } });
   }
 }
