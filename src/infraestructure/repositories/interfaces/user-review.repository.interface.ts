@@ -14,6 +14,7 @@ export interface IUserReviewRepository extends IBaseRepository<UserReview> {
   ): Promise<void>;
   getReview(userId: number, mechanicId: number): Promise<ReviewEnum>;
   getUserReviews(userId: number): Promise<UserReview[]>;
+  getByMechanicIds(mechanicIds: number[]): Promise<UserReview[]>;
 }
 
 export const IUserReviewRepositoryToken = 'IUserReviewRepository';

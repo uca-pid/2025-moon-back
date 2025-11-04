@@ -68,4 +68,29 @@ export class UserReviewService implements IUserReviewService {
       });
     }
   }
+
+  async getMechanicsReviews(
+    mechanicIds: number[],
+  ): Promise<
+    Record<
+      number,
+      { reviews: ReviewEnum[]; subCategories: SubCategroriesEnum[] }
+    >
+  > {
+    const all = await this.userReviewRepository.getByMechanicIds(mechanicIds);
+    const map: Record<
+      number,
+      { reviews: ReviewEnum[]; subCategories: SubCategroriesEnum[] }
+    > = {};
+    all.forEach((review: UserReview) => {
+      if (!map[review.mechanicId]) {
+        map[review.mechanicId] = { reviews: [], subCategories: [] };
+      }
+      map[review.mechanicId].reviews.push(review.review);
+      if (review.subCategories && review.subCategories.length) {
+        map[review.mechanicId].subCategories.push(...review.subCategories);
+      }
+    });
+    return map;
+  }
 }

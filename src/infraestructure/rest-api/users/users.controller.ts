@@ -41,8 +41,19 @@ export class UsersController {
   ) {}
 
   @Get('/workshops')
-  getAllWorkshops() {
-    return this.usersService.getAllWorkshops();
+  async getAllWorkshops() {
+    const workshops = await this.usersService.getAllWorkshops();
+    const mechanicIds = workshops.map((workshop) => workshop.id);
+    const reviewMap =
+      (await this.userReviewService.getMechanicsReviews(mechanicIds)) || {};
+    const workshopsWithReviews = workshops.map((workshop) => {
+      return {
+        ...workshop,
+        reviews: reviewMap[workshop.id]?.reviews ?? [],
+        subCategories: reviewMap[workshop.id]?.subCategories ?? [],
+      };
+    });
+    return workshopsWithReviews;
   }
 
   @Post()
