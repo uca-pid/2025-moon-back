@@ -42,6 +42,14 @@ export class AppointmentService implements IAppointmentService {
     private eventEmitter: EventEmitter2,
   ) {}
 
+  async findById(id: number): Promise<Appointment> {
+    const appointment = await this.appointmentRepository.findById(id);
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+    return appointment;
+  }
+
   async updateStatus(
     appointmentId: number,
     newStatus: AppointmentStatus,

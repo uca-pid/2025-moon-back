@@ -12,6 +12,7 @@ export interface IUsersService {
   getWorkshopById(id: number): Promise<User | null>;
   getAllWorkshops(): Promise<User[]>;
   login(dto: LoginUserDto): Promise<{ token: string }>;
+  findById(id: number): Promise<User>;
 }
 
 export const IUsersServiceToken = 'IUsersService';

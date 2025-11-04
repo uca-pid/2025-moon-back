@@ -97,4 +97,8 @@ export class UsersService implements IUsersService {
 
     return { token };
   }
+
+  async findById(id: number): Promise<User> {
+    return await this.usersRepository.findByIdOrThrow(id);
+  }
 }
