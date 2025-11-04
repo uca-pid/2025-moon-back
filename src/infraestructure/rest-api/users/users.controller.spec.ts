@@ -52,7 +52,14 @@ describe('UsersController', () => {
   it('should call usersService.getAllWorkshops on getAllWorkshops', async () => {
     const result = [{ id: 1, name: 'Workshop' }];
     usersServiceMock.getAllWorkshops.mockResolvedValue(result as any);
-    await expect(controller.getAllWorkshops()).resolves.toBe(result);
+    const expected = result.map((w) => ({
+      ...w,
+      reviews: [],
+      subCategories: [],
+    }));
+    await expect(controller.getAllWorkshops()).resolves.toEqual(
+      expected as any,
+    );
     expect(usersServiceMock.getAllWorkshops).toHaveBeenCalled();
   });
 
