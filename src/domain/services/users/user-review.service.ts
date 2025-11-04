@@ -3,7 +3,10 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { APPOINTMENT_EVENTS } from 'src/domain/events/appointments/appointment-events';
 import type { AppointmentStatusChangedEvent } from 'src/domain/events/appointments/appointment-status-changed-event';
 import { AppointmentStatus } from 'src/infraestructure/entities/appointment/appointment-status.enum';
-import { ReviewEnum } from 'src/infraestructure/entities/user/review.enum';
+import {
+  ReviewEnum,
+  SubCategroriesEnum,
+} from 'src/infraestructure/entities/user/review.enum';
 import { IUserReviewService } from 'src/domain/interfaces/user-review.interface';
 import {
   type IUserReviewRepository,
@@ -22,8 +25,14 @@ export class UserReviewService implements IUserReviewService {
     userId: number,
     mechanicId: number,
     review: ReviewEnum,
+    subCategories?: SubCategroriesEnum[],
   ): Promise<void> {
-    await this.userReviewRepository.setReview(userId, mechanicId, review);
+    await this.userReviewRepository.setReview(
+      userId,
+      mechanicId,
+      review,
+      subCategories,
+    );
   }
 
   async getUserReviews(userId: number): Promise<UserReview[]> {

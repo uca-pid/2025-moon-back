@@ -1,5 +1,9 @@
-import { ReviewEnum } from 'src/infraestructure/entities/user/review.enum';
-import { IsEnum, IsInt, Min } from 'class-validator';
+import {
+  ReviewEnum,
+  SubCategroriesEnum,
+} from 'src/infraestructure/entities/user/review.enum';
+import { IsArray, IsEnum, IsInt, IsOptional, Min } from 'class-validator';
+import { ArrayMaxSize } from 'class-validator';
 
 export class ReviewDto {
   @IsInt()
@@ -8,4 +12,10 @@ export class ReviewDto {
 
   @IsEnum(ReviewEnum)
   review: ReviewEnum;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(3)
+  @IsEnum(SubCategroriesEnum, { each: true })
+  subCategories?: SubCategroriesEnum[];
 }

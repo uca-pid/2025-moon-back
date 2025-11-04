@@ -2,7 +2,7 @@ import { IUserReviewRepository } from './interfaces/user-review.repository.inter
 import { DataSource, Repository } from 'typeorm';
 import { UserReview } from '../entities/user/user-review.entity';
 import { Injectable } from '@nestjs/common';
-import { ReviewEnum } from '../entities/user/review.enum';
+import { ReviewEnum, SubCategroriesEnum } from '../entities/user/review.enum';
 
 @Injectable()
 export class UserReviewRepository
@@ -17,6 +17,7 @@ export class UserReviewRepository
     userId: number,
     mechanicId: number,
     review: ReviewEnum,
+    subCategories?: SubCategroriesEnum[],
   ): Promise<void> {
     const reviewRepo = this.manager.getRepository(UserReview);
     const pending = await reviewRepo.findOne({
@@ -25,6 +26,9 @@ export class UserReviewRepository
     });
     if (pending) {
       pending.review = review;
+      if (subCategories !== undefined) {
+        pending.subCategories = subCategories;
+      }
       await reviewRepo.save(pending);
       return;
     }
@@ -34,6 +38,9 @@ export class UserReviewRepository
     });
     if (latest) {
       latest.review = review;
+      if (subCategories !== undefined) {
+        latest.subCategories = subCategories;
+      }
       await reviewRepo.save(latest);
     }
   }

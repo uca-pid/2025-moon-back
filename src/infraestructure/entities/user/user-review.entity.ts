@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { User } from './user.entity';
-import { ReviewEnum } from './review.enum';
+import { ReviewEnum, SubCategroriesEnum } from './review.enum';
 import { Appointment } from '../appointment/appointment.entity';
 
 @Entity('user_reviews')
@@ -32,4 +32,12 @@ export class UserReview {
     default: ReviewEnum.PENDING,
   })
   review: ReviewEnum;
+
+  @Column({
+    type: 'enum',
+    enum: SubCategroriesEnum,
+    array: true,
+    nullable: true,
+  })
+  subCategories?: SubCategroriesEnum[] | null;
 }

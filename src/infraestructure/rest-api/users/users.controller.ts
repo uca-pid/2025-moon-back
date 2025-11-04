@@ -84,6 +84,7 @@ export class UsersController {
       user.id,
       reviewDto.mechanicId,
       reviewDto.review,
+      reviewDto.subCategories,
     );
   }
 
