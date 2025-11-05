@@ -106,15 +106,10 @@ export class UsersController {
   }
 
   @Get('/review/:mechanicId')
-  async getReview(
-    @Param('mechanicId') mechanicId: string,
-    @AuthenticatedUser() user: JwtPayload,
-  ) {
-    const review = await this.userReviewService.getReview(
-      user.id,
-      Number(mechanicId),
-    );
-    return { review };
+  async getReview(@Param('mechanicId', new ParseIntPipe()) mechanicId: number) {
+    const map = await this.userReviewService.getMechanicsReviews([mechanicId]);
+    const entry = map[mechanicId] ?? { reviews: [], subCategories: [] };
+    return entry;
   }
 
   @Get('/:id')
