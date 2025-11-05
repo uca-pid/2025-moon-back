@@ -34,6 +34,8 @@ import {
 import { UpdateAppointmentStatusDto } from 'src/infraestructure/dtos/appointment/update-appointment.status.dto';
 import { DateFilter } from 'src/infraestructure/repositories/interfaces/appointment-repository.interface';
 import { AppointmentStatus } from 'src/infraestructure/entities/appointment/appointment-status.enum';
+import { User } from 'src/infraestructure/entities/user/user.entity';
+import { GetWorkshopAppointmentRangeQueryDto } from 'src/infraestructure/dtos/appointment/get-workshop-appointment-range-query.dto';
 
 @Controller('appointments')
 export class AppointmentController {
@@ -130,5 +132,16 @@ export class AppointmentController {
   @Get('/:id')
   getAppointment(@Param('id', new ParseIntPipe()) id: number) {
     return this.appointmentService.findDetailsById(id);
+  }
+
+  @Get('/workshop/range')
+  async getWorkshopAppointmentRange(
+    @AuthenticatedWorkshop() workshop: User,
+    @Query() query: GetWorkshopAppointmentRangeQueryDto,
+  ) {
+    return this.appointmentService.getWorkshopAppointmentRange(
+      workshop.id,
+      query.timeRange,
+    );
   }
 }
