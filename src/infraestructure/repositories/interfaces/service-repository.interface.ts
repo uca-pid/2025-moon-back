@@ -28,6 +28,17 @@ export interface IServiceRepository extends IBaseRepository<Service> {
       }[];
     }[]
   >;
+  findTopGrowingServices(
+    mechanicId: number,
+    days?: number,
+  ): Promise<
+    {
+      serviceName: string;
+      currentCount: number;
+      previousCount: number;
+      growth: number;
+    }[]
+  >;
 }
 
 export const IServiceRepositoryToken = 'IServiceRepository';

@@ -143,4 +143,15 @@ export class ServiceController {
   async getServiceStatsByUser(@AuthenticatedUser() user: JwtPayload) {
     return this.serviceService.getServiceStatsByUser(user.id);
   }
+
+  @Get('/stats/mechanic/growth')
+  async getTopGrowingServices(
+    @AuthenticatedWorkshop() mechanic: User,
+    @Query('days') days?: number,
+  ) {
+    return await this.serviceService.getTopGrowingServices(
+      mechanic.id,
+      Number(days) || 30,
+    );
+  }
 }

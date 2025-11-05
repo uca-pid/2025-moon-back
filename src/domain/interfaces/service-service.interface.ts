@@ -26,6 +26,17 @@ export interface IServiceService {
   getRequestedServices(
     mechanic: User,
   ): Promise<(Service & { appointmentsCount: number })[]>;
+  getTopGrowingServices(
+    mechanicId: number,
+    days?: number,
+  ): Promise<
+    {
+      serviceName: string;
+      currentCount: number;
+      previousCount: number;
+      growth: number;
+    }[]
+  >;
 }
 
 export const IServiceServiceToken = 'IServiceService';

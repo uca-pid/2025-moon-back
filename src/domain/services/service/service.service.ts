@@ -95,14 +95,26 @@ export class ServiceService implements IServiceService {
     return await this.serviceRepository.findRequestedServices(mechanic.id);
   }
 
-  async getServiceStatsByUser(
-    userId: number,
-  ): Promise<
+  async getServiceStatsByUser(userId: number): Promise<
     {
       serviceName: string;
       vehicles: { vehiclePlate: string; count: number; totalCost: number }[];
     }[]
   > {
     return this.serviceRepository.findServiceStatsByUserId(userId);
+  }
+
+  async getTopGrowingServices(
+    mechanicId: number,
+    days = 30,
+  ): Promise<
+    {
+      serviceName: string;
+      currentCount: number;
+      previousCount: number;
+      growth: number;
+    }[]
+  > {
+    return this.serviceRepository.findTopGrowingServices(mechanicId, days);
   }
 }
