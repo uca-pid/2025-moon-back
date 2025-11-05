@@ -65,7 +65,8 @@ export class VehicleService implements IVehicleService {
     vehicleId: number,
     updates: Partial<Pick<Vehicle, 'licensePlate' | 'model' | 'year' | 'km'>>,
   ): Promise<Vehicle> {
-    if (updates.licensePlate) {
+    const vehicle = await this.vehicleRepository.getById(vehicleId);
+    if (updates.licensePlate && vehicle.licensePlate !== updates.licensePlate) {
       await this.validateLicensePlate(updates.licensePlate);
     }
     return this.vehicleRepository.updateVehicleOfUser({
