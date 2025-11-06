@@ -11,6 +11,7 @@ import { Vehicle } from '../vehicle/vehicle.entity';
 import { SparePart } from '../spare-part/spare-part.entity';
 import { Service } from '../service/service.entity';
 import { Notification } from '../notification/notification.entity';
+import { Goal } from '../goals/goal.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -58,4 +59,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Notification[];
+
+  @OneToMany(() => Goal, (goal) => goal.user)
+  goals: Goal[];
 }

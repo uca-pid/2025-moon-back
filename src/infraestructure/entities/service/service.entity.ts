@@ -10,6 +10,7 @@ import { Appointment } from '../appointment/appointment.entity';
 import { User } from '../user/user.entity';
 import { ServiceSparePart } from './service-spare-part.entity';
 import { ServiceStatusEnum } from './service.enum';
+import { Goal } from '../goals/goal.entity';
 
 @Entity('services')
 export class Service extends BaseEntity {
@@ -27,6 +28,9 @@ export class Service extends BaseEntity {
 
   @ManyToOne(() => User, (user) => user.services)
   mechanic: User;
+
+  @OneToMany(() => Goal, (goal) => goal.service)
+  goals: Goal[];
 
   @OneToMany(
     () => ServiceSparePart,

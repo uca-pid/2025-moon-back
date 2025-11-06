@@ -13,6 +13,7 @@ import { VehicleModule } from './rest-api/vehicle/vehicle.module';
 import { SparePartModule } from './rest-api/spare-part/spare-part.module';
 import { NotificationModule } from './rest-api/notification/notification.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { GoalModule } from './rest-api/goal/goal.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     VehicleModule,
     SparePartModule,
     NotificationModule,
+    GoalModule,
     EventEmitterModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
