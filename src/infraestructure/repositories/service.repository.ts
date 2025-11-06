@@ -215,4 +215,72 @@ export class ServiceRepository
 
     return grouped;
   }
+
+  async findTopGrowingServices(
+    mechanicId: number,
+    days = 30,
+  ): Promise<
+    {
+      serviceName: string;
+      currentCount: number;
+      previousCount: number;
+      growth: number;
+    }[]
+  > {
+    const doubleDays = days * 2;
+
+    const raw = await this.dataSource
+      .getRepository(Appointment)
+      .createQueryBuilder('appointment')
+      .leftJoin('appointment.services', 'service')
+      .where('appointment.workshop_id = :mechanicId', { mechanicId })
+      .andWhere(
+        'appointment.date >= CURRENT_DATE - make_interval(days := :doubleDays)',
+        { doubleDays },
+      )
+      .select('service.name', 'serviceName')
+      .addSelect(
+        `
+      SUM(
+        CASE
+          WHEN appointment.date >= CURRENT_DATE - make_interval(days := :days)
+          THEN 1 ELSE 0
+        END
+      )
+    `,
+        'currentCount',
+      )
+      .addSelect(
+        `
+      SUM(
+        CASE
+          WHEN appointment.date < CURRENT_DATE - make_interval(days := :days)
+          THEN 1 ELSE 0
+        END
+      )
+    `,
+        'previousCount',
+      )
+      .setParameters({ mechanicId, days, doubleDays })
+      .groupBy('service.name')
+      .getRawMany();
+
+    return raw.map((row) => {
+      const current = Number(row.currentCount) || 0;
+      const previous = Number(row.previousCount) || 0;
+      const growth =
+        previous === 0 && current === 0
+          ? 0
+          : previous === 0
+            ? 100
+            : ((current - previous) / previous) * 100;
+
+      return {
+        serviceName: row.serviceName || 'Sin nombre',
+        currentCount: current,
+        previousCount: previous,
+        growth: Math.round(growth * 100) / 100,
+      };
+    });
+  }
 }

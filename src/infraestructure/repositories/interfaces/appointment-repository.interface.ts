@@ -36,6 +36,10 @@ export interface IAppointmentRepository extends IBaseRepository<Appointment> {
     dateFilter?: DateFilter,
   ): Promise<Appointment[]>;
   createAppointment(entityData: CreateAppointmentData): Promise<Appointment>;
+  findAppointmentRangeByWorkshop(
+    workshopId: number,
+    timeRange: 'week' | 'two_weeks' | 'month',
+  ): Promise<{ date: string; count: number }[]>;
 }
 
 export const IAppointmentRepositoryToken = 'IAppointmentRepository';

@@ -189,4 +189,38 @@ export class AppointmentRepository
     if (!appointment) throw new Error('Appointment not found after creation');
     return appointment;
   }
+
+  async findAppointmentRangeByWorkshop(
+    workshopId: number,
+    timeRange: 'week' | 'two_weeks' | 'month',
+  ): Promise<{ date: string; count: number }[]> {
+    let days = 7;
+    if (timeRange === 'two_weeks') days = 14;
+    else if (timeRange === 'month') days = 30;
+
+    const results = await this.createQueryBuilder('appointment')
+      .select("TO_CHAR(appointment.date, 'YYYY-MM-DD')", 'date')
+      .addSelect('COUNT(*)', 'count')
+      .where('appointment.workshop_id = :workshopId', { workshopId })
+      .andWhere(`appointment.date >= CURRENT_DATE - INTERVAL '${days} days'`)
+      .groupBy('date')
+      .orderBy('date', 'ASC')
+      .getRawMany();
+
+    const today = new Date();
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - (days - 1));
+
+    const allDates: { date: string; count: number }[] = [];
+    for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+      const formatted = d.toISOString().split('T')[0];
+      const found = results.find((r) => r.date === formatted);
+      allDates.push({
+        date: formatted,
+        count: found ? Number(found.count) : 0,
+      });
+    }
+
+    return allDates;
+  }
 }
