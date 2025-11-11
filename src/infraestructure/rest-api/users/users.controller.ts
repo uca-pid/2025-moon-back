@@ -46,7 +46,9 @@ export class UsersController {
     const mechanicIds = workshops.map((workshop) => workshop.id);
     const reviewMap =
       (await this.userReviewService.getMechanicsReviews(mechanicIds)) || {};
-    const workshopsWithReviews = workshops.map((workshop) => {
+    const workshopsWithReviews = workshops.map((w) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { hashedPassword, ...workshop } = w;
       return {
         ...workshop,
         reviews: reviewMap[workshop.id]?.reviews ?? [],
