@@ -29,7 +29,6 @@ import { UserRole } from 'src/infraestructure/entities/user/user-role.enum';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { APPOINTMENT_EVENTS } from 'src/domain/events/appointments/appointment-events';
 import { AppointmentStatusChangedEvent } from 'src/domain/events/appointments/appointment-status-changed-event';
-import { TimeRange } from 'src/infraestructure/dtos/appointment/get-workshop-appointment-range-query.dto';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
