@@ -93,4 +93,8 @@ export class UserReviewService implements IUserReviewService {
     });
     return map;
   }
+
+  async getTopMechanics(limit = 10) {
+    return await this.userReviewRepository.getTopMechanics(limit);
+  }
 }

@@ -23,6 +23,15 @@ export interface IUserReviewService {
       { reviews: ReviewEnum[]; subCategories: SubCategroriesEnum[] }
     >
   >;
+  getTopMechanics(limit?: number): Promise<
+    {
+      mechanicId: number;
+      workshopName: string;
+      address: string;
+      averageScore: number;
+      totalReviews: number;
+    }[]
+  >;
 }
 
 export const IUserReviewServiceToken = 'IUserReviewService';

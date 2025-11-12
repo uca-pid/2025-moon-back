@@ -114,6 +114,11 @@ export class UsersController {
     return entry;
   }
 
+  @Get('/ranking')
+  async getTopWorkshops() {
+    return this.userReviewService.getTopMechanics(10);
+  }
+
   @Get('/:id')
   getUser(@Param('id', new ParseIntPipe()) id: number) {
     return this.usersService.findById(id);
