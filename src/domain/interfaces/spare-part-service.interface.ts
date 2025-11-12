@@ -6,6 +6,8 @@ import { CreateSparePartDto } from 'src/infraestructure/dtos/spare-part/create-s
 import { UpdateSparePartDto } from 'src/infraestructure/dtos/spare-part/update-spare-part.dto';
 import { Service } from 'src/infraestructure/entities/service/service.entity';
 import { ServiceSparePartDto } from 'src/infraestructure/dtos/services/create-service.dto';
+import { CreateEntryDto } from 'src/infraestructure/dtos/spare-part/create-entry-body.dto';
+import { JwtPayload } from '../dtos/jwt-payload.interface';
 
 export interface ReduceStockData {
   sparePartId: number;
@@ -27,6 +29,7 @@ export interface ISparePartService {
     service: Service,
     spareParts: ServiceSparePartDto[],
   ): Promise<void>;
+  createEntry(entries: CreateEntryDto[], mechanic: JwtPayload);
 }
 
 export const ISparePartServiceToken = 'ISparePartService';
