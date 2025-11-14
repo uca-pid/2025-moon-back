@@ -11,6 +11,7 @@ import { ServiceModule } from '../service/service.module';
 import { UsersModule } from '../users/users.module';
 import { SparePartModule } from '../spare-part/spare-part.module';
 import { VehicleModule } from '../vehicle/vehicle.module';
+import { ExpenseTrackerModule } from 'src/infraestructure/services/expense-tracker/expense-tracker.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Appointment]),
@@ -19,6 +20,7 @@ import { VehicleModule } from '../vehicle/vehicle.module';
     UsersModule,
     SparePartModule,
     VehicleModule,
+    ExpenseTrackerModule,
   ],
   controllers: [AppointmentController],
   providers: [
