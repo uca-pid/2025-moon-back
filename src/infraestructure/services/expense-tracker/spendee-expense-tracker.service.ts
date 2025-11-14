@@ -21,8 +21,7 @@ export class SpendeeExpenseTrackerService implements IExpenseTrackerService {
   async trackIncome(incomeAmount: number) {
     const url = `${this.url}/ingreso`;
     const data = { ingreso: incomeAmount };
-    const response = await firstValueFrom(this.http.post(url, data));
-    console.log(response.data);
+    await firstValueFrom(this.http.post(url, data));
   }
 
   async trackOutcome(
@@ -36,8 +35,7 @@ export class SpendeeExpenseTrackerService implements IExpenseTrackerService {
         gasto: entry.price * entry.quantity,
         categoryName: entry.sparePart.name,
       };
-      const response = await firstValueFrom(this.http.post(url, data));
-      console.log(response.data);
+      await firstValueFrom(this.http.post(url, data));
     }
   }
 }
