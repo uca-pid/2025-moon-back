@@ -6,19 +6,14 @@ import { ISparePartRepositoryToken } from 'src/infraestructure/repositories/inte
 import { SparePartRepository } from 'src/infraestructure/repositories/spare-part.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SparePart } from 'src/infraestructure/entities/spare-part/spare-part.entity';
-import { IExpenseTrackerServiceToken } from 'src/domain/interfaces/expense-tracker-service.interface';
-import { SpendeeExpenseTrackerService } from 'src/infraestructure/services/spendee-expense-tracker.service';
+import { ExpenseTrackerModule } from 'src/infraestructure/services/expense-tracker/expense-tracker.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SparePart])],
+  imports: [TypeOrmModule.forFeature([SparePart]), ExpenseTrackerModule],
   controllers: [SparePartController],
   providers: [
     { provide: ISparePartServiceToken, useClass: SparePartService },
     { provide: ISparePartRepositoryToken, useClass: SparePartRepository },
-    {
-      provide: IExpenseTrackerServiceToken,
-      useClass: SpendeeExpenseTrackerService,
-    },
   ],
   exports: [ISparePartServiceToken],
 })

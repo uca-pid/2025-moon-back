@@ -8,8 +8,7 @@ export interface OutcomeEntry {
 }
 
 export interface IExpenseTrackerService {
-  //TODO
-  trackIncome();
+  trackIncome(incomeAmount: number): Promise<void>;
   trackOutcome(entries: OutcomeEntry[], mechanic: JwtPayload): Promise<void>;
 }
 
