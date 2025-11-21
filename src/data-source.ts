@@ -10,6 +10,7 @@ import { ServiceSparePart } from './infraestructure/entities/service/service-spa
 import { Notification } from './infraestructure/entities/notification/notification.entity';
 import { UserReview } from './infraestructure/entities/user/user-review.entity';
 import { Goal } from './infraestructure/entities/goals/goal.entity';
+import { DiscountCoupon } from './infraestructure/entities/user/discount-coupon.entity';
 
 export const entities = [
   User,
@@ -22,6 +23,7 @@ export const entities = [
   Notification,
   UserReview,
   Goal,
+  DiscountCoupon,
 ];
 
 export const createDataSource = (configService: ConfigService) =>

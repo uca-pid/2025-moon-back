@@ -11,6 +11,14 @@ import { ServiceModule } from '../service/service.module';
 import { UsersModule } from '../users/users.module';
 import { SparePartModule } from '../spare-part/spare-part.module';
 import { VehicleModule } from '../vehicle/vehicle.module';
+import { IDiscountCouponRepository } from 'src/infraestructure/repositories/interfaces/discount-coupon-repository.interface';
+import { DiscountCouponService } from 'src/domain/services/users/discount-coupon.service';
+import { IDiscountCouponServiceToken } from 'src/domain/interfaces/discount-coupon-service.interface';
+import { DiscountCouponRepository } from 'src/infraestructure/repositories/discount-coupon.repository';
+import { IDiscountCouponRepositoryToken } from 'src/infraestructure/repositories/interfaces/discount-coupon-repository.interface';
+import { IUserReviewRepositoryToken } from 'src/infraestructure/repositories/interfaces/user-review.repository.interface';
+import { UserReviewRepository } from 'src/infraestructure/repositories/user-review.repository';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Appointment]),
@@ -24,6 +32,12 @@ import { VehicleModule } from '../vehicle/vehicle.module';
   providers: [
     { provide: IAppointmentRepositoryToken, useClass: AppointmentRepository },
     { provide: IAppointmentServiceToken, useClass: AppointmentService },
+    {
+      provide: IDiscountCouponRepositoryToken,
+      useClass: DiscountCouponRepository,
+    },
+    { provide: IDiscountCouponServiceToken, useClass: DiscountCouponService },
+    { provide: IUserReviewRepositoryToken, useClass: UserReviewRepository },
   ],
   exports: [IAppointmentServiceToken],
 })

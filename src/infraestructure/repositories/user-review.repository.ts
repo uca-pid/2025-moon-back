@@ -1,5 +1,5 @@
 import { IUserReviewRepository } from './interfaces/user-review.repository.interface';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, In, Not, Repository } from 'typeorm';
 import { UserReview } from '../entities/user/user-review.entity';
 import { Injectable } from '@nestjs/common';
 import { ReviewEnum, SubCategroriesEnum } from '../entities/user/review.enum';
@@ -16,33 +16,34 @@ export class UserReviewRepository
   async setReview(
     userId: number,
     mechanicId: number,
+    appointmentId: number,
     review: ReviewEnum,
     subCategories?: SubCategroriesEnum[],
   ): Promise<void> {
     const reviewRepo = this.manager.getRepository(UserReview);
-    const pending = await reviewRepo.findOne({
-      where: { userId, mechanicId, review: ReviewEnum.PENDING },
-      order: { appointmentId: 'DESC' },
+
+    const existing = await reviewRepo.findOne({
+      where: { userId, mechanicId, appointmentId },
     });
-    if (pending) {
-      pending.review = review;
+
+    if (existing) {
+      existing.review = review;
       if (subCategories !== undefined) {
-        pending.subCategories = subCategories;
+        existing.subCategories = subCategories;
       }
-      await reviewRepo.save(pending);
+      await reviewRepo.save(existing);
       return;
     }
-    const latest = await reviewRepo.findOne({
-      where: { userId, mechanicId },
-      order: { appointmentId: 'DESC' },
+
+    const newReview = reviewRepo.create({
+      userId,
+      mechanicId,
+      appointmentId,
+      review,
+      subCategories,
     });
-    if (latest) {
-      latest.review = review;
-      if (subCategories !== undefined) {
-        latest.subCategories = subCategories;
-      }
-      await reviewRepo.save(latest);
-    }
+
+    await reviewRepo.save(newReview);
   }
 
   async getReview(userId: number, mechanicId: number): Promise<ReviewEnum> {
@@ -130,5 +131,34 @@ export class UserReviewRepository
       averageScore: parseFloat(r.averageScore),
       totalReviews: Number(r.totalReviews),
     }));
+  }
+
+  async countCompletedReviewsByUserAndMechanic(
+    userId: number,
+    mechanicId: number,
+  ): Promise<number> {
+    const reviewRepo = this.manager.getRepository(UserReview);
+    return reviewRepo.count({
+      where: {
+        userId,
+        mechanicId,
+        review: Not(ReviewEnum.PENDING),
+      },
+    });
+  }
+
+  async userHasPendingReviews(
+    userId: number,
+    mechanicId: number,
+  ): Promise<boolean> {
+    const count = await this.count({
+      where: {
+        userId,
+        mechanicId,
+        review: ReviewEnum.PENDING,
+      },
+    });
+
+    return count > 0;
   }
 }

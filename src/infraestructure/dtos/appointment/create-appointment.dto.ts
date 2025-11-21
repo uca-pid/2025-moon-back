@@ -1,4 +1,10 @@
-import { IsArray, IsNumber, IsString, Matches } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsString,
+  Matches,
+  IsOptional,
+} from 'class-validator';
 import { IsNotPastDate } from 'src/infraestructure/rest-api/decorators/is-not-past-date.decorator';
 
 export class CreateAppointmentDto {
@@ -24,4 +30,8 @@ export class CreateAppointmentDto {
 
   @IsNumber()
   vehicleId: number;
+
+  @IsOptional()
+  @IsString()
+  couponCode?: string;
 }

@@ -10,6 +10,10 @@ export class ReviewDto {
   @Min(1)
   mechanicId: number;
 
+  @IsInt()
+  @Min(1)
+  appointmentId: number;
+
   @IsEnum(ReviewEnum)
   review: ReviewEnum;
 

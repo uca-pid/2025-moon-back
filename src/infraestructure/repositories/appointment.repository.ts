@@ -173,21 +173,30 @@ export class AppointmentRepository
   }
 
   async createAppointment(
-    entityData: CreateAppointmentData,
-  ): Promise<Appointment> {
-    const result = await this.save({
-      date: entityData.date,
-      time: entityData.time,
-      user: { id: entityData.userId },
-      services: entityData.serviceIds.map((id) => ({ id })),
-      workshop: { id: entityData.workshopId },
-      vehicle: { id: entityData.vehicleId },
+    data: CreateAppointmentData,
+  ): Promise<Appointment | null> {
+    const appointment = this.create({
+      user: { id: data.userId } as any,
+      workshop: { id: data.workshopId } as any,
+      vehicle: { id: data.vehicleId } as any,
+      date: data.date,
+      time: data.time,
+      originalPrice: data.originalPrice,
+      finalPrice: data.finalPrice,
+      discountCouponId: data.discountCouponId,
     });
-    const appointment = await this.baseQueryBuilder()
-      .where('appointment.id = :id', { id: result.id })
-      .getOne();
-    if (!appointment) throw new Error('Appointment not found after creation');
-    return appointment;
+
+    await this.save(appointment);
+
+    if (data.serviceIds?.length) {
+      await this.manager
+        .createQueryBuilder()
+        .relation(Appointment, 'services')
+        .of(appointment)
+        .add(data.serviceIds);
+    }
+
+    return this.findDetailsById(appointment.id);
   }
 
   async findAppointmentRangeByWorkshop(

@@ -9,6 +9,7 @@ export interface IUserReviewRepository extends IBaseRepository<UserReview> {
   setReview(
     userId: number,
     mechanicId: number,
+    appointmentId: number,
     review: ReviewEnum,
     subCategories?: SubCategroriesEnum[],
   ): Promise<void>;
@@ -24,6 +25,11 @@ export interface IUserReviewRepository extends IBaseRepository<UserReview> {
       totalReviews: number;
     }[]
   >;
+  countCompletedReviewsByUserAndMechanic(
+    userId: number,
+    mechanicId: number,
+  ): Promise<number>;
+  userHasPendingReviews(userId: number, mechanicId: number): Promise<boolean>;
 }
 
 export const IUserReviewRepositoryToken = 'IUserReviewRepository';
