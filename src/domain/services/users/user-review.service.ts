@@ -265,4 +265,31 @@ export class UserReviewService implements IUserReviewService {
       },
     };
   }
+  async getMechanicRanking(mechanicId: number) {
+    const top = await this.getTopMechanics(9999);
+
+    const totalMechanics = top.length;
+
+    const entry = top.find((m) => m.mechanicId === mechanicId);
+
+    if (!entry) {
+      return {
+        mechanicId,
+        position: null,
+        totalMechanics,
+        averageScore: null,
+        totalReviews: 0,
+      };
+    }
+
+    const position = top.indexOf(entry) + 1;
+
+    return {
+      mechanicId,
+      position,
+      totalMechanics,
+      averageScore: entry.averageScore,
+      totalReviews: entry.totalReviews,
+    };
+  }
 }

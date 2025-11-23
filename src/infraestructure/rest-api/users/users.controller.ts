@@ -125,6 +125,13 @@ export class UsersController {
     return this.userReviewService.getTopMechanics(10);
   }
 
+  @Get('/ranking/mechanic/:mechanicId')
+  async getMechanicRankingForClient(
+    @Param('mechanicId', ParseIntPipe) mechanicId: number,
+  ) {
+    return this.userReviewService.getMechanicRanking(mechanicId);
+  }
+
   @Get('/:id')
   getUser(@Param('id', new ParseIntPipe()) id: number) {
     return this.usersService.findById(id);

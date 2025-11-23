@@ -57,6 +57,13 @@ export interface IUserReviewService {
       } | null;
     } | null;
   }>;
+  getMechanicRanking(mechanicId: number): Promise<{
+    mechanicId: number;
+    position: number | null;
+    totalMechanics: number;
+    averageScore: number | null;
+    totalReviews: number;
+  }>;
 }
 
 export const IUserReviewServiceToken = 'IUserReviewService';
