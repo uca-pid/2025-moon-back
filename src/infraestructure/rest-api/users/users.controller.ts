@@ -29,6 +29,8 @@ import {
   IUserReviewServiceToken,
   type IUserReviewService,
 } from 'src/domain/interfaces/user-review.interface';
+import { SpendeeAuthBodyDto } from 'src/infraestructure/dtos/users/spendee-auth-body.dto';
+import { AuthenticatedWorkshop } from '../decorators/authenticated-mechanic.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -117,5 +119,13 @@ export class UsersController {
   @Get('/:id')
   getUser(@Param('id', new ParseIntPipe()) id: number) {
     return this.usersService.findById(id);
+  }
+
+  @Post('/spendee-auth')
+  spendeeAuth(
+    @AuthenticatedWorkshop() mechanic: JwtPayload,
+    @Body() spendeeAuthDto: SpendeeAuthBodyDto,
+  ) {
+    return this.usersService.spendeeAuth(mechanic, spendeeAuthDto.code);
   }
 }

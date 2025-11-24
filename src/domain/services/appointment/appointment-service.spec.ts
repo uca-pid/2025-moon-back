@@ -25,12 +25,22 @@ import {
 } from 'src/domain/interfaces/spare-part-service.interface';
 import { Vehicle } from 'src/infraestructure/entities/vehicle/vehicle.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import {
+  IExpenseTrackerService,
+  IExpenseTrackerServiceToken,
+} from 'src/domain/interfaces/expense-tracker-service.interface';
+import {
+  IUsersTokenService,
+  IUsersTokenServiceToken,
+} from 'src/domain/interfaces/users-token-service.interface';
 
 describe('AppointmentService', () => {
   let appointmentService: IAppointmentService;
   const appointmentRepositoryMock = mockDeep<IAppointmentRepository>();
   const sparePartsServiceMock = mockDeep<ISparePartService>();
   const serviceServiceMock = mockDeep<IServiceService>();
+  const expenseTrackerServiceMock = mockDeep<IExpenseTrackerService>();
+  const usersTokenServiceMock = mockDeep<IUsersTokenService>();
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -52,6 +62,14 @@ describe('AppointmentService', () => {
         {
           provide: EventEmitter2,
           useValue: { emit: jest.fn() },
+        },
+        {
+          provide: IExpenseTrackerServiceToken,
+          useValue: expenseTrackerServiceMock,
+        },
+        {
+          provide: IUsersTokenServiceToken,
+          useValue: usersTokenServiceMock,
         },
       ],
     }).compile();

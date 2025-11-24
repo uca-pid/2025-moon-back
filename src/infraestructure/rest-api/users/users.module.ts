@@ -25,13 +25,19 @@ import { UserReviewService } from 'src/domain/services/users/user-review.service
 import { IUserReviewServiceToken } from 'src/domain/interfaces/user-review.interface';
 import { UserReviewRepository } from 'src/infraestructure/repositories/user-review.repository';
 import { IUserReviewRepositoryToken } from 'src/infraestructure/repositories/interfaces/user-review.repository.interface';
+import { IUsersTokenRepositoryToken } from 'src/infraestructure/repositories/interfaces/users-token-repository.interface';
+import { UsersTokenRepository } from 'src/infraestructure/repositories/users-token.repository';
+import { ExpenseTrackerModule } from 'src/infraestructure/services/expense-tracker/expense-tracker.module';
+import { IUsersTokenServiceToken } from 'src/domain/interfaces/users-token-service.interface';
+import { UsersTokenService } from 'src/domain/services/users/users-token.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, UserPasswordRecovery, UserReview]),
     ConfigModule,
+    ExpenseTrackerModule,
   ],
-  exports: [IUsersServiceToken],
+  exports: [IUsersServiceToken, IUsersTokenServiceToken],
   controllers: [UsersController],
   providers: [
     { provide: IUsersRepositoryToken, useClass: UsersRepository },
@@ -50,6 +56,8 @@ import { IUserReviewRepositoryToken } from 'src/infraestructure/repositories/int
     { provide: IEmailServiceToken, useClass: EmailService },
     { provide: IUserReviewRepositoryToken, useClass: UserReviewRepository },
     { provide: IUserReviewServiceToken, useClass: UserReviewService },
+    { provide: IUsersTokenRepositoryToken, useClass: UsersTokenRepository },
+    { provide: IUsersTokenServiceToken, useClass: UsersTokenService },
   ],
 })
 export class UsersModule {}

@@ -1,4 +1,3 @@
-import { TimeRange } from 'src/infraestructure/dtos/appointment/get-workshop-appointment-range-query.dto';
 import { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interface';
 import { AppointmentStatus } from 'src/infraestructure/entities/appointment/appointment-status.enum';
 import { Appointment } from 'src/infraestructure/entities/appointment/appointment.entity';

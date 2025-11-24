@@ -26,10 +26,17 @@ import {
 import { Vehicle } from 'src/infraestructure/entities/vehicle/vehicle.entity';
 import { AppointmentStatus } from 'src/infraestructure/entities/appointment/appointment-status.enum';
 import { UserRole } from 'src/infraestructure/entities/user/user-role.enum';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { APPOINTMENT_EVENTS } from 'src/domain/events/appointments/appointment-events';
 import { AppointmentStatusChangedEvent } from 'src/domain/events/appointments/appointment-status-changed-event';
-import { TimeRange } from 'src/infraestructure/dtos/appointment/get-workshop-appointment-range-query.dto';
+import {
+  type IExpenseTrackerService,
+  IExpenseTrackerServiceToken,
+} from 'src/domain/interfaces/expense-tracker-service.interface';
+import {
+  type IUsersTokenService,
+  IUsersTokenServiceToken,
+} from 'src/domain/interfaces/users-token-service.interface';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
@@ -41,6 +48,10 @@ export class AppointmentService implements IAppointmentService {
     @Inject(ISparePartServiceToken)
     private readonly sparePartService: ISparePartService,
     private eventEmitter: EventEmitter2,
+    @Inject(IExpenseTrackerServiceToken)
+    private expenseTrackerService: IExpenseTrackerService,
+    @Inject(IUsersTokenServiceToken)
+    private usersTokenService: IUsersTokenService,
   ) {}
 
   async findById(id: number): Promise<Appointment> {
@@ -227,5 +238,23 @@ export class AppointmentService implements IAppointmentService {
       workshopId,
       timeRange,
     );
+  }
+
+  @OnEvent(APPOINTMENT_EVENTS.STATUS_CHANGED)
+  async onAppointmentStatusChanged(event: AppointmentStatusChangedEvent) {
+    if (event.appointment.status === AppointmentStatus.COMPLETED) {
+      await this.handleAppointmentCompleted(event);
+    }
+  }
+
+  async handleAppointmentCompleted(event: AppointmentStatusChangedEvent) {
+    const token = await this.usersTokenService.getTokenOrThrow(
+      event.triggeredBy.id,
+    );
+    const appointmentTotal = event.appointment.services.reduce(
+      (acc, service) => acc + service.price,
+      0,
+    );
+    await this.expenseTrackerService.trackIncome(appointmentTotal, token);
   }
 }

@@ -19,6 +19,8 @@ import { AuthenticatedWorkshop } from '../decorators/authenticated-mechanic.deco
 import { User } from 'src/infraestructure/entities/user/user.entity';
 import { CreateSparePartDto } from 'src/infraestructure/dtos/spare-part/create-spare-part.dto';
 import { UpdateSparePartDto } from 'src/infraestructure/dtos/spare-part/update-spare-part.dto';
+import { CreateEntryDto } from 'src/infraestructure/dtos/spare-part/create-entry-body.dto';
+import { type JwtPayload } from 'src/domain/dtos/jwt-payload.interface';
 
 @Controller('spare-parts')
 export class SparePartController {
@@ -86,5 +88,13 @@ export class SparePartController {
     // @ts-expect-error dont return mechanic so we don't expose user data
     part.mechanic = undefined;
     return part;
+  }
+
+  @Post('/entry')
+  async createEntry(
+    @Body() createEntryBody: CreateEntryDto[],
+    @AuthenticatedWorkshop() mechanic: JwtPayload,
+  ) {
+    await this.sparePartService.createEntry(createEntryBody, mechanic);
   }
 }

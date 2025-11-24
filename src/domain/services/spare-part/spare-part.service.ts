@@ -1,11 +1,26 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { JwtPayload } from 'src/domain/dtos/jwt-payload.interface';
 import { PaginatedQueryDto } from 'src/domain/dtos/paginated-query.dto';
 import { PaginatedResultDto } from 'src/domain/dtos/paginated-result.dto';
+import {
+  type IExpenseTrackerService,
+  IExpenseTrackerServiceToken,
+} from 'src/domain/interfaces/expense-tracker-service.interface';
 import {
   ISparePartService,
   ReduceStockData,
 } from 'src/domain/interfaces/spare-part-service.interface';
+import {
+  type IUsersTokenService,
+  IUsersTokenServiceToken,
+} from 'src/domain/interfaces/users-token-service.interface';
 import { ServiceSparePartDto } from 'src/infraestructure/dtos/services/create-service.dto';
+import { CreateEntryDto } from 'src/infraestructure/dtos/spare-part/create-entry-body.dto';
 import { CreateSparePartDto } from 'src/infraestructure/dtos/spare-part/create-spare-part.dto';
 import { UpdateSparePartDto } from 'src/infraestructure/dtos/spare-part/update-spare-part.dto';
 import { Service } from 'src/infraestructure/entities/service/service.entity';
@@ -21,7 +36,36 @@ export class SparePartService implements ISparePartService {
   constructor(
     @Inject(ISparePartRepositoryToken)
     private readonly repository: ISparePartRepository,
+    @Inject(IExpenseTrackerServiceToken)
+    private readonly expenseTrackerService: IExpenseTrackerService,
+    @Inject(IUsersTokenServiceToken)
+    private readonly usersTokenService: IUsersTokenService,
   ) {}
+
+  async createEntry(entries: CreateEntryDto[], mechanic: JwtPayload) {
+    const token = await this.usersTokenService.getTokenOrThrow(mechanic.id);
+    const ids = entries.map((entry) => entry.sparePartId);
+    const spareParts = await this.getByIds(ids);
+    if (spareParts.length < ids.length)
+      throw new NotFoundException('Spare part not found');
+    for (const entry of entries) {
+      const index = spareParts.findIndex((sp) => sp.id === entry.sparePartId);
+      if (index === -1) throw new NotFoundException('Spare part not found');
+      spareParts[index].stock += entry.quantity;
+    }
+    await this.repository.save(spareParts);
+    await this.expenseTrackerService.trackOutcome(
+      entries.map((entry) => {
+        const sparePart = spareParts.find((s) => s.id === entry.sparePartId);
+        if (!sparePart) throw new NotFoundException();
+        return {
+          ...entry,
+          sparePart,
+        };
+      }),
+      token,
+    );
+  }
 
   getByIds(ids: number[]): Promise<SparePart[]> {
     return this.repository.getByIds(ids);
