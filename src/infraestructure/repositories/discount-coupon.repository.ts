@@ -25,17 +25,13 @@ export class DiscountCouponRepository
     });
   }
 
-  async findActiveByUserAndWorkshop(
-    userId: number,
-    workshopId: number,
-  ): Promise<DiscountCoupon | null> {
-    const now = new Date();
+  async findActiveByUserAndWorkshop(userId: number, workshopId: number) {
     return this.findOne({
       where: {
         userId,
         workshopId,
         isUsed: false,
-        expiresAt: MoreThan(now),
+        expiresAt: MoreThan(new Date()),
       },
     });
   }

@@ -40,10 +40,7 @@ export class DiscountCouponService implements IDiscountCouponService {
         workshopId,
       );
 
-    if (
-      completedReviews === 0 ||
-      completedReviews % this.REQUIRED_REVIEWS !== 0
-    ) {
+    if (completedReviews < this.REQUIRED_REVIEWS) {
       return null;
     }
 
@@ -71,7 +68,7 @@ export class DiscountCouponService implements IDiscountCouponService {
     workshopId: number,
   ): Promise<CouponProgress> {
     const [activeCoupon, completedReviews] = await Promise.all([
-      this.couponRepository.findActiveByUser(userId),
+      this.couponRepository.findActiveByUserAndWorkshop(userId, workshopId),
       this.userReviewRepository.countCompletedReviewsByUserAndMechanic(
         userId,
         workshopId,
