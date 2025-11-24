@@ -24,6 +24,14 @@ import { UpdateUserDto } from 'src/infraestructure/dtos/users/update-user.dto';
 import { UpdateUserPasswordDto } from 'src/infraestructure/dtos/users/update-user-password.dto';
 import { User } from 'src/infraestructure/entities/user/user.entity';
 import { UserRole } from 'src/infraestructure/entities/user/user-role.enum';
+import {
+  IExpenseTrackerService,
+  IExpenseTrackerServiceToken,
+} from 'src/domain/interfaces/expense-tracker-service.interface';
+import {
+  IUsersTokenRepository,
+  IUsersTokenRepositoryToken,
+} from 'src/infraestructure/repositories/interfaces/users-token-repository.interface';
 
 describe('UsersService', () => {
   let usersService: IUsersService;
@@ -31,6 +39,8 @@ describe('UsersService', () => {
   const usersRepositoryMock = mockDeep<IUsersRepository>();
   const hashServiceMock = mockDeep<IHashService>();
   const jwtServiceMock = mockDeep<IJwtService>();
+  const expenseTrackerMock = mockDeep<IExpenseTrackerService>();
+  const usersTokenRepositoryMock = mockDeep<IUsersTokenRepository>();
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -41,6 +51,11 @@ describe('UsersService', () => {
         { provide: IUsersRepositoryToken, useValue: usersRepositoryMock },
         { provide: IHashServiceToken, useValue: hashServiceMock },
         { provide: IJwtServiceToken, useValue: jwtServiceMock },
+        { provide: IExpenseTrackerServiceToken, useValue: expenseTrackerMock },
+        {
+          provide: IUsersTokenRepositoryToken,
+          useValue: usersTokenRepositoryMock,
+        },
       ],
     }).compile();
 

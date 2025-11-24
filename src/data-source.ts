@@ -10,10 +10,12 @@ import { ServiceSparePart } from './infraestructure/entities/service/service-spa
 import { Notification } from './infraestructure/entities/notification/notification.entity';
 import { UserReview } from './infraestructure/entities/user/user-review.entity';
 import { Goal } from './infraestructure/entities/goals/goal.entity';
+import { UserToken } from './infraestructure/entities/user/user-tokens';
 
 export const entities = [
   User,
   UserPasswordRecovery,
+  UserToken,
   Appointment,
   Service,
   Vehicle,

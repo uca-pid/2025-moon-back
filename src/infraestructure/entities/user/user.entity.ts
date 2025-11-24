@@ -4,6 +4,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { UserRole } from './user-role.enum';
 import { Appointment } from '../appointment/appointment.entity';
@@ -12,6 +13,7 @@ import { SparePart } from '../spare-part/spare-part.entity';
 import { Service } from '../service/service.entity';
 import { Notification } from '../notification/notification.entity';
 import { Goal } from '../goals/goal.entity';
+import { UserToken } from './user-tokens';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -62,4 +64,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Goal, (goal) => goal.user)
   goals: Goal[];
+
+  @OneToOne(() => UserToken, (token) => token.user)
+  token: UserToken;
 }
