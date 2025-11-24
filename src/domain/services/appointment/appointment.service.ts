@@ -26,13 +26,13 @@ import {
 import { Vehicle } from 'src/infraestructure/entities/vehicle/vehicle.entity';
 import { AppointmentStatus } from 'src/infraestructure/entities/appointment/appointment-status.enum';
 import { UserRole } from 'src/infraestructure/entities/user/user-role.enum';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { APPOINTMENT_EVENTS } from 'src/domain/events/appointments/appointment-events';
 import { AppointmentStatusChangedEvent } from 'src/domain/events/appointments/appointment-status-changed-event';
-import { IDiscountCouponServiceToken } from 'src/domain/interfaces/discount-coupon-service.interface';
-import type { IDiscountCouponService } from 'src/domain/interfaces/discount-coupon-service.interface';
-import { IDiscountCouponRepositoryToken } from 'src/infraestructure/repositories/interfaces/discount-coupon-repository.interface';
-import type { IDiscountCouponRepository } from 'src/infraestructure/repositories/interfaces/discount-coupon-repository.interface';
+import {
+  type IExpenseTrackerService,
+  IExpenseTrackerServiceToken,
+} from 'src/domain/interfaces/expense-tracker-service.interface';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
@@ -44,10 +44,8 @@ export class AppointmentService implements IAppointmentService {
     @Inject(ISparePartServiceToken)
     private readonly sparePartService: ISparePartService,
     private eventEmitter: EventEmitter2,
-    @Inject(IDiscountCouponServiceToken)
-    private readonly discountCouponService: IDiscountCouponService,
-    @Inject(IDiscountCouponRepositoryToken)
-    private readonly couponRepository: IDiscountCouponRepository,
+    @Inject(IExpenseTrackerServiceToken)
+    private expenseTrackerService: IExpenseTrackerService,
   ) {}
 
   async findById(id: number): Promise<Appointment> {
@@ -268,5 +266,20 @@ export class AppointmentService implements IAppointmentService {
       workshopId,
       timeRange,
     );
+  }
+
+  @OnEvent(APPOINTMENT_EVENTS.STATUS_CHANGED)
+  async onAppointmentStatusChanged(event: AppointmentStatusChangedEvent) {
+    if (event.appointment.status === AppointmentStatus.COMPLETED) {
+      await this.handleAppointmentCompleted(event);
+    }
+  }
+
+  async handleAppointmentCompleted(event: AppointmentStatusChangedEvent) {
+    const appointmentTotal = event.appointment.services.reduce(
+      (acc, service) => acc + service.price,
+      0,
+    );
+    await this.expenseTrackerService.trackIncome(appointmentTotal);
   }
 }
