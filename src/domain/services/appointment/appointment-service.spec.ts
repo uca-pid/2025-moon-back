@@ -29,6 +29,10 @@ import {
   IExpenseTrackerService,
   IExpenseTrackerServiceToken,
 } from 'src/domain/interfaces/expense-tracker-service.interface';
+import {
+  IUsersTokenService,
+  IUsersTokenServiceToken,
+} from 'src/domain/interfaces/users-token-service.interface';
 
 describe('AppointmentService', () => {
   let appointmentService: IAppointmentService;
@@ -36,6 +40,7 @@ describe('AppointmentService', () => {
   const sparePartsServiceMock = mockDeep<ISparePartService>();
   const serviceServiceMock = mockDeep<IServiceService>();
   const expenseTrackerServiceMock = mockDeep<IExpenseTrackerService>();
+  const usersTokenServiceMock = mockDeep<IUsersTokenService>();
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -61,6 +66,10 @@ describe('AppointmentService', () => {
         {
           provide: IExpenseTrackerServiceToken,
           useValue: expenseTrackerServiceMock,
+        },
+        {
+          provide: IUsersTokenServiceToken,
+          useValue: usersTokenServiceMock,
         },
       ],
     }).compile();

@@ -33,6 +33,11 @@ import { DiscountCouponService } from 'src/domain/services/users/discount-coupon
 import { IAppointmentRepositoryToken } from 'src/infraestructure/repositories/interfaces/appointment-repository.interface';
 import { AppointmentRepository } from 'src/infraestructure/repositories/appointment.repository';
 import { Appointment } from 'src/infraestructure/entities/appointment/appointment.entity';
+import { IUsersTokenRepositoryToken } from 'src/infraestructure/repositories/interfaces/users-token-repository.interface';
+import { UsersTokenRepository } from 'src/infraestructure/repositories/users-token.repository';
+import { ExpenseTrackerModule } from 'src/infraestructure/services/expense-tracker/expense-tracker.module';
+import { IUsersTokenServiceToken } from 'src/domain/interfaces/users-token-service.interface';
+import { UsersTokenService } from 'src/domain/services/users/users-token.service';
 
 @Module({
   imports: [
@@ -44,9 +49,9 @@ import { Appointment } from 'src/infraestructure/entities/appointment/appointmen
       Appointment,
     ]),
     ConfigModule,
+    ExpenseTrackerModule,
   ],
-
-  exports: [IUsersServiceToken],
+  exports: [IUsersServiceToken, IUsersTokenServiceToken],
   controllers: [UsersController],
   providers: [
     { provide: IUsersRepositoryToken, useClass: UsersRepository },
@@ -72,6 +77,10 @@ import { Appointment } from 'src/infraestructure/entities/appointment/appointmen
       useClass: DiscountCouponRepository,
     },
     { provide: IDiscountCouponServiceToken, useClass: DiscountCouponService },
+    { provide: IUserReviewRepositoryToken, useClass: UserReviewRepository },
+    { provide: IUserReviewServiceToken, useClass: UserReviewService },
+    { provide: IUsersTokenRepositoryToken, useClass: UsersTokenRepository },
+    { provide: IUsersTokenServiceToken, useClass: UsersTokenService },
   ],
 })
 export class UsersModule {}

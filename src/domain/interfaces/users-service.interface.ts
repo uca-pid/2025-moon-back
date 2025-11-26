@@ -13,6 +13,7 @@ export interface IUsersService {
   getAllWorkshops(): Promise<User[]>;
   login(dto: LoginUserDto): Promise<{ token: string }>;
   findById(id: number): Promise<User>;
+  spendeeAuth(mechanic: JwtPayload, code: string): Promise<void>;
 }
 
 export const IUsersServiceToken = 'IUsersService';

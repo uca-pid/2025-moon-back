@@ -1,7 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtPayload } from 'src/domain/dtos/jwt-payload.interface';
 import {
   IExpenseTrackerService,
   OutcomeEntry,
@@ -18,24 +17,44 @@ export class SpendeeExpenseTrackerService implements IExpenseTrackerService {
     this.url = this.config.getOrThrow('SPENDEE_BASE_URL');
   }
 
-  async trackIncome(incomeAmount: number) {
-    const url = `${this.url}/ingreso`;
+  async trackIncome(incomeAmount: number, token: string) {
+    const url = `${this.url}/api/ingreso`;
     const data = { ingreso: incomeAmount };
-    await firstValueFrom(this.http.post(url, data));
+    await firstValueFrom(
+      this.http.post(url, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    );
   }
 
-  async trackOutcome(
-    entries: OutcomeEntry[],
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mechanic: JwtPayload,
-  ): Promise<void> {
-    const url = `${this.url}/gasto`;
+  async trackOutcome(entries: OutcomeEntry[], token: string): Promise<void> {
+    const url = `${this.url}/api/gasto`;
     for (const entry of entries) {
       const data = {
         gasto: entry.price * entry.quantity,
         categoryName: entry.sparePart.name,
       };
-      await firstValueFrom(this.http.post(url, data));
+      await firstValueFrom(
+        this.http.post(url, data, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      );
     }
+  }
+
+  async fetchToken(code: string): Promise<[string, string]> {
+    const url = `${this.url}/oauth/token`;
+    const response = await firstValueFrom(this.http.post(url, { code }));
+    const { access_token, refresh_token } = response.data;
+    return [access_token, refresh_token];
+  }
+
+  async refreshToken(refreshToken: string): Promise<[string, string]> {
+    const url = `${this.url}/oauth/refresh`;
+    const response = await firstValueFrom(
+      this.http.post(url, { refresh_token: refreshToken }),
+    );
+    const { access_token, refresh_token } = response.data;
+    return [access_token, refresh_token];
   }
 }

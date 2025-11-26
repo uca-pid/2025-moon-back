@@ -31,6 +31,7 @@ import {
 } from 'src/domain/interfaces/user-review.interface';
 import type { IDiscountCouponService } from 'src/domain/interfaces/discount-coupon-service.interface';
 import { IDiscountCouponServiceToken } from 'src/domain/interfaces/discount-coupon-service.interface';
+import { SpendeeAuthBodyDto } from 'src/infraestructure/dtos/users/spendee-auth-body.dto';
 import { AuthenticatedWorkshop } from '../decorators/authenticated-mechanic.decorator';
 
 @Controller('users')
@@ -164,5 +165,12 @@ export class UsersController {
     @Param('workshopId', ParseIntPipe) workshopId: number,
   ) {
     return this.discountCouponService.getAvailableCoupons(user.id, workshopId);
+
+  @Post('/spendee-auth')
+  spendeeAuth(
+    @AuthenticatedWorkshop() mechanic: JwtPayload,
+    @Body() spendeeAuthDto: SpendeeAuthBodyDto,
+  ) {
+    return this.usersService.spendeeAuth(mechanic, spendeeAuthDto.code);
   }
 }

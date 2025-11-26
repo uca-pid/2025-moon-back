@@ -19,6 +19,14 @@ import { JwtPayload } from 'src/infraestructure/dtos/shared/jwt-payload.interfac
 import { UpdateUserDto } from 'src/infraestructure/dtos/users/update-user.dto';
 import { UpdateUserPasswordDto } from 'src/infraestructure/dtos/users/update-user-password.dto';
 import { User } from 'src/infraestructure/entities/user/user.entity';
+import {
+  IExpenseTrackerServiceToken,
+  type IExpenseTrackerService,
+} from 'src/domain/interfaces/expense-tracker-service.interface';
+import {
+  type IUsersTokenRepository,
+  IUsersTokenRepositoryToken,
+} from 'src/infraestructure/repositories/interfaces/users-token-repository.interface';
 
 @Injectable()
 export class UsersService implements IUsersService {
@@ -27,7 +35,20 @@ export class UsersService implements IUsersService {
     private readonly usersRepository: IUsersRepository,
     @Inject(IHashServiceToken) private readonly hashService: IHashService,
     @Inject(IJwtServiceToken) private readonly jwtService: IJwtService,
+    @Inject(IExpenseTrackerServiceToken)
+    private readonly expenseTracker: IExpenseTrackerService,
+    @Inject(IUsersTokenRepositoryToken)
+    private readonly usersTokenRepository: IUsersTokenRepository,
   ) {}
+
+  async spendeeAuth(mechanic: JwtPayload, code: string): Promise<void> {
+    const [token, refreshToken] = await this.expenseTracker.fetchToken(code);
+    await this.usersTokenRepository.upsertToken(
+      mechanic.id,
+      token,
+      refreshToken,
+    );
+  }
 
   getAllWorkshops(): Promise<User[]> {
     return this.usersRepository.getAllWorkshops();

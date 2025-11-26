@@ -15,6 +15,10 @@ import {
   ISparePartService,
   ReduceStockData,
 } from 'src/domain/interfaces/spare-part-service.interface';
+import {
+  type IUsersTokenService,
+  IUsersTokenServiceToken,
+} from 'src/domain/interfaces/users-token-service.interface';
 import { ServiceSparePartDto } from 'src/infraestructure/dtos/services/create-service.dto';
 import { CreateEntryDto } from 'src/infraestructure/dtos/spare-part/create-entry-body.dto';
 import { CreateSparePartDto } from 'src/infraestructure/dtos/spare-part/create-spare-part.dto';
@@ -34,9 +38,12 @@ export class SparePartService implements ISparePartService {
     private readonly repository: ISparePartRepository,
     @Inject(IExpenseTrackerServiceToken)
     private readonly expenseTrackerService: IExpenseTrackerService,
+    @Inject(IUsersTokenServiceToken)
+    private readonly usersTokenService: IUsersTokenService,
   ) {}
 
   async createEntry(entries: CreateEntryDto[], mechanic: JwtPayload) {
+    const token = await this.usersTokenService.getTokenOrThrow(mechanic.id);
     const ids = entries.map((entry) => entry.sparePartId);
     const spareParts = await this.getByIds(ids);
     if (spareParts.length < ids.length)
@@ -56,7 +63,7 @@ export class SparePartService implements ISparePartService {
           sparePart,
         };
       }),
-      mechanic,
+      token,
     );
   }
 

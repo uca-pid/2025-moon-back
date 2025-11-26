@@ -7,9 +7,14 @@ import { SparePartRepository } from 'src/infraestructure/repositories/spare-part
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SparePart } from 'src/infraestructure/entities/spare-part/spare-part.entity';
 import { ExpenseTrackerModule } from 'src/infraestructure/services/expense-tracker/expense-tracker.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SparePart]), ExpenseTrackerModule],
+  imports: [
+    TypeOrmModule.forFeature([SparePart]),
+    ExpenseTrackerModule,
+    UsersModule,
+  ],
   controllers: [SparePartController],
   providers: [
     { provide: ISparePartServiceToken, useClass: SparePartService },

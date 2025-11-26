@@ -37,6 +37,10 @@ import {
   type IExpenseTrackerService,
   IExpenseTrackerServiceToken,
 } from 'src/domain/interfaces/expense-tracker-service.interface';
+import {
+  type IUsersTokenService,
+  IUsersTokenServiceToken,
+} from 'src/domain/interfaces/users-token-service.interface';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
@@ -54,6 +58,8 @@ export class AppointmentService implements IAppointmentService {
     private readonly couponRepository: IDiscountCouponRepository,
     @Inject(IExpenseTrackerServiceToken)
     private expenseTrackerService: IExpenseTrackerService,
+    @Inject(IUsersTokenServiceToken)
+    private usersTokenService: IUsersTokenService,
   ) {}
 
   async findById(id: number): Promise<Appointment> {
@@ -284,10 +290,13 @@ export class AppointmentService implements IAppointmentService {
   }
 
   async handleAppointmentCompleted(event: AppointmentStatusChangedEvent) {
+    const token = await this.usersTokenService.getTokenOrThrow(
+      event.triggeredBy.id,
+    );
     const appointmentTotal = event.appointment.services.reduce(
       (acc, service) => acc + service.price,
       0,
     );
-    await this.expenseTrackerService.trackIncome(appointmentTotal);
+    await this.expenseTrackerService.trackIncome(appointmentTotal, token);
   }
 }
