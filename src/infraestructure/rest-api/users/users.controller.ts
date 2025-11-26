@@ -29,6 +29,8 @@ import {
   IUserReviewServiceToken,
   type IUserReviewService,
 } from 'src/domain/interfaces/user-review.interface';
+import type { IDiscountCouponService } from 'src/domain/interfaces/discount-coupon-service.interface';
+import { IDiscountCouponServiceToken } from 'src/domain/interfaces/discount-coupon-service.interface';
 import { SpendeeAuthBodyDto } from 'src/infraestructure/dtos/users/spendee-auth-body.dto';
 import { AuthenticatedWorkshop } from '../decorators/authenticated-mechanic.decorator';
 
@@ -40,6 +42,8 @@ export class UsersController {
     private readonly passwordRecoveryService: IPasswordRecoveryService,
     @Inject(IUserReviewServiceToken)
     private readonly userReviewService: IUserReviewService,
+    @Inject(IDiscountCouponServiceToken)
+    private readonly discountCouponService: IDiscountCouponService,
   ) {}
 
   @Get('/workshops')
@@ -98,6 +102,7 @@ export class UsersController {
     return this.userReviewService.setReview(
       user.id,
       reviewDto.mechanicId,
+      reviewDto.appointmentId,
       reviewDto.review,
       reviewDto.subCategories,
     );
@@ -116,10 +121,50 @@ export class UsersController {
     return entry;
   }
 
+  @Get('/ranking')
+  async getTopWorkshops() {
+    return this.userReviewService.getTopMechanics(10);
+  }
+
+  @Get('/ranking/mechanic/:mechanicId')
+  async getMechanicRankingForClient(
+    @Param('mechanicId', ParseIntPipe) mechanicId: number,
+  ) {
+    return this.userReviewService.getMechanicRanking(mechanicId);
+  }
+
   @Get('/:id')
   getUser(@Param('id', new ParseIntPipe()) id: number) {
     return this.usersService.findById(id);
   }
+
+  @Get('/rewards/progress/:workshopId')
+  async getRewardsProgress(
+    @AuthenticatedUser() user: JwtPayload,
+    @Param('workshopId', new ParseIntPipe()) workshopId: number,
+  ) {
+    return this.discountCouponService.getUserCouponProgress(
+      user.id,
+      workshopId,
+    );
+  }
+
+  @Get('/ranking/me')
+  async getMyRanking(@AuthenticatedWorkshop() mechanic: JwtPayload) {
+    return this.userReviewService.getMechanicRankingWithAdvice(mechanic.id);
+  }
+
+  @Get('/ranking/goals')
+  async getRankingGoals(@AuthenticatedWorkshop() mechanic: JwtPayload) {
+    return this.userReviewService.getRankingGoals(mechanic.id);
+  }
+
+  @Get('/coupons/available/:workshopId')
+  async getAvailableCoupons(
+    @AuthenticatedUser() user: JwtPayload,
+    @Param('workshopId', ParseIntPipe) workshopId: number,
+  ) {
+    return this.discountCouponService.getAvailableCoupons(user.id, workshopId);
 
   @Post('/spendee-auth')
   spendeeAuth(

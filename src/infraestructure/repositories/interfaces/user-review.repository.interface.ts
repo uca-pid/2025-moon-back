@@ -9,12 +9,27 @@ export interface IUserReviewRepository extends IBaseRepository<UserReview> {
   setReview(
     userId: number,
     mechanicId: number,
+    appointmentId: number,
     review: ReviewEnum,
     subCategories?: SubCategroriesEnum[],
   ): Promise<void>;
   getReview(userId: number, mechanicId: number): Promise<ReviewEnum>;
   getUserReviews(userId: number): Promise<UserReview[]>;
   getByMechanicIds(mechanicIds: number[]): Promise<UserReview[]>;
+  getTopMechanics(limit?: number): Promise<
+    {
+      mechanicId: number;
+      workshopName: string;
+      address: string;
+      averageScore: number;
+      totalReviews: number;
+    }[]
+  >;
+  countCompletedReviewsByUserAndMechanic(
+    userId: number,
+    mechanicId: number,
+  ): Promise<number>;
+  userHasPendingReviews(userId: number, mechanicId: number): Promise<boolean>;
 }
 
 export const IUserReviewRepositoryToken = 'IUserReviewRepository';

@@ -117,6 +117,7 @@ export class AppointmentController {
       services,
       workshop,
       vehicle,
+      dto.couponCode ? Number(dto.couponCode) : undefined,
     );
   }
 
