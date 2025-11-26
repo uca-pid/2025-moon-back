@@ -165,6 +165,7 @@ export class UsersController {
     @Param('workshopId', ParseIntPipe) workshopId: number,
   ) {
     return this.discountCouponService.getAvailableCoupons(user.id, workshopId);
+  }
 
   @Post('/spendee-auth')
   spendeeAuth(
