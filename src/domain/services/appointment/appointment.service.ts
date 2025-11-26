@@ -29,6 +29,10 @@ import { UserRole } from 'src/infraestructure/entities/user/user-role.enum';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { APPOINTMENT_EVENTS } from 'src/domain/events/appointments/appointment-events';
 import { AppointmentStatusChangedEvent } from 'src/domain/events/appointments/appointment-status-changed-event';
+import { IDiscountCouponServiceToken } from 'src/domain/interfaces/discount-coupon-service.interface';
+import type { IDiscountCouponService } from 'src/domain/interfaces/discount-coupon-service.interface';
+import { IDiscountCouponRepositoryToken } from 'src/infraestructure/repositories/interfaces/discount-coupon-repository.interface';
+import type { IDiscountCouponRepository } from 'src/infraestructure/repositories/interfaces/discount-coupon-repository.interface';
 import {
   type IExpenseTrackerService,
   IExpenseTrackerServiceToken,
@@ -48,6 +52,10 @@ export class AppointmentService implements IAppointmentService {
     @Inject(ISparePartServiceToken)
     private readonly sparePartService: ISparePartService,
     private eventEmitter: EventEmitter2,
+    @Inject(IDiscountCouponServiceToken)
+    private readonly discountCouponService: IDiscountCouponService,
+    @Inject(IDiscountCouponRepositoryToken)
+    private readonly couponRepository: IDiscountCouponRepository,
     @Inject(IExpenseTrackerServiceToken)
     private expenseTrackerService: IExpenseTrackerService,
     @Inject(IUsersTokenServiceToken)
@@ -158,7 +166,31 @@ export class AppointmentService implements IAppointmentService {
     services: Service[],
     workshop: User,
     vehicle: Vehicle,
+    couponId?: number,
   ): Promise<Appointment> {
+    const originalPrice = services.reduce((sum, s) => sum + s.price, 0);
+    let finalPrice = originalPrice;
+    let discountCouponId: number | null = null;
+
+    if (couponId) {
+      const coupon = await this.discountCouponService.validateCouponById(
+        user.id,
+        workshop.id,
+        couponId,
+      );
+
+      const discountAmount = Math.round(
+        (originalPrice * coupon.discountPercentage) / 100,
+      );
+
+      finalPrice = originalPrice - discountAmount;
+
+      coupon.isUsed = true;
+      await this.couponRepository.save(coupon);
+
+      discountCouponId = coupon.id;
+    }
+
     const createdAppointment =
       await this.appointmentRepository.createAppointment({
         userId: user.id,
@@ -167,12 +199,22 @@ export class AppointmentService implements IAppointmentService {
         serviceIds: services.map((service) => service.id),
         workshopId: workshop.id,
         vehicleId: vehicle.id,
+        originalPrice,
+        finalPrice,
+        discountCouponId,
       });
+
+    if (!createdAppointment) {
+      throw new Error('Failed to create appointment');
+    }
+
     await this.reduceStockFromSpareParts(createdAppointment);
+
     this.eventEmitter.emit(
       APPOINTMENT_EVENTS.STATUS_CHANGED,
       new AppointmentStatusChangedEvent(createdAppointment, user),
     );
+
     return createdAppointment;
   }
 
