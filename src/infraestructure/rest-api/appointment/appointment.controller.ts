@@ -109,6 +109,10 @@ export class AppointmentController {
     if (!vehicle) {
       throw new NotFoundException('Vehicle not found');
     }
+    // @ts-expect-error dont hashedPassword
+    workshop.hashedPassword = undefined;
+    // @ts-expect-error dont hashedPassword
+    user.hashedPassword = undefined;
 
     return this.appointmentService.create(
       user,
