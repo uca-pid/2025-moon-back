@@ -12,6 +12,7 @@ import { Service } from '../service/service.entity';
 import { User } from '../user/user.entity';
 import { Vehicle } from '../vehicle/vehicle.entity';
 import { AppointmentStatus } from './appointment-status.enum';
+import { DiscountCoupon } from '../user/discount-coupon.entity';
 
 @Entity('appointments')
 export class Appointment extends BaseEntity {
@@ -50,4 +51,17 @@ export class Appointment extends BaseEntity {
   @ManyToOne(() => Vehicle)
   @JoinColumn({ name: 'vehicle_id' })
   vehicle: Vehicle;
+
+  @Column({ type: 'int', nullable: true })
+  originalPrice: number | null;
+
+  @Column({ type: 'int', nullable: true })
+  finalPrice: number | null;
+
+  @Column({ type: 'int', nullable: true })
+  discountCouponId: number | null;
+
+  @ManyToOne(() => DiscountCoupon, { nullable: true })
+  @JoinColumn({ name: 'discountCouponId' })
+  discountCoupon?: DiscountCoupon | null;
 }

@@ -9,6 +9,9 @@ export interface CreateAppointmentData {
   serviceIds: number[];
   workshopId: number;
   vehicleId: number;
+  originalPrice: number;
+  finalPrice: number | null;
+  discountCouponId: number | null;
 }
 
 export enum DateFilter {
@@ -20,22 +23,28 @@ export enum DateFilter {
 export interface IAppointmentRepository extends IBaseRepository<Appointment> {
   findById(id: number): Promise<Appointment | null>;
   findDetailsById(id: number): Promise<Appointment | null>;
+
   deletePendingAppointmentsOfVehicle(id: number): Promise<void>;
+
   getNextAppointmentsOfUser(userId: number): Promise<Appointment[]>;
   getAppointmentsOfWorkshop(
     workshopId: number,
     dateFilter?: DateFilter,
   ): Promise<Appointment[]>;
+
   getAppointmentsBySearch(
     workshopId: number,
     status?: AppointmentStatus,
     dateFilter?: DateFilter,
   ): Promise<Appointment[]>;
+
   getAppointmentsOfUser(
-    user_id: number,
+    userId: number,
     dateFilter?: DateFilter,
   ): Promise<Appointment[]>;
-  createAppointment(entityData: CreateAppointmentData): Promise<Appointment>;
+
+  createAppointment(data: CreateAppointmentData): Promise<Appointment | null>;
+
   findAppointmentRangeByWorkshop(
     workshopId: number,
     timeRange: 'week' | 'two_weeks' | 'month',

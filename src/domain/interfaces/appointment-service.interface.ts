@@ -36,6 +36,7 @@ export interface IAppointmentService {
     services: Service[],
     workshop: User,
     vehicle: Vehicle,
+    couponId?: number,
   ): Promise<Appointment>;
   getWorkshopAppointmentRange(
     workshopId: number,
